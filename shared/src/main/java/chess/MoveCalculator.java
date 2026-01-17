@@ -200,6 +200,7 @@ public class MoveCalculator {
     public Collection<ChessMove> checkAdjacent(ChessBoard board, ChessPosition myPosition){
         int current_row = myPosition.getRow();
         int current_col = myPosition.getColumn();
+        System.out.println(String.format("here is the king: [row: %s, col: %s]", current_row, current_col));
         ArrayList<ChessMove> possible_moves = new ArrayList<ChessMove>();
         ChessMove my_move;
 
@@ -210,6 +211,8 @@ public class MoveCalculator {
         if (my_move != null) {
             possible_moves.add(my_move);
         }
+        System.out.println("top left");
+        System.out.println(my_move);
 
         //top middle
         row = current_row-1;
@@ -270,7 +273,163 @@ public class MoveCalculator {
         return possible_moves;
     }
 
+    public Collection<ChessMove> checkFrontThree(ChessBoard board, ChessPosition myPosition){
+        int current_row = myPosition.getRow();
+        int current_col = myPosition.getColumn();
+        ArrayList<ChessMove> possible_moves = new ArrayList<ChessMove>();
 
+        //top left
+        int row = current_row-1;
+        int col = current_col-1;
+        if (row > 0 & col > 0 & row < 9 & col < 9) {
+            boolean promote = false;
+            if (row == 1 | row == 8){
+                promote = true;
+            }
+            ChessPosition possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) != null) {
+                if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //if it's an enemy piece, we can move there
+                    System.out.println(String.format("space: [%s, %s]", row, col));
+                    if (!promote) {
+                        possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                    }else {
+                            possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.QUEEN));
+                            possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.ROOK));
+                            possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.KNIGHT));
+                            possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.BISHOP));
+                    }
+                }
+            }
+        }
+
+        //top middle
+        row = current_row-1;
+        col = current_col;
+        if (row > 0 & col > 0 & row < 9 & col < 9) {
+            boolean promote = false;
+            if (row == 1 | row == 8){
+                promote = true;
+            }
+            ChessPosition possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) == null) {
+                //there is nothing there, so we can move the piece here!
+                System.out.println(String.format("space: [%s, %s]", row, col));
+                if (!promote) {
+                    possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                }else {
+                    possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.QUEEN));
+                    possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.ROOK));
+                    possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.KNIGHT));
+                    possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.BISHOP));
+                }
+            }
+        }
+
+        //top right
+        row = current_row-1;
+        col = current_col+1;
+        if (row > 0 & col > 0 & row < 9 & col < 9) {
+            boolean promote = false;
+            if (row == 1 | row == 8){
+                promote = true;
+            }
+            ChessPosition possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) != null) {
+                if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //if it's an enemy piece, we can move there
+                    System.out.println(String.format("space: [%s, %s]", row, col));
+                    if (!promote) {
+                        possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                    }else {
+                        possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.QUEEN));
+                        possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.ROOK));
+                        possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.KNIGHT));
+                        possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.BISHOP));
+                    }
+                }
+            }
+        }
+
+        return possible_moves;
+    }
+
+    public Collection<ChessMove> checkBackThree(ChessBoard board, ChessPosition myPosition){
+        int current_row = myPosition.getRow();
+        int current_col = myPosition.getColumn();
+        ArrayList<ChessMove> possible_moves = new ArrayList<ChessMove>();
+
+        //bottom right
+        int row = current_row+1;
+        int col = current_col+1;
+        if (row > 0 & col > 0 & row < 9 & col < 9) {
+            boolean promote = false;
+            if (row == 1 | row == 8){
+                promote = true;
+            }
+            ChessPosition possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) != null) {
+                if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //if it's an enemy piece, we can move there
+                    System.out.println(String.format("space: [%s, %s]", row, col));
+                    if (!promote) {
+                        possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                    }else {
+                        possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.QUEEN));
+                        possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.ROOK));
+                        possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.KNIGHT));
+                        possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.BISHOP));
+                    }
+                }
+            }
+        }
+
+        //bottom middle
+        row = current_row+1;
+        col = current_col;
+        if (row > 0 & col > 0 & row < 9 & col < 9) {
+            boolean promote = false;
+            if (row == 1 | row == 8){
+                promote = true;
+            }
+            ChessPosition possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) == null) {
+                //there is nothing there, so we can move the piece here!
+                System.out.println(String.format("space: [%s, %s]", row, col));
+                if (!promote) {
+                    possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                }else {
+                    possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.QUEEN));
+                    possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.ROOK));
+                    possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.KNIGHT));
+                    possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.BISHOP));
+                }
+            }
+        }
+
+        //bottom left
+        row = current_row+1;
+        col = current_col-1;
+        if (row > 0 & col > 0 & row < 9 & col < 9) {
+            boolean promote = false;
+            if (row == 1 | row == 8){
+                promote = true;
+            }
+            ChessPosition possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) != null) {
+                if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //if it's an enemy piece, we can move there
+                    System.out.println(String.format("space: [%s, %s]", row, col));
+                    if (!promote) {
+                        possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                    }else {
+                        possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.QUEEN));
+                        possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.ROOK));
+                        possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.KNIGHT));
+                        possible_moves.add(new ChessMove(myPosition, possible_space, ChessPiece.PieceType.BISHOP));
+                    }
+                }
+            }
+        }
+
+        return possible_moves;
+    }
 
     public ChessMove checkValidMove(ChessBoard board, ChessPosition myPosition, int row, int col) {
         if (row > 0 & col > 0 & row < 9 & col < 9) {
@@ -281,11 +440,40 @@ public class MoveCalculator {
                 return new ChessMove(myPosition, possible_space, null);
             } else if (board.getPiece(possible_space).getTeamColor() == board.getPiece(myPosition).getTeamColor()) { //if the piece is on our team, we can't move there
                 //don't add anything
-            } else if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //if it's an enemy piece, we can move there, but we can't go past it
+            } else if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //if it's an enemy piece, we can move there
                 System.out.println(String.format("space: [%s, %s]", row, col));
                 return new ChessMove(myPosition, possible_space, null);
             }
         }
         return null;
+    }
+
+    public Collection<ChessMove> checkDoubleMoveUp(ChessBoard board, ChessPosition myPosition){
+        ArrayList<ChessMove> possible_moves = new ArrayList<ChessMove>();
+
+        ChessPosition direct_space = new ChessPosition(6, myPosition.getColumn());
+        if (board.getPiece(direct_space) == null) {
+            ChessPosition double_space = new ChessPosition(5, myPosition.getColumn());
+            if (board.getPiece(double_space) == null) {
+                //there is nothing there, so we can move the piece here!
+                possible_moves.add(new ChessMove(myPosition, double_space, null));
+            }
+        }
+
+        return possible_moves;
+    }
+    public Collection<ChessMove> checkDoubleMoveDown(ChessBoard board, ChessPosition myPosition){
+        ArrayList<ChessMove> possible_moves = new ArrayList<ChessMove>();
+
+        ChessPosition direct_space = new ChessPosition(3, myPosition.getColumn());
+        if (board.getPiece(direct_space) == null) {
+            ChessPosition double_space = new ChessPosition(4, myPosition.getColumn());
+            if (board.getPiece(double_space) == null) {
+                //there is nothing there, so we can move the piece here!
+                possible_moves.add(new ChessMove(myPosition, double_space, null));
+            }
+        }
+
+        return possible_moves;
     }
 }

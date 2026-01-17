@@ -68,6 +68,10 @@ public class ChessPiece {
             KingCalc MyMoveCalculator = new KingCalc(board, myPosition);
             return MyMoveCalculator.pieceMoves();
         }
+        else if (my_piece.type == PieceType.PAWN) {
+            PawnCalc MyMoveCalculator = new PawnCalc(board, myPosition);
+            return MyMoveCalculator.pieceMoves();
+        }
         return List.of();
     }
 

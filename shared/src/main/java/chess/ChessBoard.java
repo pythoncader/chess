@@ -87,7 +87,11 @@ public class ChessBoard {
         String my_string = "";
         for (int row = 1; row < 9; row++){
             for (int col = 1; col < 9; col++){
-                my_string = my_string + " |" + this.getPiece(new ChessPosition(row, col));
+                if (this.getPiece(new ChessPosition(row, col)) == null){
+                    my_string = my_string + " | ";
+                }else {
+                    my_string = my_string + " |" + this.getPiece(new ChessPosition(row, col));
+                }
             }
             my_string = my_string + " row " + row + "\n";
         }

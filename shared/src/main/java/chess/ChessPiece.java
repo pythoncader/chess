@@ -1,6 +1,9 @@
 package chess;
 
+import javax.lang.model.type.NullType;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -53,7 +56,12 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece my_piece = board.getPiece(myPosition);
+        if (my_piece.type == PieceType.ROOK) {
+            RookCalc MyMoveCalculator = new RookCalc(board, myPosition);
+            return MyMoveCalculator.pieceMoves();
+        }
+        return List.of();
     }
 
     @Override

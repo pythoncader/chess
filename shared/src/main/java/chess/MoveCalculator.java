@@ -89,4 +89,111 @@ public class MoveCalculator {
         }
         return possible_moves;
     }
+
+    public Collection<ChessMove> diagonal_backward_right(ChessBoard board, ChessPosition myPosition){
+        int current_row = myPosition.getRow();
+        int current_col = myPosition.getColumn();
+        ChessPosition possible_space;
+        ArrayList<ChessMove> possible_moves = new ArrayList<ChessMove>();
+        int row = current_row+1;
+        for (int col = current_col+1; col < 9; col++){ // increment column towards the right of the chessboard
+            if (row == 9){
+                break;
+            }
+            possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) == null){
+                //there is nothing there, so we can move the piece here!
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("backward_right: [%s, %s]", row, col));
+            }else if (board.getPiece(possible_space).getTeamColor() == board.getPiece(myPosition).getTeamColor()){ //if the piece is on our team, we can't move there
+                break;
+            } else if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()){ //if it's an enemy piece, we can move there, but we can't go past it
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("backward_right: [%s, %s]", row, col));
+                break;
+            }
+            row++;
+        }
+        return possible_moves;
+    }
+    public Collection<ChessMove> diagonal_forward_left(ChessBoard board, ChessPosition myPosition){
+        int current_row = myPosition.getRow();
+        int current_col = myPosition.getColumn();
+        ChessPosition possible_space;
+        ArrayList<ChessMove> possible_moves = new ArrayList<ChessMove>();
+        int row = current_row-1;
+        for (int col = current_col-1; col > 0; col--){ // increment column towards the right of the chessboard
+            if (row == 0){
+                break;
+            }
+            possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) == null){
+                //there is nothing there, so we can move the piece here!
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("forward_left: [%s, %s]", row, col));
+            }else if (board.getPiece(possible_space).getTeamColor() == board.getPiece(myPosition).getTeamColor()){ //if the piece is on our team, we can't move there
+                break;
+            } else if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()){ //if it's an enemy piece, we can move there, but we can't go past it
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("forward_left: [%s, %s]", row, col));
+                break;
+            }
+            row--;
+        }
+        return possible_moves;
+    }
+
+    public Collection<ChessMove> diagonal_backward_left(ChessBoard board, ChessPosition myPosition){
+        int current_row = myPosition.getRow();
+        int current_col = myPosition.getColumn();
+        ChessPosition possible_space;
+        ArrayList<ChessMove> possible_moves = new ArrayList<ChessMove>();
+        int col = current_col-1;
+        for (int row = current_row+1; row < 9; row++){ // increment column towards the right of the chessboard
+            if (col == 0){
+                break;
+            }
+            possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) == null){
+                //there is nothing there, so we can move the piece here!
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("backward_left: [%s, %s]", row, col));
+            }else if (board.getPiece(possible_space).getTeamColor() == board.getPiece(myPosition).getTeamColor()){ //if the piece is on our team, we can't move there
+                break;
+            } else if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()){ //if it's an enemy piece, we can move there, but we can't go past it
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("backward_left: [%s, %s]", row, col));
+                break;
+            }
+            col--;
+        }
+        return possible_moves;
+    }
+
+    public Collection<ChessMove> diagonal_forward_right(ChessBoard board, ChessPosition myPosition){
+        int current_row = myPosition.getRow();
+        int current_col = myPosition.getColumn();
+        ChessPosition possible_space;
+        ArrayList<ChessMove> possible_moves = new ArrayList<ChessMove>();
+        int col = current_col+1;
+        for (int row = current_row-1; row > 0; row--){ // increment column towards the right of the chessboard
+            if (col == 9){
+                break;
+            }
+            possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) == null){
+                //there is nothing there, so we can move the piece here!
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("backward_left: [%s, %s]", row, col));
+            }else if (board.getPiece(possible_space).getTeamColor() == board.getPiece(myPosition).getTeamColor()){ //if the piece is on our team, we can't move there
+                break;
+            } else if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()){ //if it's an enemy piece, we can move there, but we can't go past it
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("backward_left: [%s, %s]", row, col));
+                break;
+            }
+            col++;
+        }
+        return possible_moves;
+    }
 }

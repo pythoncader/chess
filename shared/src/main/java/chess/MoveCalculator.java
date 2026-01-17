@@ -476,4 +476,91 @@ public class MoveCalculator {
 
         return possible_moves;
     }
+    public Collection<ChessMove> checkL(ChessBoard board, ChessPosition myPosition){
+        int current_row = myPosition.getRow();
+        int current_col = myPosition.getColumn();
+        System.out.println(String.format("here is the Knight: [row: %s, col: %s]", current_row, current_col));
+        ArrayList<ChessMove> possible_moves = new ArrayList<ChessMove>();
+        ChessMove my_move;
+
+        //   -
+        // ---
+        int row = current_row-1;
+        int col = current_col+2;
+        my_move = checkValidMove(board, myPosition, row, col);
+        if (my_move != null) {
+            possible_moves.add(my_move);
+        }
+        System.out.println("top left");
+        System.out.println(my_move);
+
+        // ---
+        //   -
+        row = current_row+1;
+        col = current_col+2;
+        my_move = checkValidMove(board, myPosition, row, col);
+        if (my_move != null) {
+            possible_moves.add(my_move);
+        }
+
+        // --
+        // -
+        // -
+        row = current_row-2;
+        col = current_col+1;
+        my_move = checkValidMove(board, myPosition, row, col);
+        if (my_move != null) {
+            possible_moves.add(my_move);
+        }
+
+        // --
+        //  -
+        //  -
+        row = current_row-2;
+        col = current_col-1;
+        my_move = checkValidMove(board, myPosition, row, col);
+        if (my_move != null) {
+            possible_moves.add(my_move);
+        }
+
+        // -
+        // ---
+        row = current_row-1;
+        col = current_col-2;
+        my_move = checkValidMove(board, myPosition, row, col);
+        if (my_move != null) {
+            possible_moves.add(my_move);
+        }
+
+        // ---
+        // -
+        row = current_row+1;
+        col = current_col-2;
+        my_move = checkValidMove(board, myPosition, row, col);
+        if (my_move != null) {
+            possible_moves.add(my_move);
+        }
+
+        //  -
+        //  -
+        // --
+        row = current_row+2;
+        col = current_col-1;
+        my_move = checkValidMove(board, myPosition, row, col);
+        if (my_move != null) {
+            possible_moves.add(my_move);
+        }
+
+        // -
+        // -
+        // --
+        row = current_row+2;
+        col = current_col+1;
+        my_move = checkValidMove(board, myPosition, row, col);
+        if (my_move != null) {
+            possible_moves.add(my_move);
+        }
+
+        return possible_moves;
+    }
 }

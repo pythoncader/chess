@@ -1,7 +1,5 @@
 package chess;
 
-import javax.lang.model.type.NullType;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -62,6 +60,9 @@ public class ChessPiece {
             return MyMoveCalculator.pieceMoves();
         }else if (my_piece.type == PieceType.BISHOP) {
             BishopCalc MyMoveCalculator = new BishopCalc(board, myPosition);
+            return MyMoveCalculator.pieceMoves();
+        }else if (my_piece.type == PieceType.QUEEN) {
+            QueenCalc MyMoveCalculator = new QueenCalc(board, myPosition);
             return MyMoveCalculator.pieceMoves();
         }
         return List.of();

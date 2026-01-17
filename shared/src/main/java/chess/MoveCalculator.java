@@ -196,4 +196,150 @@ public class MoveCalculator {
         }
         return possible_moves;
     }
+
+    public Collection<ChessMove> checkAdjacent(ChessBoard board, ChessPosition myPosition){
+        int current_row = myPosition.getRow();
+        int current_col = myPosition.getColumn();
+        ChessPosition possible_space;
+        ArrayList<ChessMove> possible_moves = new ArrayList<ChessMove>();
+
+        //top left
+        int row = current_row-1;
+        int col = current_col-1;
+        if (row > 0 & col > 0 & row < 9 & col < 9) {
+            possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) == null) {
+                //there is nothing there, so we can move the piece here!
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            } else if (board.getPiece(possible_space).getTeamColor() == board.getPiece(myPosition).getTeamColor()) { //if the piece is on our team, we can't move there
+                //don't add anything
+            } else if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //if it's an enemy piece, we can move there, but we can't go past it
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            }
+        }
+
+        //top middle
+        row = current_row-1;
+        col = current_col;
+        if (row > 0 & col > 0 & row < 9 & col < 9) {
+            possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) == null) {
+                //there is nothing there, so we can move the piece here!
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            } else if (board.getPiece(possible_space).getTeamColor() == board.getPiece(myPosition).getTeamColor()) { //if the piece is on our team, we can't move there
+                //don't add anything
+            } else if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //if it's an enemy piece, we can move there, but we can't go past it
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            }
+        }
+
+        //top right
+        row = current_row-1;
+        col = current_col+1;
+        if (row > 0 & col > 0 & row < 9 & col < 9) {
+            possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) == null) {
+                //there is nothing there, so we can move the piece here!
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            } else if (board.getPiece(possible_space).getTeamColor() == board.getPiece(myPosition).getTeamColor()) { //if the piece is on our team, we can't move there
+                //don't add anything
+            } else if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //if it's an enemy piece, we can move there, but we can't go past it
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            }
+        }
+
+        //right middle
+        row = current_row;
+        col = current_col+1;
+        if (row > 0 & col > 0 & row < 9 & col < 9) {
+            possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) == null) {
+                //there is nothing there, so we can move the piece here!
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            } else if (board.getPiece(possible_space).getTeamColor() == board.getPiece(myPosition).getTeamColor()) { //if the piece is on our team, we can't move there
+                //don't add anything
+            } else if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //if it's an enemy piece, we can move there, but we can't go past it
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            }
+        }
+
+        //bottom right
+        row = current_row+1;
+        col = current_col+1;
+        if (row > 0 & col > 0 & row < 9 & col < 9) {
+            possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) == null) {
+                //there is nothing there, so we can move the piece here!
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            } else if (board.getPiece(possible_space).getTeamColor() == board.getPiece(myPosition).getTeamColor()) { //if the piece is on our team, we can't move there
+                //don't add anything
+            } else if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //if it's an enemy piece, we can move there, but we can't go past it
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            }
+        }
+
+        //bottom middle
+        row = current_row+1;
+        col = current_col;
+        if (row > 0 & col > 0 & row < 9 & col < 9) {
+            possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) == null) {
+                //there is nothing there, so we can move the piece here!
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            } else if (board.getPiece(possible_space).getTeamColor() == board.getPiece(myPosition).getTeamColor()) { //if the piece is on our team, we can't move there
+                //don't add anything
+            } else if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //if it's an enemy piece, we can move there, but we can't go past it
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            }
+        }
+
+        //bottom left
+        row = current_row+1;
+        col = current_col-1;
+        if (row > 0 & col > 0 & row < 9 & col < 9) {
+            possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) == null) {
+                //there is nothing there, so we can move the piece here!
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            } else if (board.getPiece(possible_space).getTeamColor() == board.getPiece(myPosition).getTeamColor()) { //if the piece is on our team, we can't move there
+                //don't add anything
+            } else if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //if it's an enemy piece, we can move there, but we can't go past it
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            }
+        }
+
+        //left middle
+        row = current_row;
+        col = current_col-1;
+        if (row > 0 & col > 0 & row < 9 & col < 9) {
+            possible_space = new ChessPosition(row, col);
+            if (board.getPiece(possible_space) == null) {
+                //there is nothing there, so we can move the piece here!
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            } else if (board.getPiece(possible_space).getTeamColor() == board.getPiece(myPosition).getTeamColor()) { //if the piece is on our team, we can't move there
+                //don't add anything
+            } else if (board.getPiece(possible_space).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //if it's an enemy piece, we can move there, but we can't go past it
+                possible_moves.add(new ChessMove(myPosition, possible_space, null));
+                System.out.println(String.format("king_space: [%s, %s]", row, col));
+            }
+        }
+
+
+        return possible_moves;
+    }
 }

@@ -52,12 +52,12 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition){
         Collection<ChessMove> myValidMoves = this.myBoard.getPiece(startPosition).pieceMoves(this.myBoard, startPosition);
-//        this.myBoard = this.myBoard.clone();
-//        for (int i = 0; i < myValidMoves.size(); i++){
-//            if (isInCheck(this.myBoard.getPiece(startPosition).getTeamColor())){
-//
-//            }
-//        }
+        this.myBoard = this.myBoard.clone();
+        for (int i = 0; i < myValidMoves.size(); i++){
+            if (isInCheck(this.myBoard.getPiece(startPosition).getTeamColor())){
+
+            }
+        }
         return myValidMoves;
     }
 

@@ -112,11 +112,11 @@ public class ChessBoard implements Cloneable{
         return Arrays.deepHashCode(squares);
     }
 
-//    @Override
-//    protected Object clone() throws CloneNotSupportedException {
-//        var clone = new CloneCopy();
-//        clone.data = Arrays.copyOf(data, data.length);
-//        return clone;
-//    }
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        var clone = new CloneCopy();
+        clone.data = Arrays.copyOf(data, data.length);
+        return clone;
+    }
 
 }

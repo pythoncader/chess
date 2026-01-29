@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -9,16 +11,19 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
+    private TeamColor currentTurn = TeamColor.WHITE;
+    private ChessBoard myBoard = new ChessBoard();
+
 
     public ChessGame() {
-
+        this.myBoard.resetBoard();
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return this.currentTurn;
     }
 
     /**
@@ -27,7 +32,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        this.currentTurn = team;
     }
 
     /**
@@ -45,8 +50,15 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+    public Collection<ChessMove> validMoves(ChessPosition startPosition){
+        Collection<ChessMove> myValidMoves = this.myBoard.getPiece(startPosition).pieceMoves(this.myBoard, startPosition);
+//        this.myBoard = this.myBoard.clone();
+//        for (int i = 0; i < myValidMoves.size(); i++){
+//            if (isInCheck(this.myBoard.getPiece(startPosition).getTeamColor())){
+//
+//            }
+//        }
+        return myValidMoves;
     }
 
     /**
@@ -56,7 +68,31 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece myPiece = myBoard.getPiece(move.getStartPosition());
+        if (myPiece != null){
+            if (myPiece.getTeamColor() != this.currentTurn){
+                throw new InvalidMoveException("You can't move out of turn");
+            }
+            Collection<ChessMove> myMoves = validMoves(move.getStartPosition());
+
+            if (myMoves.contains(move)){
+                if (myPiece.getPieceType() == ChessPiece.PieceType.PAWN && move.getPromotionPiece() != null){
+                    myBoard.addPiece(move.getEndPosition(), new ChessPiece(myPiece.getTeamColor(), move.getPromotionPiece()));
+                } else {
+                    myBoard.addPiece(move.getEndPosition(), myBoard.getPiece(move.getStartPosition()));
+                }
+                myBoard.addPiece(move.getStartPosition(), null);
+                if (this.currentTurn == TeamColor.WHITE) {
+                    this.setTeamTurn(TeamColor.BLACK);
+                } else {
+                    this.setTeamTurn(TeamColor.WHITE);
+                }
+            } else {
+                throw new InvalidMoveException("You can't move to this square: " + move.getEndPosition());
+            }
+        } else { // if there is no piece here on the board
+            throw new InvalidMoveException("There is no piece at this position");
+        }
     }
 
     /**
@@ -96,7 +132,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.myBoard = board;
     }
 
     /**
@@ -105,6 +141,20 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return this.myBoard;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return currentTurn == chessGame.currentTurn && Objects.equals(myBoard, chessGame.myBoard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(currentTurn, myBoard);
     }
 }

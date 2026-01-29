@@ -113,10 +113,15 @@ public class ChessBoard implements Cloneable{
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        var clone = new CloneCopy();
-        clone.data = Arrays.copyOf(data, data.length);
-        return clone;
+    protected ChessBoard clone() {
+        try {
+            ChessBoard clone = (ChessBoard) super.clone();
+
+            clone.squares = Arrays.copyOf(this.squares, this.squares.length);
+            return clone;
+        } catch (CloneNotSupportedException exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
 }

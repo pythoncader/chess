@@ -45,9 +45,9 @@ public class ChessBoard implements Cloneable{
         squares = new ChessPiece[8][8];
         for (int i = 1; i < 9; i++) { // add both the white and the black pawns
             this.addPiece(new ChessPosition(2, i), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
-            System.out.println(String.format("Added black pawn at [2,%d]", i));
+//            System.out.println(String.format("Added white pawn at [2,%d]", i));
             this.addPiece(new ChessPosition(7, i), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
-            System.out.println(String.format("Added black pawn at [7,%d]", i));
+//            System.out.println(String.format("Added black pawn at [7,%d]", i));
         }
 
         //add the rooks
@@ -77,8 +77,6 @@ public class ChessBoard implements Cloneable{
 
         this.addPiece(new ChessPosition(8, 4), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
         this.addPiece(new ChessPosition(8, 5), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
-        System.out.println("hello world:");
-        System.out.println(this);
 
     }
 

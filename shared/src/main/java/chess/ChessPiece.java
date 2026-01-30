@@ -54,25 +54,22 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        ChessPiece my_piece = board.getPiece(myPosition);
-        if (my_piece.type == PieceType.ROOK) {
-            RookCalc MyMoveCalculator = new RookCalc(board, myPosition);
-            return MyMoveCalculator.pieceMoves();
-        }else if (my_piece.type == PieceType.BISHOP) {
-            BishopCalc MyMoveCalculator = new BishopCalc(board, myPosition);
-            return MyMoveCalculator.pieceMoves();
-        }else if (my_piece.type == PieceType.QUEEN) {
-            QueenCalc MyMoveCalculator = new QueenCalc(board, myPosition);
-            return MyMoveCalculator.pieceMoves();
-        }else if (my_piece.type == PieceType.KING) {
-            KingCalc MyMoveCalculator = new KingCalc(board, myPosition);
-            return MyMoveCalculator.pieceMoves();
-        }else if (my_piece.type == PieceType.PAWN) {
-            PawnCalc MyMoveCalculator = new PawnCalc(board, myPosition);
-            return MyMoveCalculator.pieceMoves();
-        }else if (my_piece.type == PieceType.KNIGHT) {
-            KnightCalc MyMoveCalculator = new KnightCalc(board, myPosition);
-            return MyMoveCalculator.pieceMoves();
+        ChessPiece.PieceType mytype = board.getPiece(myPosition).getPieceType();
+
+        MoveCalculator my_move_calculator = new MoveCalculator();
+        switch (mytype){
+            case ROOK:
+                return my_move_calculator.RookCalc(board, myPosition);
+            case BISHOP:
+                return my_move_calculator.BishopCalc(board, myPosition);
+            case QUEEN:
+                return my_move_calculator.QueenCalc(board, myPosition);
+            case KING:
+                return my_move_calculator.KingCalc(board, myPosition);
+            case KNIGHT:
+                return my_move_calculator.KnightCalc(board, myPosition);
+            case PAWN:
+                return my_move_calculator.PawnCalc(board, myPosition);
         }
         return List.of();
     }

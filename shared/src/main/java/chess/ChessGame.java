@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -51,12 +52,25 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition){
-        Collection<ChessMove> myValidMoves = this.myBoard.getPiece(startPosition).pieceMoves(this.myBoard, startPosition);
-        this.myBoard = this.myBoard.clone();
-        for (int i = 0; i < myValidMoves.size(); i++){
-            if (isInCheck(this.myBoard.getPiece(startPosition).getTeamColor())){
+        ChessBoard newBoard = this.myBoard.clone();
+        ChessPiece myPiece = newBoard.getPiece(startPosition);
+        Collection<ChessMove> potentialMoves = myPiece.pieceMoves(newBoard, startPosition);
+        Collection<ChessMove> myValidMoves = new ArrayList<>(List.of());
 
+        for (ChessMove move : potentialMoves){
+            System.out.println("This is my board (before the potential move):");
+            System.out.println(newBoard);
+            ChessPiece whatWasThere = newBoard.getPiece(move.getEndPosition());
+            newBoard.addPiece(move.getEndPosition(), new ChessPiece(myPiece.getTeamColor(), myPiece.getPieceType()));
+            newBoard.addPiece(move.getStartPosition(), null);
+            System.out.println("This is my board (after the potential move):");
+            System.out.println(newBoard);
+            System.out.printf("Is %s in check? %s%n\n\n", myPiece.getTeamColor(), isInCheck(myPiece.getTeamColor()));
+            if (!isInCheck(myPiece.getTeamColor())){
+                myValidMoves.add(move);
             }
+            newBoard.addPiece(move.getStartPosition(), new ChessPiece(myPiece.getTeamColor(), myPiece.getPieceType()));
+            newBoard.addPiece(move.getEndPosition(), whatWasThere);
         }
         return myValidMoves;
     }
@@ -68,8 +82,10 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        System.out.println(myBoard);
         ChessPiece myPiece = myBoard.getPiece(move.getStartPosition());
         if (myPiece != null){
+            System.out.println(String.format("Moving %s %s from %s to %s", myPiece.getTeamColor(), myPiece.getPieceType(), move.getStartPosition(), move.getEndPosition()));
             if (myPiece.getTeamColor() != this.currentTurn){
                 throw new InvalidMoveException("You can't move out of turn");
             }

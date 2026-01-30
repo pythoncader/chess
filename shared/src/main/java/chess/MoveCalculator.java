@@ -196,7 +196,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+//        System.out.println(String.format("[%d, %d]", myRow, myCol));
 
         // top middle
         myRow = position.getRow()+1;
@@ -211,7 +211,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // System.out.println(String.format("[%d, %d]", myRow, myCol));
 
         // top right
         myRow = position.getRow()+1;
@@ -226,7 +226,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
         //right middle
         myRow = position.getRow();
@@ -241,7 +241,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
         // bottom right
         myRow = position.getRow()-1;
@@ -256,7 +256,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
         // bottom middle
         myRow = position.getRow()-1;
@@ -271,7 +271,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
         // bottom left
         myRow = position.getRow()-1;
@@ -286,7 +286,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
         // left middle
         myRow = position.getRow();
@@ -301,7 +301,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
 
         return possible_moves;
@@ -329,7 +329,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
 
         // --
@@ -347,7 +347,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
         //   -
         // ---
@@ -363,7 +363,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
         // ---
         //   -
@@ -379,7 +379,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
         // -
         // -
@@ -396,7 +396,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
         //  -
         //  -
@@ -413,7 +413,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
         // -
         // ---
@@ -429,7 +429,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
         // ---
         // -
@@ -445,7 +445,7 @@ public class MoveCalculator {
                 possible_moves.add(new ChessMove(position, possible_position, null));
             }
         }
-        System.out.println(String.format("[%d, %d]", myRow, myCol));
+        // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
         return possible_moves;
     }
@@ -492,7 +492,7 @@ public class MoveCalculator {
                     }
                 }
             }
-            System.out.println(String.format("[%d, %d]", myRow, myCol));
+            // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
             // top middle
             myRow = position.getRow() + 1;
@@ -511,7 +511,7 @@ public class MoveCalculator {
                     }
                 }
             }
-            System.out.println(String.format("[%d, %d]", myRow, myCol));
+            // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
             // top right
             myRow = position.getRow() + 1;
@@ -532,7 +532,7 @@ public class MoveCalculator {
                     }
                 }
             }
-            System.out.println(String.format("[%d, %d]", myRow, myCol));
+            // system.out.println(String.format("[%d, %d]", myRow, myCol));
         } else {
             // pawn initial move
             if (position.getRow() == 7){
@@ -567,7 +567,7 @@ public class MoveCalculator {
                     }
                 }
             }
-            System.out.println(String.format("[%d, %d]", myRow, myCol));
+            // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
             // bottom middle
             myRow = position.getRow() - 1;
@@ -586,7 +586,7 @@ public class MoveCalculator {
                     }
                 }
             }
-            System.out.println(String.format("[%d, %d]", myRow, myCol));
+            // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
             // bottom right
             myRow = position.getRow() - 1;
@@ -607,7 +607,7 @@ public class MoveCalculator {
                     }
                 }
             }
-            System.out.println(String.format("[%d, %d]", myRow, myCol));
+            // system.out.println(String.format("[%d, %d]", myRow, myCol));
         }
 
         return possible_moves;

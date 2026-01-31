@@ -85,7 +85,7 @@ public class ChessGame {
         System.out.println(myBoard);
         ChessPiece myPiece = myBoard.getPiece(move.getStartPosition());
         if (myPiece != null){
-            System.out.println(String.format("Moving %s %s from %s to %s", myPiece.getTeamColor(), myPiece.getPieceType(), move.getStartPosition(), move.getEndPosition()));
+            System.out.printf("Moving %s %s from %s to %s%n", myPiece.getTeamColor(), myPiece.getPieceType(), move.getStartPosition(), move.getEndPosition());
             if (myPiece.getTeamColor() != this.currentTurn){
                 throw new InvalidMoveException("You can't move out of turn");
             }
@@ -174,6 +174,7 @@ public class ChessGame {
                 }
             }
         }
+        // we are in checkmate if we are in check and we don't have any moves
         return isInCheck(teamColor) && myMoves.isEmpty();
     }
 
@@ -199,6 +200,7 @@ public class ChessGame {
                 }
             }
         }
+        // we are in stalemate if we are not in check and we don't have any moves
         return !isInCheck(teamColor) && myMoves.isEmpty();
     }
 

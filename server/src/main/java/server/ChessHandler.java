@@ -4,16 +4,23 @@ import com.google.gson.Gson;
 import io.javalin.http.Context;
 import model.AuthData;
 import model.UserData;
-
-import java.util.UUID;
+import model.ErrorMessage;
 
 public class ChessHandler {
-
-    public void addUser(Context ctx){
+    Service myService = new Service();
+    public void addUser(Context ctx) {
         Gson gson = new Gson();
         UserData loginRequest = gson.fromJson(ctx.body(), UserData.class);
         ctx.contentType("application/json");
-//        AuthData response = new AuthData(loginRequest.username(), generateToken());
-//        ctx.result(new Gson().toJson(response));
+        try {
+            String authToken = myService.register(loginRequest);
+            AuthData response = new AuthData(loginRequest.username(), authToken);
+            ctx.result(gson.toJson(response));
+        } catch (Exception ex){
+            ctx.status(403);
+            ErrorMessage errorResponse = new ErrorMessage("Error: already taken");
+            ctx.result(gson.toJson(errorResponse));
+        }
+
     }
 }

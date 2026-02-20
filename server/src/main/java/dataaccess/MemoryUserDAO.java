@@ -25,17 +25,17 @@ public class MemoryUserDAO implements UserDAO{
     public String createUser(UserData newUser) {
         Users.put(newUser.username(), newUser.password());
         String authToken = generateToken();
-        this.addAuthData(authToken);
+        this.addAuthToken(authToken);
         return authToken;
     }
 
     @Override
-    public void addAuthData(String authData) {
-        authTokens.add(authData);
+    public void addAuthToken(String authToken) {
+        authTokens.add(authToken);
     }
 
     @Override
-    public void deleteAuthToken(String authData) {
-        authTokens.remove(authData);
+    public void deleteAuthToken(String authToken) {
+        authTokens.remove(authToken);
     }
 }

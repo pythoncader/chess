@@ -105,10 +105,11 @@ public class ChessHandler {
     public void joinGame(Context ctx){
         String authToken = ctx.header("Authorization");
         ctx.contentType("application/json");
+        PlayerInfo request = gson.fromJson(ctx.body(), PlayerInfo.class);
         try {
             if (authToken != null) {
-                ListofGames myGames = new ListofGames(myService.listGames(authToken));
-                ctx.result(gson.toJson(myGames));
+                myService.join(authToken, request.playerColor(), request.gameID());
+                ctx.result("{}");
             } else {
                 // throw an exception or something
             }

@@ -34,4 +34,8 @@ public class Service {
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException{
         return myDataAccess.listGames(authToken);
     }
+
+    public void join(String authToken, String playerColor, int gameID) throws DataAccessException{
+        myDataAccess.addToGame(authToken, playerColor, gameID);
+    }
 }

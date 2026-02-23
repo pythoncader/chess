@@ -1,6 +1,9 @@
 package dataaccess;
 
+import model.GameData;
 import model.UserData;
+
+import java.util.ArrayList;
 
 
 public interface UserDAO {
@@ -11,4 +14,6 @@ public interface UserDAO {
     void clear() throws DataAccessException;
 
     int makeNewGame(String gameName, String authToken) throws DataAccessException;
+
+    ArrayList<GameData> listGames(String authToken) throws DataAccessException;
 }

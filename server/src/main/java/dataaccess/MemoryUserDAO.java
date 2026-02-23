@@ -1,7 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
-import model.NameAndGame;
+import model.GameData;
 import model.UserData;
 import server.EmailandPassword;
 import java.util.*;
@@ -10,7 +10,7 @@ public class MemoryUserDAO implements UserDAO{
     // This variable is final so that it cannot point to a different map, but its contents can still be changed
     private final Map<String, EmailandPassword> Users = new HashMap<>();
     private final ArrayList<String> authTokens = new ArrayList<>();
-    private final Map<Integer, NameAndGame> chessGames = new HashMap<>();
+    private final Map<Integer, GameData> chessGames = new HashMap<>();
     private int currentGameID = 0;
 
     public static String generateToken() {
@@ -71,11 +71,24 @@ public class MemoryUserDAO implements UserDAO{
     public int makeNewGame(String gameName, String authToken) throws DataAccessException {
         if (authTokens.contains(authToken)){
             this.currentGameID += 1;
-            chessGames.put(this.currentGameID, new NameAndGame(gameName, new ChessGame()));
+            chessGames.put(this.currentGameID, new GameData(this.currentGameID, "", "", gameName, new ChessGame()));
             return currentGameID;
         } else {
             throw new DataAccessException("Error: unauthorized", 401);
         }
     }
 
+    @Override
+    public ArrayList<GameData> listGames(String authToken) throws DataAccessException {
+        if (authTokens.contains(authToken)){
+            ArrayList<GameData> gameDataList = new ArrayList<>(this.chessGames.values());
+            ArrayList<GameData> gameList = new ArrayList<>();
+            for (GameData dataGame : gameDataList){
+                gameList.add(new GameData(dataGame.gameID(), dataGame.whiteUsername(), dataGame.blackUsername(), dataGame.gameName(), null));
+            }
+            return gameList;
+        } else {
+            throw new DataAccessException("Error: unauthorized", 401);
+        }
+    }
 }

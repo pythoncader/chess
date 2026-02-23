@@ -2,8 +2,11 @@ package server;
 
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
+import model.GameData;
 import model.UserData;
 import dataaccess.MemoryUserDAO;
+
+import java.util.ArrayList;
 
 public class Service {
     UserDAO myDataAccess = new MemoryUserDAO();
@@ -26,5 +29,9 @@ public class Service {
 
     public int newGame(String gameName, String authToken) throws DataAccessException{
         return myDataAccess.makeNewGame(gameName, authToken);
+    }
+
+    public ArrayList<GameData> listGames(String authToken) throws DataAccessException{
+        return myDataAccess.listGames(authToken);
     }
 }

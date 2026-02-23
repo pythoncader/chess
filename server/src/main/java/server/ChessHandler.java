@@ -3,9 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import io.javalin.http.Context;
-import model.AuthData;
-import model.UserData;
-import model.ErrorMessage;
+import model.*;
 
 public class ChessHandler {
     Service myService = new Service();
@@ -57,9 +55,29 @@ public class ChessHandler {
     }
 
     public void clearDatabase(Context ctx){
+        ctx.contentType("application/json");
         try {
             myService.clear();
             ctx.result("{}");
+        } catch (DataAccessException ex){
+            ctx.status(ex.getErrorCode());
+            ErrorMessage errorResponse = new ErrorMessage(ex.getMessage());
+            ctx.result(gson.toJson(errorResponse));
+        }
+    }
+
+    public void createGame(Context ctx) {
+        GameRequest request = gson.fromJson(ctx.body(), GameRequest.class);
+        ctx.contentType("application/json");
+        String authToken = ctx.header("Authorization");
+        try {
+            if (authToken != null) {
+                GameID newGameID = new GameID(myService.newGame(request.gameName(), authToken));
+                ctx.result(gson.toJson(newGameID));
+//                ctx.result(gson.toJson(request));
+            } else {
+                // throw an exception or something
+            }
         } catch (DataAccessException ex){
             ctx.status(ex.getErrorCode());
             ErrorMessage errorResponse = new ErrorMessage(ex.getMessage());

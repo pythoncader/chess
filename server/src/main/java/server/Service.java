@@ -23,4 +23,8 @@ public class Service {
     public void clear() throws DataAccessException{
         myDataAccess.clear();
     }
+
+    public int newGame(String gameName, String authToken) throws DataAccessException{
+        return myDataAccess.makeNewGame(gameName, authToken);
+    }
 }

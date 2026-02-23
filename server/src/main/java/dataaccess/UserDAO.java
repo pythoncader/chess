@@ -9,4 +9,6 @@ public interface UserDAO {
     String addAuthToken();
     String loginUser(String username, String password) throws DataAccessException;
     void clear() throws DataAccessException;
+
+    int makeNewGame(String gameName, String authToken) throws DataAccessException;
 }

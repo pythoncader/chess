@@ -13,8 +13,7 @@ public class ChessHandler {
         UserData registerRequest = gson.fromJson(ctx.body(), UserData.class);
         ctx.contentType("application/json");
         try {
-            String authToken = myService.register(registerRequest);
-            AuthData response = new AuthData(registerRequest.username(), authToken);
+            AuthData response = myService.register(registerRequest);
             ctx.result(gson.toJson(response));
         } catch (DataAccessException ex){
             ctx.status(ex.getErrorCode());
@@ -28,8 +27,7 @@ public class ChessHandler {
         UserData loginRequest = gson.fromJson(ctx.body(), UserData.class);
         ctx.contentType("application/json");
         try {
-            String authToken = myService.login(loginRequest);
-            AuthData response = new AuthData(loginRequest.username(), authToken);
+            AuthData response = myService.login(loginRequest);
             ctx.result(gson.toJson(response));
         } catch (DataAccessException ex){
             ctx.status(ex.getErrorCode());
@@ -42,7 +40,7 @@ public class ChessHandler {
         String authToken = ctx.header("Authorization");
         try {
             if (authToken != null) {
-                myService.logout(authToken);
+                myService.logout(new LogoutRequest(authToken));
                 ctx.result("{}");
             } else {
                 // throw an exception or something
@@ -72,9 +70,8 @@ public class ChessHandler {
         String authToken = ctx.header("Authorization");
         try {
             if (authToken != null) {
-                GameID newGameID = new GameID(myService.newGame(request.gameName(), authToken));
+                GameID newGameID = myService.newGame(new GameRequest(request.gameName(), authToken));
                 ctx.result(gson.toJson(newGameID));
-//                ctx.result(gson.toJson(request));
             } else {
                 // throw an exception or something
             }
@@ -90,7 +87,7 @@ public class ChessHandler {
         ctx.contentType("application/json");
         try {
             if (authToken != null) {
-                ListofGames myGames = new ListofGames(myService.listGames(authToken));
+                ListofGames myGames = myService.listGames(new ListRequest(authToken));
                 ctx.result(gson.toJson(myGames));
             } else {
                 // throw an exception or something
@@ -108,7 +105,7 @@ public class ChessHandler {
         PlayerInfo request = gson.fromJson(ctx.body(), PlayerInfo.class);
         try {
             if (authToken != null) {
-                myService.join(authToken, request.playerColor(), request.gameID());
+                myService.join(new JoinRequest(authToken, request.playerColor(), request.gameID()));
                 ctx.result("{}");
             } else {
                 // throw an exception or something

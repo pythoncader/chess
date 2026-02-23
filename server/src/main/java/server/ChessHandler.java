@@ -20,7 +20,6 @@ public class ChessHandler {
             ErrorMessage errorResponse = new ErrorMessage(ex.getMessage());
             ctx.result(gson.toJson(errorResponse));
         }
-
     }
 
     public void loginUser(Context ctx) {

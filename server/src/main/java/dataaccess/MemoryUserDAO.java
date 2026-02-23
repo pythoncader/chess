@@ -41,7 +41,9 @@ public class MemoryUserDAO implements UserDAO{
     @Override
     public String loginUser(String username, String password) throws DataAccessException{
         UserData myUserData = Users.get(username);
-        if (myUserData.username() == null | myUserData.password() == null | myUserData.email() == null) {
+        if (myUserData == null) {
+            throw new DataAccessException("Error: bad request", 400);
+        } else if (myUserData.username() == null | myUserData.password() == null | myUserData.email() == null) {
             throw new DataAccessException("Error: bad request", 400);
         } else if (Objects.equals(myUserData.password(), password)) {
             return this.addAuthToken(username);

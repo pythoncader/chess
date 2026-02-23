@@ -4,8 +4,9 @@ import model.UserData;
 
 
 public interface UserDAO {
-    Boolean existsUser(String username);
-    String createUser(UserData newUser);
-    void addAuthToken(String authToken);
-    void deleteAuthToken(String authToken);
+    String createUser(UserData newUser) throws DataAccessException;
+    void deleteAuthToken(String authToken) throws DataAccessException;
+    String addAuthToken();
+    String loginUser(String username, String password) throws DataAccessException;
+    void clear() throws DataAccessException;
 }

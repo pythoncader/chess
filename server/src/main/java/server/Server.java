@@ -10,8 +10,11 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         // Register your endpoints and exception handlers here
-        ChessHandler my_register_handler = new ChessHandler();
-        javalin.post("/user", my_register_handler::addUser);
+        ChessHandler myHandler = new ChessHandler();
+        javalin.post("/user", myHandler::registerUser);
+        javalin.post("/session", myHandler::loginUser);
+        javalin.delete("/session", myHandler::logoutUser);
+        javalin.delete("/db", myHandler::clearDatabase);
     }
 
     public int run(int desiredPort) {

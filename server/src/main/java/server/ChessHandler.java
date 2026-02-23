@@ -67,7 +67,7 @@ public class ChessHandler {
     }
 
     public void createGame(Context ctx) {
-        GameRequest request = gson.fromJson(ctx.body(), GameRequest.class);
+        GameData request = gson.fromJson(ctx.body(), GameData.class);
         ctx.contentType("application/json");
         String authToken = ctx.header("Authorization");
         try {
@@ -86,6 +86,23 @@ public class ChessHandler {
     }
 
     public void getGames(Context ctx){
+        String authToken = ctx.header("Authorization");
+        ctx.contentType("application/json");
+        try {
+            if (authToken != null) {
+                ListofGames myGames = new ListofGames(myService.listGames(authToken));
+                ctx.result(gson.toJson(myGames));
+            } else {
+                // throw an exception or something
+            }
+        } catch (DataAccessException ex){
+            ctx.status(ex.getErrorCode());
+            ErrorMessage errorResponse = new ErrorMessage(ex.getMessage());
+            ctx.result(gson.toJson(errorResponse));
+        }
+    }
+
+    public void joinGame(Context ctx){
         String authToken = ctx.header("Authorization");
         ctx.contentType("application/json");
         try {

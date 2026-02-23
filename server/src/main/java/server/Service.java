@@ -5,8 +5,6 @@ import dataaccess.UserDAO;
 import model.*;
 import dataaccess.MemoryUserDAO;
 
-import java.util.ArrayList;
-
 public class Service {
     UserDAO myDataAccess = new MemoryUserDAO();
 

@@ -18,7 +18,7 @@ public class MemoryUserDAO implements UserDAO{
 
     @Override
     public String createUser(UserData newUser) throws DataAccessException{
-        if (newUser.username() == null | newUser.password() == null | newUser.email() == null) {
+        if (newUser.username() == null || newUser.password() == null || newUser.email() == null) {
             throw new DataAccessException("Error: bad request", 400);
         }
         if (Users.get(newUser.username()) == null) {
@@ -41,14 +41,13 @@ public class MemoryUserDAO implements UserDAO{
     @Override
     public String loginUser(String username, String password) throws DataAccessException{
         UserData myUserData = Users.get(username);
-        if (myUserData == null) {
+        if (username == null || password == null) {
             throw new DataAccessException("Error: bad request", 400);
-        } else if (myUserData.username() == null | myUserData.password() == null | myUserData.email() == null) {
-            throw new DataAccessException("Error: bad request", 400);
-        } else if (Objects.equals(myUserData.password(), password)) {
-            return this.addAuthToken(username);
-        } else {
+        }
+        if (myUserData == null || !Objects.equals(myUserData.password(), password)){
             throw new DataAccessException("Error: unauthorized", 401);
+        } else {
+            return this.addAuthToken(username);
         }
     }
 
@@ -69,7 +68,7 @@ public class MemoryUserDAO implements UserDAO{
 
     @Override
     public int makeNewGame(String gameName, String authToken) throws DataAccessException {
-        if (gameName == null | authToken == null){
+        if (gameName == null || authToken == null){
             throw new DataAccessException("Error: bad request", 400);
         }
         if (authTokens.containsKey(authToken)) {
@@ -97,7 +96,7 @@ public class MemoryUserDAO implements UserDAO{
 
     @Override
     public void addToGame(String authToken, String playerColor, int gameID) throws DataAccessException {
-        if (authToken == null | (!Objects.equals(playerColor, "BLACK") && !Objects.equals(playerColor, "WHITE")) | !chessGames.containsKey(gameID)) {
+        if (authToken == null || (!Objects.equals(playerColor, "BLACK") && !Objects.equals(playerColor, "WHITE")) || !chessGames.containsKey(gameID)) {
             throw new DataAccessException("Error: bad request", 400);
         }
         if (authTokens.containsKey(authToken)) {

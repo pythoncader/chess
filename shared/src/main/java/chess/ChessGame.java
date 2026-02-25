@@ -136,8 +136,12 @@ public class ChessGame {
                 myPosition = new ChessPosition(row, col);
                 myPiece = this.myBoard.getPiece(myPosition);
 
-                if (myPiece == null) continue;
-                if (myPiece.getTeamColor() == teamColor) continue;
+                if (myPiece == null) {
+                    continue;
+                }
+                if (myPiece.getTeamColor() == teamColor) {
+                    continue;
+                }
 
                 Collection<ChessMove> myValidMoves = myPiece.pieceMoves(this.myBoard, myPosition);
                 Collection<ChessPosition> myValidEndPoints = new ArrayList<>();
@@ -159,22 +163,8 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        ChessPosition myPosition;
-        ChessPiece myPiece;
-        Collection<ChessMove> myMoves = new ArrayList<>(List.of());
-        for (int row = 1; row < 9; row++){
-            for (int col = 1; col < 9; col++){
-                myPosition = new ChessPosition(row, col);
-                myPiece = this.myBoard.getPiece(myPosition);
-                if (myPiece != null){
-                    if (myPiece.getTeamColor() == teamColor) {
-                        myMoves.addAll(validMoves(myPosition));
-                    }
-                }
-            }
-        }
         // we are in checkmate if we are in check and we don't have any moves
-        return isInCheck(teamColor) && myMoves.isEmpty();
+        return isInCheck(teamColor) && !hasMoves(teamColor);
     }
 
     /**
@@ -184,7 +174,7 @@ public class ChessGame {
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
      */
-    public boolean isInStalemate(TeamColor teamColor) {
+    private boolean hasMoves(TeamColor teamColor){
         ChessPosition myPosition;
         ChessPiece myPiece;
         Collection<ChessMove> myMoves = new ArrayList<>(List.of());
@@ -199,8 +189,11 @@ public class ChessGame {
                 }
             }
         }
+        return !myMoves.isEmpty();
+    }
+    public boolean isInStalemate(TeamColor teamColor) {
         // we are in stalemate if we are not in check and we don't have any moves
-        return !isInCheck(teamColor) && myMoves.isEmpty();
+        return !isInCheck(teamColor) && !hasMoves(teamColor);
     }
 
     /**

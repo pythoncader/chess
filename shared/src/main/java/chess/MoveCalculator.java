@@ -8,6 +8,19 @@ public class MoveCalculator {
         return row >= 1 && row <= 8 && col >= 1 && col <= 8;
     }
 
+    private Collection<ChessMove> checkPromotionPieces(ChessPosition position, ChessPosition possiblePosition, int myRow){
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+        if (myRow == 8 || myRow == 1) {
+            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.ROOK));
+            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.QUEEN));
+            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.BISHOP));
+            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.KNIGHT));
+        } else {
+            possibleMoves.add(new ChessMove(position, possiblePosition, null));
+        }
+        return possibleMoves;
+    }
+
     private Collection<ChessMove> addAdjacentMoves(ChessBoard board, ChessPosition position, int vertical, int horizontal){
         int myRow = position.getRow() + vertical;
         int myCol = position.getColumn() + horizontal;
@@ -37,14 +50,7 @@ public class MoveCalculator {
             if (board.getPiece(possiblePosition) != null) {
                 if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                     //the piece is an enemy, so we can move here
-                    if (myRow == 8 || myRow == 1) {
-                        possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.ROOK));
-                        possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.QUEEN));
-                        possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.BISHOP));
-                        possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.KNIGHT));
-                    } else {
-                        possibleMoves.add(new ChessMove(position, possiblePosition, null));
-                    }
+                    possibleMoves.addAll(checkPromotionPieces(position, possiblePosition, myRow));
                 }
             }
         }
@@ -62,14 +68,7 @@ public class MoveCalculator {
             possiblePosition = new ChessPosition(myRow, myCol);
             if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here
-                if (myRow == 8 || myRow == 1) {
-                    possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.ROOK));
-                    possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.QUEEN));
-                    possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.BISHOP));
-                    possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.KNIGHT));
-                } else {
-                    possibleMoves.add(new ChessMove(position, possiblePosition, null));
-                }
+                possibleMoves.addAll(checkPromotionPieces(position, possiblePosition, myRow));
             }
         }
 

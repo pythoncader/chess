@@ -85,7 +85,6 @@ public class ChessGame {
         System.out.println(myBoard);
         ChessPiece myPiece = myBoard.getPiece(move.getStartPosition());
         if (myPiece != null){
-            System.out.printf("Moving %s %s from %s to %s%n", myPiece.getTeamColor(), myPiece.getPieceType(), move.getStartPosition(), move.getEndPosition());
             if (myPiece.getTeamColor() != this.currentTurn){
                 throw new InvalidMoveException("You can't move out of turn");
             }
@@ -136,18 +135,17 @@ public class ChessGame {
             for (int col = 1; col < 9; col++){
                 myPosition = new ChessPosition(row, col);
                 myPiece = this.myBoard.getPiece(myPosition);
-                if (myPiece != null){
-                    if (myPiece.getTeamColor() != teamColor) {
-                        Collection<ChessMove> myValidMoves = myPiece.pieceMoves(this.myBoard, myPosition);
-                        Collection<ChessPosition> myValidEndPoints = new ArrayList<>();
-                        for (ChessMove move : myValidMoves){
-                            myValidEndPoints.add(move.getEndPosition());
-                        }
-                        if (myValidEndPoints.contains(kingPosition)){
-                            return true;
-                        }
-                    }
+
+                if (myPiece == null) continue; // skips the rest of the loop if there is no piece here
+
+                if (myPiece.getTeamColor() == teamColor) continue; // skips the rest of the loop if the pieces are not enemy pieces
+
+                Collection<ChessMove> myValidMoves = myPiece.pieceMoves(this.myBoard, myPosition);
+                Collection<ChessPosition> myValidEndPoints = new ArrayList<>();
+                for (ChessMove move : myValidMoves){
+                    myValidEndPoints.add(move.getEndPosition());
                 }
+                return myValidEndPoints.contains(kingPosition); // True if the king is in check
             }
         }
         return false;

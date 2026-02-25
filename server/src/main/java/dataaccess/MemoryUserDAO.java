@@ -73,7 +73,16 @@ public class MemoryUserDAO implements UserDAO{
         }
         if (authTokens.containsKey(authToken)) {
             this.currentGameID += 1;
-            chessGames.put(this.currentGameID, new GameData(this.currentGameID, null, null, gameName, new ChessGame()));
+            chessGames.put(
+                    this.currentGameID,
+                    new GameData(
+                            this.currentGameID,
+                            null,
+                            null,
+                            gameName,
+                            new ChessGame()
+                    )
+            );
             return currentGameID;
         } else {
             throw new DataAccessException("Error: unauthorized", 401);
@@ -86,7 +95,15 @@ public class MemoryUserDAO implements UserDAO{
             ArrayList<GameData> gameDataList = new ArrayList<>(this.chessGames.values());
             ArrayList<GameData> gameList = new ArrayList<>();
             for (GameData dataGame : gameDataList) {
-                gameList.add(new GameData(dataGame.gameID(), dataGame.whiteUsername(), dataGame.blackUsername(), dataGame.gameName(), null));
+                gameList.add(
+                        new GameData(
+                                dataGame.gameID(),
+                                dataGame.whiteUsername(),
+                                dataGame.blackUsername(),
+                                dataGame.gameName(),
+                                null
+                        )
+                );
             }
             return gameList;
         } else {
@@ -96,20 +113,40 @@ public class MemoryUserDAO implements UserDAO{
 
     @Override
     public void addToGame(String authToken, String playerColor, int gameID) throws DataAccessException {
-        if (authToken == null || (!Objects.equals(playerColor, "BLACK") && !Objects.equals(playerColor, "WHITE")) || !chessGames.containsKey(gameID)) {
+        if (authToken == null
+                || (!Objects.equals(playerColor, "BLACK") && !Objects.equals(playerColor, "WHITE"))
+                || !chessGames.containsKey(gameID)) {
             throw new DataAccessException("Error: bad request", 400);
         }
         if (authTokens.containsKey(authToken)) {
             GameData oldGame = chessGames.get(gameID);
             if (Objects.equals(playerColor, "BLACK")) {
                 if (oldGame.blackUsername() == null) {
-                    chessGames.put(oldGame.gameID(), new GameData(oldGame.gameID(), oldGame.whiteUsername(), authTokens.get(authToken), oldGame.gameName(), oldGame.game()));
+                    chessGames.put(
+                            oldGame.gameID(),
+                            new GameData(
+                                oldGame.gameID(),
+                                oldGame.whiteUsername(),
+                                authTokens.get(authToken),
+                                oldGame.gameName(),
+                                oldGame.game()
+                            )
+                    );
                 } else {
                     throw new DataAccessException("Error: already taken", 403);
                 }
             } else {
                 if (oldGame.whiteUsername() == null) {
-                    chessGames.put(oldGame.gameID(), new GameData(oldGame.gameID(), authTokens.get(authToken), oldGame.blackUsername(), oldGame.gameName(), oldGame.game()));
+                    chessGames.put(
+                            oldGame.gameID(),
+                            new GameData(
+                                oldGame.gameID(),
+                                authTokens.get(authToken),
+                                oldGame.blackUsername(),
+                                oldGame.gameName(),
+                                oldGame.game()
+                            )
+                    );
                 } else {
                     throw new DataAccessException("Error: already taken", 403);
                 }

@@ -82,18 +82,18 @@ public class ChessBoard implements Cloneable{
 
     @Override
     public String toString() {
-        String my_string = "";
+        String myString = "";
         for (int row = 8; row > 0; row--){
             for (int col = 1; col < 9; col++){
                 if (this.getPiece(new ChessPosition(row, col)) == null){
-                    my_string = my_string + " |  ";
+                    myString = myString + " |  ";
                 }else {
-                    my_string = my_string + " | " + this.getPiece(new ChessPosition(row, col));
+                    myString = myString + " | " + this.getPiece(new ChessPosition(row, col));
                 }
             }
-            my_string = my_string + " row " + row + "\n";
+            myString = myString + " row " + row + "\n";
         }
-        return my_string;
+        return myString;
     }
 
     @Override

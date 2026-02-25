@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class MoveCalculator {
-    public Collection<ChessMove> RookCalc(ChessBoard board, ChessPosition position){
+    public Collection<ChessMove> rookCalc(ChessBoard board, ChessPosition position){
         int col;
         int row;
-        ChessPosition possible_position;
-        ArrayList<ChessMove> possible_moves = new ArrayList<>();
+        ChessPosition possiblePosition;
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
 
         // check moves to the right until we hit the edge of the board
         for (col = position.getColumn()+1; col < 9; col++){
-            possible_position = new ChessPosition(position.getRow(), col);
-            if (board.getPiece(possible_position) == null){
+            possiblePosition = new ChessPosition(position.getRow(), col);
+            if (board.getPiece(possiblePosition) == null){
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()){
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()){
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
                 break;
             } else {
                 //otherwise if the piece is the same as the rook we are moving we cannot move here
@@ -28,13 +28,13 @@ public class MoveCalculator {
 
         //check moves to the left until we hit the edge of the board
         for (col = position.getColumn()-1; col > 0; col--){
-            possible_position = new ChessPosition(position.getRow(), col);
-            if (board.getPiece(possible_position) == null){
+            possiblePosition = new ChessPosition(position.getRow(), col);
+            if (board.getPiece(possiblePosition) == null){
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()){
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()){
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
                 break;
             } else {
                 //otherwise if the piece is the same as the rook we are moving we cannot move here
@@ -44,13 +44,13 @@ public class MoveCalculator {
 
         //check moves in front until we hit the edge of the board
         for (row = position.getRow()+1; row < 9; row++){
-            possible_position = new ChessPosition(row, position.getColumn());
-            if (board.getPiece(possible_position) == null){
+            possiblePosition = new ChessPosition(row, position.getColumn());
+            if (board.getPiece(possiblePosition) == null){
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()){
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()){
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
                 break;
             } else {
                 //otherwise if the piece is the same as the rook we are moving we cannot move here
@@ -60,27 +60,27 @@ public class MoveCalculator {
 
         //check moves behind until we hit the edge of the board
         for (row = position.getRow()-1; row > 0; row--){
-            possible_position = new ChessPosition(row, position.getColumn());
-            if (board.getPiece(possible_position) == null){
+            possiblePosition = new ChessPosition(row, position.getColumn());
+            if (board.getPiece(possiblePosition) == null){
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()){
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()){
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
                 break;
             } else {
                 //otherwise if the piece is the same as the rook we are moving we cannot move here
                 break;
             }
         }
-        return possible_moves;
+        return possibleMoves;
     }
 
-    public Collection<ChessMove> BishopCalc(ChessBoard board, ChessPosition position){
+    public Collection<ChessMove> bishopCalc(ChessBoard board, ChessPosition position){
         int col;
         int row;
-        ChessPosition possible_position;
-        ArrayList<ChessMove> possible_moves = new ArrayList<>();
+        ChessPosition possiblePosition;
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
 
         // check moves to the right and up until we hit the edge of the board
         row = position.getRow();
@@ -89,13 +89,13 @@ public class MoveCalculator {
             if (row > 8){
                 break;
             }
-            possible_position = new ChessPosition(row, col);
-            if (board.getPiece(possible_position) == null){
+            possiblePosition = new ChessPosition(row, col);
+            if (board.getPiece(possiblePosition) == null){
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()){
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()){
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
                 break;
             } else {
                 //otherwise if the piece is the same as the one we are moving we cannot move here
@@ -110,13 +110,13 @@ public class MoveCalculator {
             if (row > 8){
                 break;
             }
-            possible_position = new ChessPosition(row, col);
-            if (board.getPiece(possible_position) == null){
+            possiblePosition = new ChessPosition(row, col);
+            if (board.getPiece(possiblePosition) == null){
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()){
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()){
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
                 break;
             } else {
                 //otherwise if the piece is the same as the one we are moving we cannot move here
@@ -131,13 +131,13 @@ public class MoveCalculator {
             if (row < 1){
                 break;
             }
-            possible_position = new ChessPosition(row, col);
-            if (board.getPiece(possible_position) == null){
+            possiblePosition = new ChessPosition(row, col);
+            if (board.getPiece(possiblePosition) == null){
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()){
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()){
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
                 break;
             } else {
                 //otherwise if the piece is the same as the one we are moving we cannot move here
@@ -152,13 +152,13 @@ public class MoveCalculator {
             if (row < 1){
                 break;
             }
-            possible_position = new ChessPosition(row, col);
-            if (board.getPiece(possible_position) == null){
+            possiblePosition = new ChessPosition(row, col);
+            if (board.getPiece(possiblePosition) == null){
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()){
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()){
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
                 break;
             } else {
                 //otherwise if the piece is the same as the one we are moving we cannot move here
@@ -166,20 +166,20 @@ public class MoveCalculator {
             }
         }
 
-        return possible_moves;
+        return possibleMoves;
     }
 
-    public Collection<ChessMove> QueenCalc(ChessBoard board, ChessPosition position){
-        ArrayList<ChessMove> possible_moves = new ArrayList<>();
-        possible_moves.addAll(BishopCalc(board, position));
-        possible_moves.addAll(RookCalc(board, position));
-        return possible_moves;
+    public Collection<ChessMove> queenCalc(ChessBoard board, ChessPosition position){
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+        possibleMoves.addAll(bishopCalc(board, position));
+        possibleMoves.addAll(rookCalc(board, position));
+        return possibleMoves;
     }
 
-    public Collection<ChessMove> KingCalc(ChessBoard board, ChessPosition position){
-        ArrayList<ChessMove> possible_moves = new ArrayList<>();
+    public Collection<ChessMove> kingCalc(ChessBoard board, ChessPosition position){
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
 
-        ChessPosition possible_position;
+        ChessPosition possiblePosition;
         int myRow;
         int myCol;
 
@@ -187,13 +187,13 @@ public class MoveCalculator {
         myRow = position.getRow()+1;
         myCol = position.getColumn()-1;
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
 //        System.out.println(String.format("[%d, %d]", myRow, myCol));
@@ -202,13 +202,13 @@ public class MoveCalculator {
         myRow = position.getRow()+1;
         myCol = position.getColumn();
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // System.out.println(String.format("[%d, %d]", myRow, myCol));
@@ -217,13 +217,13 @@ public class MoveCalculator {
         myRow = position.getRow()+1;
         myCol = position.getColumn()+1;
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // system.out.println(String.format("[%d, %d]", myRow, myCol));
@@ -232,13 +232,13 @@ public class MoveCalculator {
         myRow = position.getRow();
         myCol = position.getColumn()+1;
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // system.out.println(String.format("[%d, %d]", myRow, myCol));
@@ -247,13 +247,13 @@ public class MoveCalculator {
         myRow = position.getRow()-1;
         myCol = position.getColumn()+1;
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // system.out.println(String.format("[%d, %d]", myRow, myCol));
@@ -262,13 +262,13 @@ public class MoveCalculator {
         myRow = position.getRow()-1;
         myCol = position.getColumn();
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // system.out.println(String.format("[%d, %d]", myRow, myCol));
@@ -277,13 +277,13 @@ public class MoveCalculator {
         myRow = position.getRow()-1;
         myCol = position.getColumn()-1;
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // system.out.println(String.format("[%d, %d]", myRow, myCol));
@@ -292,25 +292,25 @@ public class MoveCalculator {
         myRow = position.getRow();
         myCol = position.getColumn()-1;
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
 
-        return possible_moves;
+        return possibleMoves;
     }
 
-    public Collection<ChessMove> KnightCalc(ChessBoard board, ChessPosition position){
-        ArrayList<ChessMove> possible_moves = new ArrayList<>();
+    public Collection<ChessMove> knightCalc(ChessBoard board, ChessPosition position){
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
 
-        ChessPosition possible_position;
+        ChessPosition possiblePosition;
         int myRow;
         int myCol;
 
@@ -320,13 +320,13 @@ public class MoveCalculator {
         myRow = position.getRow()+2;
         myCol = position.getColumn()+1;
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // system.out.println(String.format("[%d, %d]", myRow, myCol));
@@ -338,13 +338,13 @@ public class MoveCalculator {
         myRow = position.getRow()+2;
         myCol = position.getColumn()-1;
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // system.out.println(String.format("[%d, %d]", myRow, myCol));
@@ -354,13 +354,13 @@ public class MoveCalculator {
         myRow = position.getRow()+1;
         myCol = position.getColumn()+2;
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // system.out.println(String.format("[%d, %d]", myRow, myCol));
@@ -370,13 +370,13 @@ public class MoveCalculator {
         myRow = position.getRow()-1;
         myCol = position.getColumn()+2;
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // system.out.println(String.format("[%d, %d]", myRow, myCol));
@@ -387,13 +387,13 @@ public class MoveCalculator {
         myRow = position.getRow()-2;
         myCol = position.getColumn()+1;
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // system.out.println(String.format("[%d, %d]", myRow, myCol));
@@ -404,13 +404,13 @@ public class MoveCalculator {
         myRow = position.getRow()-2;
         myCol = position.getColumn()-1;
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // system.out.println(String.format("[%d, %d]", myRow, myCol));
@@ -420,13 +420,13 @@ public class MoveCalculator {
         myRow = position.getRow()+1;
         myCol = position.getColumn()-2;
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // system.out.println(String.format("[%d, %d]", myRow, myCol));
@@ -436,25 +436,25 @@ public class MoveCalculator {
         myRow = position.getRow()-1;
         myCol = position.getColumn()-2;
         if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-            possible_position = new ChessPosition(myRow, myCol);
-            if (board.getPiece(possible_position) == null) {
+            possiblePosition = new ChessPosition(myRow, myCol);
+            if (board.getPiece(possiblePosition) == null) {
                 //there is nothing here, so we can move here or continue past it
-                possible_moves.add(new ChessMove(position, possible_position, null));
-            } else if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
+            } else if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                 //the piece is an enemy, so we can move here, but then we stop
-                possible_moves.add(new ChessMove(position, possible_position, null));
+                possibleMoves.add(new ChessMove(position, possiblePosition, null));
             }
         }
         // system.out.println(String.format("[%d, %d]", myRow, myCol));
 
-        return possible_moves;
+        return possibleMoves;
     }
 
 
-    public Collection<ChessMove> PawnCalc(ChessBoard board, ChessPosition position) {
-        ArrayList<ChessMove> possible_moves = new ArrayList<>();
+    public Collection<ChessMove> pawnCalc(ChessBoard board, ChessPosition position) {
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
 
-        ChessPosition possible_position;
+        ChessPosition possiblePosition;
         int myRow;
         int myCol;
 
@@ -463,12 +463,12 @@ public class MoveCalculator {
             if (position.getRow() == 2){
                 myRow = position.getRow() + 1;
                 myCol = position.getColumn();
-                possible_position = new ChessPosition(myRow, myCol);
-                if (board.getPiece(possible_position) == null) {
+                possiblePosition = new ChessPosition(myRow, myCol);
+                if (board.getPiece(possiblePosition) == null) {
                     myRow = position.getRow() + 2;
-                    possible_position = new ChessPosition(myRow, myCol);
-                    if (board.getPiece(possible_position) == null) {
-                        possible_moves.add(new ChessMove(position, possible_position, null));
+                    possiblePosition = new ChessPosition(myRow, myCol);
+                    if (board.getPiece(possiblePosition) == null) {
+                        possibleMoves.add(new ChessMove(position, possiblePosition, null));
                     }
                 }
             }
@@ -477,17 +477,17 @@ public class MoveCalculator {
             myRow = position.getRow() + 1;
             myCol = position.getColumn() - 1;
             if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-                possible_position = new ChessPosition(myRow, myCol);
-                if (board.getPiece(possible_position) != null) {
-                    if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possiblePosition = new ChessPosition(myRow, myCol);
+                if (board.getPiece(possiblePosition) != null) {
+                    if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                         //the piece is an enemy, so we can move here
                         if (myRow == 8) {
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.ROOK));
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.QUEEN));
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.BISHOP));
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.KNIGHT));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.ROOK));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.QUEEN));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.BISHOP));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.KNIGHT));
                         } else {
-                            possible_moves.add(new ChessMove(position, possible_position, null));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, null));
                         }
                     }
                 }
@@ -498,16 +498,16 @@ public class MoveCalculator {
             myRow = position.getRow() + 1;
             myCol = position.getColumn();
             if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-                possible_position = new ChessPosition(myRow, myCol);
-                if (board.getPiece(possible_position) == null) {
+                possiblePosition = new ChessPosition(myRow, myCol);
+                if (board.getPiece(possiblePosition) == null) {
                     //there is nothing here, so we can move here
                     if (myRow == 8) {
-                        possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.ROOK));
-                        possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.QUEEN));
-                        possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.BISHOP));
-                        possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.KNIGHT));
+                        possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.ROOK));
+                        possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.QUEEN));
+                        possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.BISHOP));
+                        possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.KNIGHT));
                     } else {
-                        possible_moves.add(new ChessMove(position, possible_position, null));
+                        possibleMoves.add(new ChessMove(position, possiblePosition, null));
                     }
                 }
             }
@@ -517,17 +517,17 @@ public class MoveCalculator {
             myRow = position.getRow() + 1;
             myCol = position.getColumn() + 1;
             if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-                possible_position = new ChessPosition(myRow, myCol);
-                if (board.getPiece(possible_position) != null) {
-                    if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possiblePosition = new ChessPosition(myRow, myCol);
+                if (board.getPiece(possiblePosition) != null) {
+                    if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                         //the piece is an enemy, so we can move here
                         if (myRow == 8) {
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.ROOK));
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.QUEEN));
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.BISHOP));
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.KNIGHT));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.ROOK));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.QUEEN));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.BISHOP));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.KNIGHT));
                         } else {
-                            possible_moves.add(new ChessMove(position, possible_position, null));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, null));
                         }
                     }
                 }
@@ -538,12 +538,12 @@ public class MoveCalculator {
             if (position.getRow() == 7){
                 myRow = position.getRow() - 1;
                 myCol = position.getColumn();
-                possible_position = new ChessPosition(myRow, myCol);
-                if (board.getPiece(possible_position) == null) {
+                possiblePosition = new ChessPosition(myRow, myCol);
+                if (board.getPiece(possiblePosition) == null) {
                     myRow = position.getRow() - 2;
-                    possible_position = new ChessPosition(myRow, myCol);
-                    if (board.getPiece(possible_position) == null) {
-                        possible_moves.add(new ChessMove(position, possible_position, null));
+                    possiblePosition = new ChessPosition(myRow, myCol);
+                    if (board.getPiece(possiblePosition) == null) {
+                        possibleMoves.add(new ChessMove(position, possiblePosition, null));
                     }
                 }
             }
@@ -552,17 +552,17 @@ public class MoveCalculator {
             myRow = position.getRow() - 1;
             myCol = position.getColumn() - 1;
             if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-                possible_position = new ChessPosition(myRow, myCol);
-                if (board.getPiece(possible_position) != null) {
-                    if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possiblePosition = new ChessPosition(myRow, myCol);
+                if (board.getPiece(possiblePosition) != null) {
+                    if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                         //the piece is an enemy, so we can move here
                         if (myRow == 1) {
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.ROOK));
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.QUEEN));
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.BISHOP));
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.KNIGHT));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.ROOK));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.QUEEN));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.BISHOP));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.KNIGHT));
                         } else {
-                            possible_moves.add(new ChessMove(position, possible_position, null));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, null));
                         }
                     }
                 }
@@ -573,16 +573,16 @@ public class MoveCalculator {
             myRow = position.getRow() - 1;
             myCol = position.getColumn();
             if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-                possible_position = new ChessPosition(myRow, myCol);
-                if (board.getPiece(possible_position) == null) {
+                possiblePosition = new ChessPosition(myRow, myCol);
+                if (board.getPiece(possiblePosition) == null) {
                     //there is nothing here, so we can move here
                     if (myRow == 1) {
-                        possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.ROOK));
-                        possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.QUEEN));
-                        possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.BISHOP));
-                        possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.KNIGHT));
+                        possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.ROOK));
+                        possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.QUEEN));
+                        possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.BISHOP));
+                        possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.KNIGHT));
                     } else {
-                        possible_moves.add(new ChessMove(position, possible_position, null));
+                        possibleMoves.add(new ChessMove(position, possiblePosition, null));
                     }
                 }
             }
@@ -592,17 +592,17 @@ public class MoveCalculator {
             myRow = position.getRow() - 1;
             myCol = position.getColumn() + 1;
             if (myRow < 9 && myRow > 0 && myCol < 9 && myCol > 0) {
-                possible_position = new ChessPosition(myRow, myCol);
-                if (board.getPiece(possible_position) != null) {
-                    if (board.getPiece(possible_position).getTeamColor() != board.getPiece(position).getTeamColor()) {
+                possiblePosition = new ChessPosition(myRow, myCol);
+                if (board.getPiece(possiblePosition) != null) {
+                    if (board.getPiece(possiblePosition).getTeamColor() != board.getPiece(position).getTeamColor()) {
                         //the piece is an enemy, so we can move here
                         if (myRow == 1) {
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.ROOK));
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.QUEEN));
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.BISHOP));
-                            possible_moves.add(new ChessMove(position, possible_position, ChessPiece.PieceType.KNIGHT));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.ROOK));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.QUEEN));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.BISHOP));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, ChessPiece.PieceType.KNIGHT));
                         } else {
-                            possible_moves.add(new ChessMove(position, possible_position, null));
+                            possibleMoves.add(new ChessMove(position, possiblePosition, null));
                         }
                     }
                 }
@@ -610,7 +610,7 @@ public class MoveCalculator {
             // system.out.println(String.format("[%d, %d]", myRow, myCol));
         }
 
-        return possible_moves;
+        return possibleMoves;
     }
 }
 

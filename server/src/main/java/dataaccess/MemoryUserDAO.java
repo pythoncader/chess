@@ -7,7 +7,7 @@ import java.util.*;
 
 public class MemoryUserDAO implements UserDAO{
     // This variable is final so that it cannot point to a different map, but its contents can still be changed
-    private final Map<String, UserData> Users = new HashMap<>();
+    private final Map<String, UserData> users = new HashMap<>();
     private final Map<String, String> authTokens = new HashMap<>();
     private final Map<Integer, GameData> chessGames = new HashMap<>();
     private int currentGameID = 0;
@@ -21,8 +21,8 @@ public class MemoryUserDAO implements UserDAO{
         if (newUser.username() == null || newUser.password() == null || newUser.email() == null) {
             throw new DataAccessException("Error: bad request", 400);
         }
-        if (Users.get(newUser.username()) == null) {
-            Users.put(newUser.username(), newUser);
+        if (users.get(newUser.username()) == null) {
+            users.put(newUser.username(), newUser);
             return this.addAuthToken(newUser.username());
         } else {
             throw new DataAccessException("Error: already taken", 403);
@@ -40,7 +40,7 @@ public class MemoryUserDAO implements UserDAO{
 
     @Override
     public String loginUser(String username, String password) throws DataAccessException{
-        UserData myUserData = Users.get(username);
+        UserData myUserData = users.get(username);
         if (username == null || password == null) {
             throw new DataAccessException("Error: bad request", 400);
         }
@@ -61,7 +61,7 @@ public class MemoryUserDAO implements UserDAO{
     @Override
     public void clear() throws DataAccessException {
         authTokens.clear();
-        Users.clear();
+        users.clear();
         this.currentGameID = 0;
         chessGames.clear();
     }

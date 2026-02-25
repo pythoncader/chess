@@ -56,20 +56,20 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece.PieceType mytype = board.getPiece(myPosition).getPieceType();
 
-        MoveCalculator my_move_calculator = new MoveCalculator();
+        MoveCalculator myMoveCalculator = new MoveCalculator();
         switch (mytype){
             case ROOK:
-                return my_move_calculator.RookCalc(board, myPosition);
+                return myMoveCalculator.rookCalc(board, myPosition);
             case BISHOP:
-                return my_move_calculator.BishopCalc(board, myPosition);
+                return myMoveCalculator.bishopCalc(board, myPosition);
             case QUEEN:
-                return my_move_calculator.QueenCalc(board, myPosition);
+                return myMoveCalculator.queenCalc(board, myPosition);
             case KING:
-                return my_move_calculator.KingCalc(board, myPosition);
+                return myMoveCalculator.kingCalc(board, myPosition);
             case KNIGHT:
-                return my_move_calculator.KnightCalc(board, myPosition);
+                return myMoveCalculator.knightCalc(board, myPosition);
             case PAWN:
-                return my_move_calculator.PawnCalc(board, myPosition);
+                return myMoveCalculator.pawnCalc(board, myPosition);
         }
         return List.of();
     }

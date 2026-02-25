@@ -136,16 +136,17 @@ public class ChessGame {
                 myPosition = new ChessPosition(row, col);
                 myPiece = this.myBoard.getPiece(myPosition);
 
-                if (myPiece == null) continue; // skips the rest of the loop if there is no piece here
-
-                if (myPiece.getTeamColor() == teamColor) continue; // skips the rest of the loop if the pieces are not enemy pieces
+                if (myPiece == null) continue;
+                if (myPiece.getTeamColor() == teamColor) continue;
 
                 Collection<ChessMove> myValidMoves = myPiece.pieceMoves(this.myBoard, myPosition);
                 Collection<ChessPosition> myValidEndPoints = new ArrayList<>();
                 for (ChessMove move : myValidMoves){
                     myValidEndPoints.add(move.getEndPosition());
                 }
-                return myValidEndPoints.contains(kingPosition); // True if the king is in check
+                if (myValidEndPoints.contains(kingPosition)){
+                    return true;
+                }
             }
         }
         return false;

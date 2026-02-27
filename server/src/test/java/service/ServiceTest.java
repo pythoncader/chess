@@ -87,7 +87,11 @@ class ServiceTest {
 
     @Test
     void logoutNegative() {
-        DataAccessException exception = assertThrows(DataAccessException.class, () -> serviceObject.logout(new LogoutRequest("abe827a1-8307-40f8-80ef-7055c9575380")));
+        DataAccessException exception = assertThrows(
+                DataAccessException.class, () -> serviceObject.logout(
+                        new LogoutRequest("abe827a1-8307-40f8-80ef-7055c9575380")
+                )
+        );
         assertEquals("Error: unauthorized", exception.getMessage());
     }
 
@@ -116,11 +120,18 @@ class ServiceTest {
     void newGameNegative() throws DataAccessException{
         AuthData authToken = serviceObject.register(new UserData("Cade", "hello", "different_email@123.com"));
         // user does not provide a name for the game
-        DataAccessException exception = assertThrows(DataAccessException.class, () -> serviceObject.newGame(new GameRequest(null, authToken.authToken())));
+        DataAccessException exception = assertThrows(
+                DataAccessException.class, () -> serviceObject.newGame(
+                        new GameRequest(null, authToken.authToken())
+                )
+        );
         assertEquals("Error: bad request", exception.getMessage());
 
         // user provides incorrect authToken
-        exception = assertThrows(DataAccessException.class, () -> serviceObject.newGame(new GameRequest("game_name", "no token")));
+        exception = assertThrows(DataAccessException.class, () -> serviceObject.newGame(
+                new GameRequest("game_name", "no token")
+            )
+        );
         assertEquals("Error: unauthorized", exception.getMessage());
     }
 
@@ -167,7 +178,10 @@ class ServiceTest {
         serviceObject.join(new JoinRequest(authToken.authToken(), "WHITE", id.gameID()));
 
         // request to join in a place that is already taken
-        DataAccessException exception = assertThrows(DataAccessException.class, () -> serviceObject.join(new JoinRequest(authToken2.authToken(), "WHITE", id.gameID())));
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> serviceObject.join(
+                new JoinRequest(authToken2.authToken(), "WHITE", id.gameID())
+            )
+        );
         assertEquals("Error: already taken", exception.getMessage());
 
         // request to join without authorization

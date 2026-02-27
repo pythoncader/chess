@@ -6,6 +6,19 @@ import model.UserData;
 import java.util.*;
 
 public class MemoryUserDAO implements UserDAO{
+    public Map<String, UserData> getUsers() {
+        return users;
+    }
+
+    public Map<String, String> getAuthTokens() {
+        return authTokens;
+    }
+
+    public Map<Integer, GameData> getChessGames() {
+        return chessGames;
+    }
+
+
     // This variable is final so that it cannot point to a different map, but its contents can still be changed
     private final Map<String, UserData> users = new HashMap<>();
     private final Map<String, String> authTokens = new HashMap<>();
@@ -18,7 +31,14 @@ public class MemoryUserDAO implements UserDAO{
 
     @Override
     public String createUser(UserData newUser) throws DataAccessException{
-        if (newUser.username() == null || newUser.password() == null || newUser.email() == null) {
+        if (
+                newUser.username() == null
+                || newUser.password() == null
+                || newUser.email() == null
+                || newUser.username().isEmpty()
+                || newUser.password().isEmpty()
+                || newUser.email().isEmpty()
+        ) {
             throw new DataAccessException("Error: bad request", 400);
         }
         if (users.get(newUser.username()) == null) {
@@ -41,7 +61,7 @@ public class MemoryUserDAO implements UserDAO{
     @Override
     public String loginUser(String username, String password) throws DataAccessException{
         UserData myUserData = users.get(username);
-        if (username == null || password == null) {
+        if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
             throw new DataAccessException("Error: bad request", 400);
         }
         if (myUserData == null || !Objects.equals(myUserData.password(), password)){
@@ -59,7 +79,7 @@ public class MemoryUserDAO implements UserDAO{
     }
 
     @Override
-    public void clear() throws DataAccessException {
+    public void clear() {
         authTokens.clear();
         users.clear();
         this.currentGameID = 0;
@@ -68,7 +88,7 @@ public class MemoryUserDAO implements UserDAO{
 
     @Override
     public int makeNewGame(String gameName, String authToken) throws DataAccessException {
-        if (gameName == null || authToken == null){
+        if (gameName == null || authToken == null || gameName.isEmpty() || authToken.isEmpty()){
             throw new DataAccessException("Error: bad request", 400);
         }
         if (authTokens.containsKey(authToken)) {
@@ -114,6 +134,7 @@ public class MemoryUserDAO implements UserDAO{
     @Override
     public void addToGame(String authToken, String playerColor, int gameID) throws DataAccessException {
         if (authToken == null
+                || authToken.isEmpty()
                 || (!Objects.equals(playerColor, "BLACK") && !Objects.equals(playerColor, "WHITE"))
                 || !chessGames.containsKey(gameID)) {
             throw new DataAccessException("Error: bad request", 400);

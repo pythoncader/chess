@@ -3,10 +3,12 @@ package server;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.*;
-import dataaccess.MemoryUserDAO;
 
 public class Service {
-    UserDAO myDataAccess = new MemoryUserDAO();
+    UserDAO myDataAccess;
+    public Service(UserDAO myDataAccess){
+        this.myDataAccess = myDataAccess;
+    }
 
     public AuthData register(UserData myUser) throws DataAccessException {
         return new AuthData(myUser.username(), myDataAccess.createUser(myUser));

@@ -2,11 +2,14 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.MemoryUserDAO;
+import dataaccess.UserDAO;
 import io.javalin.http.Context;
 import model.*;
 
 public class ChessHandler {
-    Service myService = new Service();
+    UserDAO myDataAccess = new MemoryUserDAO();
+    Service myService = new Service(myDataAccess);
     Gson gson = new Gson();
 
     public void registerUser(Context ctx) {
@@ -41,8 +44,6 @@ public class ChessHandler {
             if (authToken != null) {
                 myService.logout(new LogoutRequest(authToken));
                 ctx.result("{}");
-            } else {
-                // throw an exception or something
             }
         } catch (DataAccessException ex) {
             ctx.status(ex.getErrorCode());
@@ -71,8 +72,6 @@ public class ChessHandler {
             if (authToken != null) {
                 GameID newGameID = myService.newGame(new GameRequest(request.gameName(), authToken));
                 ctx.result(gson.toJson(newGameID));
-            } else {
-                // throw an exception or something
             }
         } catch (DataAccessException ex){
             ctx.status(ex.getErrorCode());
@@ -88,8 +87,6 @@ public class ChessHandler {
             if (authToken != null) {
                 ListofGames myGames = myService.listGames(new ListRequest(authToken));
                 ctx.result(gson.toJson(myGames));
-            } else {
-                // throw an exception or something
             }
         } catch (DataAccessException ex){
             ctx.status(ex.getErrorCode());
@@ -106,8 +103,6 @@ public class ChessHandler {
             if (authToken != null) {
                 myService.join(new JoinRequest(authToken, request.playerColor(), request.gameID()));
                 ctx.result("{}");
-            } else {
-                // throw an exception or something
             }
         } catch (DataAccessException ex){
             ctx.status(ex.getErrorCode());

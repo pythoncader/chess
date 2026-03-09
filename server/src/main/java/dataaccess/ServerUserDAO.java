@@ -1,29 +1,26 @@
 package dataaccess;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import model.GameData;
 import model.UserData;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
-public class MemoryUserDAO implements UserDAO{
-    public Map<String, UserData> getUsers() {
-        return users;
-    }
+public class ServerUserDAO implements UserDAO{
 
-    public Map<String, String> getAuthTokens() {
-        return authTokens;
+    public ServerUserDAO() throws DataAccessException {
+        configureDatabase();
     }
-
-    public Map<Integer, GameData> getChessGames() {
-        return chessGames;
-    }
-
 
     // This variable is final so that it cannot point to a different map, but its contents can still be changed
     private final Map<String, UserData> users = new HashMap<>();
     private final Map<String, String> authTokens = new HashMap<>();
     private final Map<Integer, GameData> chessGames = new HashMap<>();
-    private int currentGameID = 0;
 
     public static String generateToken() {
         return UUID.randomUUID().toString();
@@ -82,7 +79,6 @@ public class MemoryUserDAO implements UserDAO{
     public void clear() {
         authTokens.clear();
         users.clear();
-        this.currentGameID = 0;
         chessGames.clear();
     }
 
@@ -92,17 +88,30 @@ public class MemoryUserDAO implements UserDAO{
             throw new DataAccessException("Error: bad request", 400);
         }
         if (authTokens.containsKey(authToken)) {
-            this.currentGameID += 1;
-            chessGames.put(
-                    this.currentGameID,
-                    new GameData(
-                            null,
-                            null,
-                            gameName,
-                            new ChessGame()
-                    )
-            );
-            return currentGameID;
+            try (var conn = DatabaseManager.getConnection()) {
+                var statement = "INSERT INTO chessGames (name, json) VALUES (?, ?)";
+                GameData myGame = new GameData(
+                        null,
+                        null,
+                        gameName,
+                        new ChessGame()
+                );
+                String json = new Gson().toJson(myGame);
+                try (var preparedStatement = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
+                    preparedStatement.setString(1, gameName);
+                    preparedStatement.setString(2, json);
+                    preparedStatement.executeUpdate();
+                    ResultSet rs = preparedStatement.getGeneratedKeys();
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    } else {
+                        throw new DataAccessException("ID not generated", 500);
+                    }
+                }
+
+            } catch (Exception ex) {
+                throw new DataAccessException(ex.getMessage(), 500);
+            }
         } else {
             throw new DataAccessException("Error: unauthorized", 401);
         }
@@ -111,19 +120,25 @@ public class MemoryUserDAO implements UserDAO{
     @Override
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException {
         if (authTokens.containsKey(authToken)) {
-            ArrayList<GameData> gameDataList = new ArrayList<>(this.chessGames.values());
             ArrayList<GameData> gameList = new ArrayList<>();
-            for (GameData dataGame : gameDataList) {
-                gameList.add(
-                        new GameData(
-                                dataGame.whiteUsername(),
-                                dataGame.blackUsername(),
-                                dataGame.gameName(),
-                                null
-                        )
-                );
+            ArrayList<String> jsonList = new ArrayList<>();
+            var statement = "SELECT json FROM chessGames";
+
+            try (var conn = DatabaseManager.getConnection(); var preparedStatement = conn.prepareStatement(statement);
+                 ResultSet rs = preparedStatement.executeQuery() ){
+
+                while (rs.next()){
+                    jsonList.add(rs.getString("json"));
+                }
+                Gson gson = new Gson();
+                for (String jsonData : jsonList) {
+                    gameList.add(gson.fromJson(jsonData, GameData.class));
+                }
+
+                return gameList;
+            } catch (Exception ex) {
+                throw new DataAccessException(ex.getMessage(), 500);
             }
-            return gameList;
         } else {
             throw new DataAccessException("Error: unauthorized", 401);
         }
@@ -141,7 +156,8 @@ public class MemoryUserDAO implements UserDAO{
             GameData oldGame = chessGames.get(gameID);
             if (Objects.equals(playerColor, "BLACK")) {
                 if (oldGame.blackUsername() == null) {
-                    chessGames.put(gameID,
+                    chessGames.put(
+                            gameID,
                             new GameData(
                                 oldGame.whiteUsername(),
                                 authTokens.get(authToken),
@@ -154,7 +170,8 @@ public class MemoryUserDAO implements UserDAO{
                 }
             } else {
                 if (oldGame.whiteUsername() == null) {
-                    chessGames.put(gameID,
+                    chessGames.put(
+                            gameID,
                             new GameData(
                                 authTokens.get(authToken),
                                 oldGame.blackUsername(),
@@ -168,6 +185,31 @@ public class MemoryUserDAO implements UserDAO{
             }
         } else {
             throw new DataAccessException("Error: unauthorized", 401);
+        }
+    }
+
+    private final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  chessGames (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `name` varchar(256) NOT NULL,
+              `json` TEXT DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              INDEX(name)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+    };
+
+    private void configureDatabase() throws DataAccessException {
+        DatabaseManager.createDatabase();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            for (String statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()), 500);
         }
     }
 }

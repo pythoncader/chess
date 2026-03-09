@@ -3,14 +3,19 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryUserDAO;
+import dataaccess.ServerUserDAO;
 import dataaccess.UserDAO;
 import io.javalin.http.Context;
 import model.*;
 
 public class ChessHandler {
-    UserDAO myDataAccess = new MemoryUserDAO();
+//    UserDAO myDataAccess = new MemoryUserDAO();
+    UserDAO myDataAccess = new ServerUserDAO();
     Service myService = new Service(myDataAccess);
     Gson gson = new Gson();
+
+    public ChessHandler() throws DataAccessException {
+    }
 
     public void registerUser(Context ctx) {
         UserData registerRequest = gson.fromJson(ctx.body(), UserData.class);

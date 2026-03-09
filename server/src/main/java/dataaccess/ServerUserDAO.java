@@ -120,6 +120,7 @@ public class ServerUserDAO implements UserDAO{
     @Override
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException {
         if (authTokens.containsKey(authToken)) {
+            ArrayList<GameData> gameDataList = new ArrayList<>();
             ArrayList<GameData> gameList = new ArrayList<>();
             ArrayList<String> jsonList = new ArrayList<>();
             var statement = "SELECT json FROM chessGames";
@@ -132,9 +133,19 @@ public class ServerUserDAO implements UserDAO{
                 }
                 Gson gson = new Gson();
                 for (String jsonData : jsonList) {
-                    gameList.add(gson.fromJson(jsonData, GameData.class));
+                    gameDataList.add(gson.fromJson(jsonData, GameData.class));
                 }
 
+                for (GameData dataGame : gameDataList) {
+                    gameList.add(
+                            new GameData(
+                                    dataGame.whiteUsername(),
+                                    dataGame.blackUsername(),
+                                    dataGame.gameName(),
+                                    null
+                            )
+                    );
+                }
                 return gameList;
             } catch (Exception ex) {
                 throw new DataAccessException(ex.getMessage(), 500);

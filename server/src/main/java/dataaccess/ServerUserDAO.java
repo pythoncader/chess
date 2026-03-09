@@ -76,10 +76,16 @@ public class ServerUserDAO implements UserDAO{
     }
 
     @Override
-    public void clear() {
+    public void clear() throws DataAccessException {
+        var statement = "TRUNCATE chessGames";
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.executeUpdate();
+        } catch (Exception ex){
+            throw new DataAccessException(ex.getMessage(), 500);
+        }
         authTokens.clear();
         users.clear();
-        chessGames.clear();
     }
 
     @Override
@@ -125,7 +131,8 @@ public class ServerUserDAO implements UserDAO{
             ArrayList<String> jsonList = new ArrayList<>();
             var statement = "SELECT json FROM chessGames";
 
-            try (var conn = DatabaseManager.getConnection(); var preparedStatement = conn.prepareStatement(statement);
+            try (var conn = DatabaseManager.getConnection();
+                 var preparedStatement = conn.prepareStatement(statement);
                  ResultSet rs = preparedStatement.executeQuery() ){
 
                 while (rs.next()){
@@ -136,22 +143,26 @@ public class ServerUserDAO implements UserDAO{
                     gameDataList.add(gson.fromJson(jsonData, GameData.class));
                 }
 
-                for (GameData dataGame : gameDataList) {
-                    gameList.add(
-                            new GameData(
-                                    dataGame.whiteUsername(),
-                                    dataGame.blackUsername(),
-                                    dataGame.gameName(),
-                                    null
-                            )
-                    );
-                }
+                removeGameObject(gameDataList, gameList);
                 return gameList;
             } catch (Exception ex) {
                 throw new DataAccessException(ex.getMessage(), 500);
             }
         } else {
             throw new DataAccessException("Error: unauthorized", 401);
+        }
+    }
+
+    private static void removeGameObject(ArrayList<GameData> gameDataList, ArrayList<GameData> gameList) {
+        for (GameData dataGame : gameDataList) {
+            gameList.add(
+                    new GameData(
+                            dataGame.whiteUsername(),
+                            dataGame.blackUsername(),
+                            dataGame.gameName(),
+                            null
+                    )
+            );
         }
     }
 

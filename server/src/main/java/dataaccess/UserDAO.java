@@ -9,7 +9,6 @@ import java.util.ArrayList;
 public interface UserDAO {
     String createUser(UserData newUser) throws DataAccessException;
     void deleteAuthToken(String authToken) throws DataAccessException;
-    String addAuthToken(String username) throws DataAccessException;
     String loginUser(String username, String password) throws DataAccessException;
     void clear() throws DataAccessException;
 

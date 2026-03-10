@@ -96,14 +96,17 @@ class ServiceTest {
 
     @Test
     void clear() throws DataAccessException {
-        dataAccessObject.createUser(new UserData("test", "test_password", "test@test.com"));
-        String testToken = dataAccessObject.addAuthToken("test");
+        UserData userData = new UserData("test", "test_password", "test@test.com");
+        dataAccessObject.createUser(userData);
+        AuthData authData = serviceObject.login(userData);
+        String testToken = authData.authToken();
         dataAccessObject.makeNewGame("helloworld", testToken);
         serviceObject.clear();
         DataAccessException exception = assertThrows(DataAccessException.class, () -> dataAccessObject.loginUser("test", "test_password"));
         assertEquals("Error: unauthorized", exception.getMessage());
 
-        testToken = dataAccessObject.addAuthToken("test");
+        authData = serviceObject.login(userData);
+        testToken = authData.authToken();
         assertEquals(new ArrayList<GameData>(), dataAccessObject.listGames(testToken));
     }
 

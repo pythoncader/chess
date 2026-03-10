@@ -20,7 +20,7 @@ public class DatabaseUserDAO implements UserDAO{
 
 
     @Override
-    public String createUser(UserData newUser) throws DataAccessException{
+    public String createUser(UserData newUser) throws DataAccessException{ // tested
         if (
                 newUser.username() == null
                 || newUser.password() == null
@@ -65,8 +65,9 @@ public class DatabaseUserDAO implements UserDAO{
             throw new DataAccessException("Error: " + ex.getMessage(), 500);
         }
     }
+
     @Override
-    public void deleteAuthToken(String authToken) throws DataAccessException{
+    public void deleteAuthToken(String authToken) throws DataAccessException{ // tested
         if (isInTable(authToken, "authToken", "authTokens")) {
             var statement = "DELETE FROM authTokens WHERE authToken=?";
             executeUpdate(statement, authToken);
@@ -76,7 +77,7 @@ public class DatabaseUserDAO implements UserDAO{
     }
 
     @Override
-    public String loginUser(String username, String password) throws DataAccessException{
+    public String loginUser(String username, String password) throws DataAccessException{ // tested
         if (username == null
             || password == null
             || username.isEmpty()
@@ -109,8 +110,7 @@ public class DatabaseUserDAO implements UserDAO{
         }
     }
 
-    @Override
-    public String addAuthToken(String username) throws DataAccessException{
+    private String addAuthToken(String username) throws DataAccessException{
         String authToken = UUID.randomUUID().toString(); // generate a new authToken
         var statement = "INSERT INTO authTokens (username, authToken) VALUES (?, ?)";
         executeUpdate(statement, username, authToken);
@@ -118,14 +118,13 @@ public class DatabaseUserDAO implements UserDAO{
     }
 
     @Override
-    public void clear() throws DataAccessException {
+    public void clear() throws DataAccessException { // tested
         var statement = "TRUNCATE chessGames";
         executeUpdate(statement);
         statement = "TRUNCATE users";
         executeUpdate(statement);
         statement = "TRUNCATE authTokens";
         executeUpdate(statement);
-
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
@@ -157,7 +156,7 @@ public class DatabaseUserDAO implements UserDAO{
     }
 
     @Override
-    public int makeNewGame(String gameName, String authToken) throws DataAccessException {
+    public int makeNewGame(String gameName, String authToken) throws DataAccessException { // tested
         if (gameName == null || authToken == null || gameName.isEmpty() || authToken.isEmpty()){
             throw new DataAccessException("Error: bad request", 400);
         }
@@ -182,7 +181,7 @@ public class DatabaseUserDAO implements UserDAO{
     }
 
     @Override
-    public ArrayList<GameData> listGames(String authToken) throws DataAccessException {
+    public ArrayList<GameData> listGames(String authToken) throws DataAccessException { // tested
         if (isInTable(authToken, "authToken", "authTokens")) {
             ArrayList<GameData> gameDataList = new ArrayList<>();
             ArrayList<GameData> gameList = new ArrayList<>();
@@ -259,7 +258,7 @@ public class DatabaseUserDAO implements UserDAO{
     }
 
     @Override
-    public void addToGame(String authToken, String playerColor, int gameID) throws DataAccessException {
+    public void addToGame(String authToken, String playerColor, int gameID) throws DataAccessException { // tested
         if (authToken == null
                 || authToken.isEmpty()
                 || (!Objects.equals(playerColor, "BLACK") && !Objects.equals(playerColor, "WHITE"))

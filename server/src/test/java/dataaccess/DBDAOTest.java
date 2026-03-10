@@ -70,7 +70,7 @@ class DBDAOTest {
     }
 
     @Test
-    void registerPositive() throws DataAccessException {
+    void createUserPositive() throws DataAccessException {
         String authToken = dataAccessObject.createUser(new UserData("Cade", "Rigby", "1@1.com"));
         assertTrue(isInTable(authToken, "authToken", "authTokens"));
         assertTrue(isInTable("Cade", "username", "authTokens"));
@@ -78,7 +78,7 @@ class DBDAOTest {
     }
 
     @Test
-    void registerNegative() throws DataAccessException {
+    void createUserNegative() throws DataAccessException {
         // user does not provide a username
         DataAccessException exception = assertThrows(DataAccessException.class, () ->
                 dataAccessObject.createUser(
@@ -141,14 +141,14 @@ class DBDAOTest {
     }
 
     @Test
-    void logoutPositive() throws DataAccessException{
+    void deleteAuthTokenPositive() throws DataAccessException{
         String authToken = dataAccessObject.createUser(new UserData("Cade", "hello", "different_email@123.com"));
         dataAccessObject.deleteAuthToken(authToken);
         assertFalse(isInTable(authToken, "authToken", "authTokens"));
     }
 
     @Test
-    void logoutNegative() {
+    void deleteAuthTokenNegative() {
         DataAccessException exception = assertThrows(
                 DataAccessException.class, () -> dataAccessObject.deleteAuthToken(
                         "abe827a1-8307-40f8-80ef-7055c9575380"
@@ -160,13 +160,13 @@ class DBDAOTest {
     @Test
     void clear() throws DataAccessException {
         dataAccessObject.createUser(new UserData("test", "test_password", "test@test.com"));
-        String testToken = dataAccessObject.addAuthToken("test");
+        String testToken = dataAccessObject.loginUser("test", "test_password");
         dataAccessObject.makeNewGame("helloworld", testToken);
         dataAccessObject.clear();
         DataAccessException exception = assertThrows(DataAccessException.class, () -> dataAccessObject.loginUser("test", "test_password"));
         assertEquals("Error: unauthorized", exception.getMessage());
 
-        testToken = dataAccessObject.addAuthToken("test");
+        testToken = dataAccessObject.loginUser("test", "test_password");
         assertEquals(new ArrayList<GameData>(), dataAccessObject.listGames(testToken));
     }
 
@@ -236,7 +236,7 @@ class DBDAOTest {
     }
 
     @Test
-    void joinPositive() throws DataAccessException{
+    void addToGamePositive() throws DataAccessException{
         String authToken = dataAccessObject.createUser(new UserData("Cade", "hello", "different_email@123.com"));
         String authToken2 = dataAccessObject.createUser(new UserData("Jeremy", "hello", "different_email@123.com"));
         int id = dataAccessObject.makeNewGame("my_game", authToken);
@@ -251,7 +251,7 @@ class DBDAOTest {
     }
 
     @Test
-    void joinNegative() throws DataAccessException{
+    void addToGameNegative() throws DataAccessException{
         String authToken = dataAccessObject.createUser(new UserData("Cade", "hello", "different_email@123.com"));
         String authToken2 = dataAccessObject.createUser(new UserData("Jeremy", "hello", "different_email@123.com"));
         int id = dataAccessObject.makeNewGame("my_game", authToken);

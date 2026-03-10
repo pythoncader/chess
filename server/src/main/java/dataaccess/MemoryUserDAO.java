@@ -71,8 +71,7 @@ public class MemoryUserDAO implements UserDAO{
         }
     }
 
-    @Override
-    public String addAuthToken(String username){
+    private String addAuthToken(String username){
         String authToken = generateToken();
         authTokens.put(authToken, username);
         return authToken;

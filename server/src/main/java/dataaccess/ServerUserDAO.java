@@ -38,14 +38,33 @@ public class ServerUserDAO implements UserDAO{
         ) {
             throw new DataAccessException("Error: bad request", 400);
         }
-        if (users.get(newUser.username()) == null) {
-            users.put(newUser.username(), newUser);
+        if (!isInTable(newUser.username(), "username", "users")) {
+            var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+
+            executeUpdate(statement, newUser.username(), newUser.password(), newUser.email());
+
             return this.addAuthToken(newUser.username());
         } else {
             throw new DataAccessException("Error: already taken", 403);
         }
     }
 
+    private boolean isInTable(String value, String columnName, String tableName) throws DataAccessException{
+        var statement = "SELECT COUNT(*) FROM " + tableName + " WHERE "+columnName+" = ?";
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, value);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                } else {
+                    throw new DataAccessException("There was a problem accessing the database", 500);
+                }
+            }
+        } catch (Exception ex) {
+            throw new DataAccessException(ex.getMessage(), 500);
+        }
+    }
     @Override
     public void deleteAuthToken(String authToken) throws DataAccessException{
         if (authTokens.containsKey(authToken)) {
@@ -117,30 +136,16 @@ public class ServerUserDAO implements UserDAO{
             throw new DataAccessException("Error: bad request", 400);
         }
         if (authTokens.containsKey(authToken)) {
-            try (var conn = DatabaseManager.getConnection()) {
-                var statement = "INSERT INTO chessGames (name, json) VALUES (?, ?)";
-                GameData myGame = new GameData(
-                        null,
-                        null,
-                        gameName,
-                        new ChessGame()
-                );
-                String json = new Gson().toJson(myGame);
-                try (var preparedStatement = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
-                    preparedStatement.setString(1, gameName);
-                    preparedStatement.setString(2, json);
-                    preparedStatement.executeUpdate();
-                    ResultSet rs = preparedStatement.getGeneratedKeys();
-                    if (rs.next()) {
-                        return rs.getInt(1);
-                    } else {
-                        throw new DataAccessException("ID not generated", 500);
-                    }
-                }
+            var statement = "INSERT INTO chessGames (name, json) VALUES (?, ?)";
+            GameData myGame = new GameData(
+                    null,
+                    null,
+                    gameName,
+                    new ChessGame()
+            );
+            String json = new Gson().toJson(myGame);
+            return executeUpdate(statement, gameName, json);
 
-            } catch (Exception ex) {
-                throw new DataAccessException(ex.getMessage(), 500);
-            }
         } else {
             throw new DataAccessException("Error: unauthorized", 401);
         }
@@ -245,11 +250,11 @@ public class ServerUserDAO implements UserDAO{
             """,
             """
             CREATE TABLE IF NOT EXISTS  users (
-              `id` int NOT NULL AUTO_INCREMENT,
-              `name` varchar(256) NOT NULL,
-              `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`id`),
-              INDEX(name)
+              `username` varchar(256) NOT NULL,
+              `password` TEXT DEFAULT NULL,
+              `email` TEXT DEFAULT NULL,
+              PRIMARY KEY (`username`),
+              INDEX(username)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
             """

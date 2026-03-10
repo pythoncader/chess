@@ -12,9 +12,9 @@ import java.util.*;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
-public class ServerUserDAO implements UserDAO{
+public class DatabaseUserDAO implements UserDAO{
 
-    public ServerUserDAO() throws DataAccessException {
+    public DatabaseUserDAO() throws DataAccessException {
         configureDatabase();
     }
 
@@ -47,7 +47,7 @@ public class ServerUserDAO implements UserDAO{
 
     private boolean isInTable(Object value, String columnName, String tableName) throws DataAccessException{
         if ((!Objects.equals(tableName, "chessGames") && !Objects.equals(tableName, "users") && !Objects.equals(tableName, "authTokens"))){
-            throw new DataAccessException("Invalid table name", 500);
+            throw new DataAccessException("Error: Invalid table name", 500);
         }
         var statement = "SELECT COUNT(*) FROM "+tableName+" WHERE "+columnName+" = ?";
         try (Connection conn = DatabaseManager.getConnection()) {
@@ -61,11 +61,11 @@ public class ServerUserDAO implements UserDAO{
                 if (rs.next()) {
                     return rs.getInt(1) > 0;
                 } else {
-                    throw new DataAccessException("There was a problem accessing the database", 500);
+                    throw new DataAccessException("Error: There was a problem accessing the database", 500);
                 }
             }
         } catch (Exception ex) {
-            throw new DataAccessException(ex.getMessage(), 500);
+            throw new DataAccessException("Error: " + ex.getMessage(), 500);
         }
     }
     @Override
@@ -100,11 +100,11 @@ public class ServerUserDAO implements UserDAO{
                 String hashedPassword = rs.getString("password");
                 return BCrypt.checkpw(password, hashedPassword);
             } else {
-                throw new DataAccessException("There was a problem accessing the database", 500);
+                throw new DataAccessException("Error: There was a problem accessing the database", 500);
             }
 
         } catch (Exception ex) {
-            throw new DataAccessException(ex.getMessage(), 500);
+            throw new DataAccessException("Error: " + ex.getMessage(), 500);
         }
     }
 
@@ -142,11 +142,10 @@ public class ServerUserDAO implements UserDAO{
                 if (rs.next()) {
                     return rs.getInt(1);
                 }
-
                 return 0;
             }
         } catch (Exception ex) {
-            throw new DataAccessException(ex.getMessage(), 500);
+            throw new DataAccessException("Error: " + ex.getMessage(), 500);
         }
     }
 
@@ -194,7 +193,7 @@ public class ServerUserDAO implements UserDAO{
                 removeGameObject(gameDataList, gameList);
                 return gameList;
             } catch (Exception ex) {
-                throw new DataAccessException(ex.getMessage(), 500);
+                throw new DataAccessException("Error: " + ex.getMessage(), 500);
             }
         } else {
             throw new DataAccessException("Error: unauthorized", 401);
@@ -223,11 +222,11 @@ public class ServerUserDAO implements UserDAO{
             if (rs.next()){
                 return rs.getString("username");
             } else {
-                throw new DataAccessException("There was a problem accessing the database", 500);
+                throw new DataAccessException("Error: There was a problem accessing the database", 500);
             }
 
         } catch (Exception ex) {
-            throw new DataAccessException(ex.getMessage(), 500);
+            throw new DataAccessException("Error: " + ex.getMessage(), 500);
         }
     }
     private String getChessGame(int gameID) throws DataAccessException {
@@ -239,11 +238,11 @@ public class ServerUserDAO implements UserDAO{
             if (rs.next()){
                 return rs.getString("json");
             } else {
-                throw new DataAccessException("There was a problem accessing the database", 500);
+                throw new DataAccessException("Error: There was a problem accessing the database", 500);
             }
 
         } catch (Exception ex) {
-            throw new DataAccessException(ex.getMessage(), 500);
+            throw new DataAccessException("Error: " + ex.getMessage(), 500);
         }
     }
 
@@ -302,7 +301,7 @@ public class ServerUserDAO implements UserDAO{
               `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`id`),
               INDEX(name)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            )
             """,
             """
             CREATE TABLE IF NOT EXISTS  users (
@@ -311,14 +310,14 @@ public class ServerUserDAO implements UserDAO{
               `email` TEXT DEFAULT NULL,
               PRIMARY KEY (`username`),
               INDEX(username)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            )
             """,
             """
             CREATE TABLE IF NOT EXISTS  authTokens (
               `authToken` varchar(256) NOT NULL,
               `username` varchar(256) NOT NULL,
               PRIMARY KEY (`authToken`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            )
             """
     };
 
@@ -331,7 +330,7 @@ public class ServerUserDAO implements UserDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()), 500);
+            throw new DataAccessException(String.format("Error: Unable to configure database: %s", ex.getMessage()), 500);
         }
     }
 }

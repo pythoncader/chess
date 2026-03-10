@@ -2,7 +2,7 @@ package dataacess;
 
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
-import dataaccess.ServerUserDAO;
+import dataaccess.DatabaseUserDAO;
 import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DBDAOTest {
-    ServerUserDAO dataAccessObject = new ServerUserDAO();
+    DatabaseUserDAO dataAccessObject = new DatabaseUserDAO();
 
     DBDAOTest() throws DataAccessException {
     }

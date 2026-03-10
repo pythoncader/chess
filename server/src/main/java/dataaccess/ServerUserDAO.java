@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 import java.util.*;
@@ -41,7 +42,7 @@ public class ServerUserDAO implements UserDAO{
         if (!isInTable(newUser.username(), "username", "users")) {
             var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
 
-            executeUpdate(statement, newUser.username(), newUser.password(), newUser.email());
+            executeUpdate(statement, newUser.username(), BCrypt.hashpw(newUser.password(), BCrypt.gensalt()), newUser.email());
 
             return this.addAuthToken(newUser.username());
         } else {
@@ -76,14 +77,31 @@ public class ServerUserDAO implements UserDAO{
 
     @Override
     public String loginUser(String username, String password) throws DataAccessException{
-        UserData myUserData = users.get(username);
         if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
             throw new DataAccessException("Error: bad request", 400);
         }
-        if (myUserData == null || !Objects.equals(myUserData.password(), password)){
+        if (!isInTable(username, "username", "users") || !checkPassword(username, password)){
             throw new DataAccessException("Error: unauthorized", 401);
         } else {
             return this.addAuthToken(username);
+        }
+    }
+
+    private boolean checkPassword(String username, String password) throws DataAccessException {
+        var statement = "SELECT username, password FROM users WHERE username=?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(statement)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()){
+                String hashedPassword = rs.getString("password");
+                return BCrypt.checkpw(password, hashedPassword);
+            } else {
+                throw new DataAccessException("There was a problem accessing the database", 500);
+            }
+
+        } catch (Exception ex) {
+            throw new DataAccessException(ex.getMessage(), 500);
         }
     }
 

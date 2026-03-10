@@ -165,7 +165,7 @@ class DBDAOTest {
         dataAccessObject.clear();
         DataAccessException exception = assertThrows(DataAccessException.class, () -> dataAccessObject.loginUser("test", "test_password"));
         assertEquals("Error: unauthorized", exception.getMessage());
-
+        dataAccessObject.createUser(new UserData("test", "test_password", "test@test.com"));
         testToken = dataAccessObject.loginUser("test", "test_password");
         assertEquals(new ArrayList<GameData>(), dataAccessObject.listGames(testToken));
     }

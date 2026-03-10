@@ -105,6 +105,7 @@ class ServiceTest {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> dataAccessObject.loginUser("test", "test_password"));
         assertEquals("Error: unauthorized", exception.getMessage());
 
+        dataAccessObject.createUser(userData);
         authData = serviceObject.login(userData);
         testToken = authData.authToken();
         assertEquals(new ArrayList<GameData>(), dataAccessObject.listGames(testToken));

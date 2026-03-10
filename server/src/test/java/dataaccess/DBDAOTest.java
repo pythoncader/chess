@@ -25,7 +25,10 @@ class DBDAOTest {
     }
 
     private boolean isInTable(Object value, String columnName, String tableName) throws DataAccessException{
-        if ((!Objects.equals(tableName, "chessGames") && !Objects.equals(tableName, "users") && !Objects.equals(tableName, "authTokens"))){
+        if ((!Objects.equals(tableName, "chessGames")
+            && !Objects.equals(tableName, "users")
+            && !Objects.equals(tableName, "authTokens"))
+        ){
             throw new DataAccessException("Invalid table name", 500);
         }
         var statement = "SELECT COUNT(*) FROM "+tableName+" WHERE "+columnName+" = ?";
@@ -77,27 +80,41 @@ class DBDAOTest {
     @Test
     void registerNegative() throws DataAccessException {
         // user does not provide a username
-        DataAccessException exception = assertThrows(DataAccessException.class, () -> dataAccessObject.createUser(new UserData("", "Rigby", "1@1.com")));
+        DataAccessException exception = assertThrows(DataAccessException.class, () ->
+                dataAccessObject.createUser(
+                        new UserData("", "Rigby", "1@1.com")
+                ));
         assertEquals("Error: bad request", exception.getMessage());
 
         //user does not provide a password
-        exception = assertThrows(DataAccessException.class, () -> dataAccessObject.createUser(new UserData("Cade", "", "1@1.com")));
+        exception = assertThrows(DataAccessException.class, () ->
+                dataAccessObject.createUser(
+                        new UserData("Cade", "", "1@1.com")
+                ));
         assertEquals("Error: bad request", exception.getMessage());
 
         //user does not provide an email
-        exception = assertThrows(DataAccessException.class, () -> dataAccessObject.createUser(new UserData("Cade", "hello", "")));
+        exception = assertThrows(DataAccessException.class, () ->
+                dataAccessObject.createUser(
+                        new UserData("Cade", "hello", "")
+                ));
         assertEquals("Error: bad request", exception.getMessage());
 
         dataAccessObject.clear();
         // duplicated username
         dataAccessObject.createUser(new UserData("User1", "hello", "123@123.com"));
-        exception = assertThrows(DataAccessException.class, () -> dataAccessObject.createUser(new UserData("User1", "hello2", "different_email@123.com")));
+        exception = assertThrows(DataAccessException.class, () ->
+                dataAccessObject.createUser(
+                        new UserData("User1", "hello2", "different_email@123.com")
+                ));
         assertEquals("Error: already taken", exception.getMessage());
     }
 
     @Test
     void loginPositive() throws DataAccessException{
-        dataAccessObject.createUser(new UserData("Cade", "hello", "different_email@123.com"));
+        dataAccessObject.createUser(
+                new UserData("Cade", "hello", "different_email@123.com")
+        );
 
         String authToken = dataAccessObject.loginUser("Cade", "hello");
         assertTrue(isInTable(authToken, "authToken", "authTokens"));

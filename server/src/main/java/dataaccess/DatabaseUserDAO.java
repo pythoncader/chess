@@ -18,9 +18,6 @@ public class DatabaseUserDAO implements UserDAO{
         configureDatabase();
     }
 
-    public static String generateToken() {
-        return UUID.randomUUID().toString();
-    }
 
     @Override
     public String createUser(UserData newUser) throws DataAccessException{
@@ -80,10 +77,14 @@ public class DatabaseUserDAO implements UserDAO{
 
     @Override
     public String loginUser(String username, String password) throws DataAccessException{
-        if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
+        if (username == null
+            || password == null
+            || username.isEmpty()
+            || password.isEmpty()) {
             throw new DataAccessException("Error: bad request", 400);
         }
-        if (!isInTable(username, "username", "users") || !checkPassword(username, password)){
+        if (!isInTable(username, "username", "users")
+            || !checkPassword(username, password)) {
             throw new DataAccessException("Error: unauthorized", 401);
         } else {
             return this.addAuthToken(username);
@@ -110,7 +111,7 @@ public class DatabaseUserDAO implements UserDAO{
 
     @Override
     public String addAuthToken(String username) throws DataAccessException{
-        String authToken = generateToken();
+        String authToken = UUID.randomUUID().toString(); // generate a new authToken
         var statement = "INSERT INTO authTokens (username, authToken) VALUES (?, ?)";
         executeUpdate(statement, username, authToken);
         return authToken;
@@ -132,9 +133,15 @@ public class DatabaseUserDAO implements UserDAO{
             try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (int i = 0; i < params.length; i++) {
                     Object param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param == null) ps.setNull(i + 1, NULL);
+                    if (param instanceof String p) {
+                        ps.setString(i + 1, p);
+                    }
+                    else if (param instanceof Integer p) {
+                        ps.setInt(i + 1, p);
+                    }
+                    else if (param == null) {
+                        ps.setNull(i + 1, NULL);
+                    }
                 }
                 ps.executeUpdate();
 

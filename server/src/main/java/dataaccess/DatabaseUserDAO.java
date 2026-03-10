@@ -155,15 +155,19 @@ public class DatabaseUserDAO implements UserDAO{
             throw new DataAccessException("Error: bad request", 400);
         }
         if (isInTable(authToken, "authToken", "authTokens")) {
-            var statement = "INSERT INTO chessGames (name, json) VALUES (?, ?)";
+            var statement = "INSERT INTO chessGames (name) VALUES (?)";
+            int gameID = executeUpdate(statement, gameName);
             GameData myGame = new GameData(
+                    gameID,
                     null,
                     null,
                     gameName,
                     new ChessGame()
             );
             String json = new Gson().toJson(myGame);
-            return executeUpdate(statement, gameName, json);
+            statement = "UPDATE chessGames SET json=? WHERE id=?";
+            executeUpdate(statement, json, gameID);
+            return gameID;
 
         } else {
             throw new DataAccessException("Error: unauthorized", 401);
@@ -204,6 +208,7 @@ public class DatabaseUserDAO implements UserDAO{
         for (GameData dataGame : gameDataList) {
             gameList.add(
                     new GameData(
+                            dataGame.gameID(),
                             dataGame.whiteUsername(),
                             dataGame.blackUsername(),
                             dataGame.gameName(),
@@ -261,6 +266,7 @@ public class DatabaseUserDAO implements UserDAO{
                 if (oldGame.blackUsername() == null) {
                     var statement = "UPDATE chessGames SET json = ? WHERE id=?";
                     GameData myGame = new GameData(
+                            gameID,
                             oldGame.whiteUsername(),
                             getUsername(authToken),
                             oldGame.gameName(),
@@ -276,6 +282,7 @@ public class DatabaseUserDAO implements UserDAO{
                 if (oldGame.whiteUsername() == null) {
                     var statement = "UPDATE chessGames SET json = ? WHERE id=?";
                     GameData myGame = new GameData(
+                            gameID,
                             getUsername(authToken),
                             oldGame.blackUsername(),
                             oldGame.gameName(),

@@ -96,6 +96,7 @@ public class MemoryUserDAO implements UserDAO{
             chessGames.put(
                     this.currentGameID,
                     new GameData(
+                            this.currentGameID,
                             null,
                             null,
                             gameName,
@@ -116,6 +117,7 @@ public class MemoryUserDAO implements UserDAO{
             for (GameData dataGame : gameDataList) {
                 gameList.add(
                         new GameData(
+                                dataGame.gameID(),
                                 dataGame.whiteUsername(),
                                 dataGame.blackUsername(),
                                 dataGame.gameName(),
@@ -143,6 +145,7 @@ public class MemoryUserDAO implements UserDAO{
                 if (oldGame.blackUsername() == null) {
                     chessGames.put(gameID,
                             new GameData(
+                                oldGame.gameID(),
                                 oldGame.whiteUsername(),
                                 authTokens.get(authToken),
                                 oldGame.gameName(),
@@ -156,6 +159,7 @@ public class MemoryUserDAO implements UserDAO{
                 if (oldGame.whiteUsername() == null) {
                     chessGames.put(gameID,
                             new GameData(
+                                oldGame.gameID(),
                                 authTokens.get(authToken),
                                 oldGame.blackUsername(),
                                 oldGame.gameName(),

@@ -209,7 +209,7 @@ class DBDAOTest {
         myArrayList = dataAccessObject.listGames(authToken);
         myList = new ListofGames(myArrayList);
         ArrayList<GameData> expected = new ArrayList<>();
-        expected.add(new GameData(null, null, "new game", null));
+        expected.add(new GameData(1, null, null, "new game", null));
         assertEquals(expected, myList.games());
     }
 
@@ -232,7 +232,7 @@ class DBDAOTest {
         ArrayList<GameData> myArrayList = dataAccessObject.listGames(authToken);
         ListofGames myList = new ListofGames(myArrayList);
         ArrayList<GameData> expected = new ArrayList<>();
-        expected.add(new GameData("Cade", "Jeremy", "my_game", null));
+        expected.add(new GameData(1, "Cade", "Jeremy", "my_game", null));
         assertEquals(expected, myList.games());
     }
 

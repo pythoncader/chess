@@ -142,7 +142,7 @@ class ServiceTest {
 
         myList = serviceObject.listGames(new ListRequest(authToken.authToken()));
         ArrayList<GameData> expected = new ArrayList<>();
-        expected.add(new GameData(null, null, "new game", null));
+        expected.add(new GameData(1, null, null, "new game", null));
         assertEquals(expected, myList.games());
     }
 
@@ -164,7 +164,7 @@ class ServiceTest {
 
         ListofGames myList = serviceObject.listGames(new ListRequest(authToken.authToken()));
         ArrayList<GameData> expected = new ArrayList<>();
-        expected.add(new GameData("Cade", "Jeremy", "my_game", null));
+        expected.add(new GameData(1, "Cade", "Jeremy", "my_game", null));
         assertEquals(expected, myList.games());
     }
 

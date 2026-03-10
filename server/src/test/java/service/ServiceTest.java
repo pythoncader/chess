@@ -53,7 +53,6 @@ class ServiceTest {
     void loginPositive() throws DataAccessException{
         serviceObject.register(new UserData("Cade", "hello", "different_email@123.com"));
 
-        //user does not provide a password
         AuthData authToken = serviceObject.login(new UserData("Cade", "hello", null));
         assertTrue(dataAccessObject.getAuthTokens().containsKey(authToken.authToken()));
     }
@@ -141,10 +140,9 @@ class ServiceTest {
         ListofGames myList = serviceObject.listGames(new ListRequest(authToken.authToken()));
         assertEquals(new ArrayList<GameData>(), myList.games());
 
-        GameID id = serviceObject.newGame(new GameRequest("new game", authToken.authToken()));
         myList = serviceObject.listGames(new ListRequest(authToken.authToken()));
         ArrayList<GameData> expected = new ArrayList<>();
-        expected.add(new GameData(id.gameID(), null, null, "new game", null));
+        expected.add(new GameData(null, null, "new game", null));
         assertEquals(expected, myList.games());
     }
 
@@ -166,7 +164,7 @@ class ServiceTest {
 
         ListofGames myList = serviceObject.listGames(new ListRequest(authToken.authToken()));
         ArrayList<GameData> expected = new ArrayList<>();
-        expected.add(new GameData(id.gameID(), "Cade", "Jeremy", "my_game", null));
+        expected.add(new GameData("Cade", "Jeremy", "my_game", null));
         assertEquals(expected, myList.games());
     }
 

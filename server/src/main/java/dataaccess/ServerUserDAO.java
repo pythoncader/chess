@@ -106,8 +106,15 @@ public class ServerUserDAO implements UserDAO{
     }
 
     @Override
-    public String addAuthToken(String username){
+    public String addAuthToken(String username) throws DataAccessException{
         String authToken = generateToken();
+        var statement = "INSERT INTO authTokens (username, authToken) VALUES (?, ?)";
+        try {
+            executeUpdate(statement, username, authToken);
+        } catch (DataAccessException ex){
+//            statement = "UPDATE authTokens SET authToken=? WHERE username=?";
+//            executeUpdate(statement, authToken, username);
+        }
         authTokens.put(authToken, username);
         return authToken;
     }
@@ -277,11 +284,9 @@ public class ServerUserDAO implements UserDAO{
             """,
             """
             CREATE TABLE IF NOT EXISTS  authTokens (
-              `id` int NOT NULL AUTO_INCREMENT,
-              `name` varchar(256) NOT NULL,
-              `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`id`),
-              INDEX(name)
+              `authToken` varchar(256) NOT NULL,
+              `username` varchar(256) NOT NULL,
+              PRIMARY KEY (`authToken`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };

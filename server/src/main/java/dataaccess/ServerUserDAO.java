@@ -18,11 +18,6 @@ public class ServerUserDAO implements UserDAO{
         configureDatabase();
     }
 
-    // This variable is final so that it cannot point to a different map, but its contents can still be changed
-    private final Map<String, UserData> users = new HashMap<>();
-    private final Map<String, String> authTokens = new HashMap<>();
-    private final Map<Integer, GameData> chessGames = new HashMap<>();
-
     public static String generateToken() {
         return UUID.randomUUID().toString();
     }
@@ -50,11 +45,18 @@ public class ServerUserDAO implements UserDAO{
         }
     }
 
-    private boolean isInTable(String value, String columnName, String tableName) throws DataAccessException{
-        var statement = "SELECT COUNT(*) FROM " + tableName + " WHERE "+columnName+" = ?";
+    private boolean isInTable(Object value, String columnName, String tableName) throws DataAccessException{
+        if ((!Objects.equals(tableName, "chessGames") && !Objects.equals(tableName, "users") && !Objects.equals(tableName, "authTokens"))){
+            throw new DataAccessException("Invalid table name", 500);
+        }
+        var statement = "SELECT COUNT(*) FROM "+tableName+" WHERE "+columnName+" = ?";
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                ps.setString(1, value);
+                if (value instanceof String) {
+                    ps.setString(1, (String)value);
+                } else if (value instanceof Integer) {
+                    ps.setInt(1, (int)value);
+                }
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
                     return rs.getInt(1) > 0;
@@ -68,8 +70,9 @@ public class ServerUserDAO implements UserDAO{
     }
     @Override
     public void deleteAuthToken(String authToken) throws DataAccessException{
-        if (authTokens.containsKey(authToken)) {
-            authTokens.remove(authToken);
+        if (isInTable(authToken, "authToken", "authTokens")) {
+            var statement = "DELETE FROM authTokens WHERE authToken=?";
+            executeUpdate(statement, authToken);
         } else {
             throw new DataAccessException("Error: unauthorized", 401);
         }
@@ -109,13 +112,7 @@ public class ServerUserDAO implements UserDAO{
     public String addAuthToken(String username) throws DataAccessException{
         String authToken = generateToken();
         var statement = "INSERT INTO authTokens (username, authToken) VALUES (?, ?)";
-        try {
-            executeUpdate(statement, username, authToken);
-        } catch (DataAccessException ex){
-//            statement = "UPDATE authTokens SET authToken=? WHERE username=?";
-//            executeUpdate(statement, authToken, username);
-        }
-        authTokens.put(authToken, username);
+        executeUpdate(statement, username, authToken);
         return authToken;
     }
 
@@ -128,8 +125,6 @@ public class ServerUserDAO implements UserDAO{
         statement = "TRUNCATE authTokens";
         executeUpdate(statement);
 
-        authTokens.clear();
-        users.clear();
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
@@ -160,7 +155,7 @@ public class ServerUserDAO implements UserDAO{
         if (gameName == null || authToken == null || gameName.isEmpty() || authToken.isEmpty()){
             throw new DataAccessException("Error: bad request", 400);
         }
-        if (authTokens.containsKey(authToken)) {
+        if (isInTable(authToken, "authToken", "authTokens")) {
             var statement = "INSERT INTO chessGames (name, json) VALUES (?, ?)";
             GameData myGame = new GameData(
                     null,
@@ -178,7 +173,7 @@ public class ServerUserDAO implements UserDAO{
 
     @Override
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException {
-        if (authTokens.containsKey(authToken)) {
+        if (isInTable(authToken, "authToken", "authTokens")) {
             ArrayList<GameData> gameDataList = new ArrayList<>();
             ArrayList<GameData> gameList = new ArrayList<>();
             ArrayList<String> jsonList = new ArrayList<>();
@@ -219,41 +214,77 @@ public class ServerUserDAO implements UserDAO{
         }
     }
 
+    private String getUsername(String authToken) throws DataAccessException{
+        var statement = "SELECT username FROM authTokens WHERE authToken=?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(statement)) {
+            ps.setString(1, authToken);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()){
+                return rs.getString("username");
+            } else {
+                throw new DataAccessException("There was a problem accessing the database", 500);
+            }
+
+        } catch (Exception ex) {
+            throw new DataAccessException(ex.getMessage(), 500);
+        }
+    }
+    private String getChessGame(int gameID) throws DataAccessException {
+        var statement = "SELECT json FROM chessGames WHERE id=?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(statement)) {
+            ps.setInt(1, gameID);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()){
+                return rs.getString("json");
+            } else {
+                throw new DataAccessException("There was a problem accessing the database", 500);
+            }
+
+        } catch (Exception ex) {
+            throw new DataAccessException(ex.getMessage(), 500);
+        }
+    }
+
     @Override
     public void addToGame(String authToken, String playerColor, int gameID) throws DataAccessException {
         if (authToken == null
                 || authToken.isEmpty()
                 || (!Objects.equals(playerColor, "BLACK") && !Objects.equals(playerColor, "WHITE"))
-                || !chessGames.containsKey(gameID)) {
+                || !isInTable(gameID, "id", "chessGames")) {
             throw new DataAccessException("Error: bad request", 400);
         }
-        if (authTokens.containsKey(authToken)) {
-            GameData oldGame = chessGames.get(gameID);
+        if (isInTable(authToken, "authToken", "authTokens")) {
+            GameData oldGame = new Gson().fromJson(getChessGame(gameID), GameData.class);
+
             if (Objects.equals(playerColor, "BLACK")) {
                 if (oldGame.blackUsername() == null) {
-                    chessGames.put(
-                            gameID,
-                            new GameData(
-                                oldGame.whiteUsername(),
-                                authTokens.get(authToken),
-                                oldGame.gameName(),
-                                oldGame.game()
-                            )
+                    var statement = "UPDATE chessGames SET json = ? WHERE id=?";
+                    GameData myGame = new GameData(
+                            oldGame.whiteUsername(),
+                            getUsername(authToken),
+                            oldGame.gameName(),
+                            oldGame.game()
                     );
+
+                    String json = new Gson().toJson(myGame);
+                    executeUpdate(statement, json, gameID);
                 } else {
                     throw new DataAccessException("Error: already taken", 403);
                 }
             } else {
                 if (oldGame.whiteUsername() == null) {
-                    chessGames.put(
-                            gameID,
-                            new GameData(
-                                authTokens.get(authToken),
-                                oldGame.blackUsername(),
-                                oldGame.gameName(),
-                                oldGame.game()
-                            )
+                    var statement = "UPDATE chessGames SET json = ? WHERE id=?";
+                    GameData myGame = new GameData(
+                            getUsername(authToken),
+                            oldGame.blackUsername(),
+                            oldGame.gameName(),
+                            oldGame.game()
                     );
+
+                    String json = new Gson().toJson(myGame);
+                    executeUpdate(statement, json, gameID);
                 } else {
                     throw new DataAccessException("Error: already taken", 403);
                 }

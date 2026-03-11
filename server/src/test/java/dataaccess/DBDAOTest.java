@@ -255,7 +255,7 @@ class DBDAOTest {
         String authToken = dataAccessObject.createUser(new UserData("Cade", "hello", "different_email@123.com"));
         // user provides incorrect authToken
         DataAccessException exception = assertThrows(DataAccessException.class, () -> dataAccessObject.makeNewGame(
-                        "game_name", "no token"
+                        "game_name", authToken + "5"
                 )
         );
         assertEquals("Error: unauthorized", exception.getMessage());
@@ -284,7 +284,7 @@ class DBDAOTest {
     }
 
     @Test
-    void NumberGamesNegative() throws DataAccessException{
+    void listGamesNumberNegative() throws DataAccessException{
         String authToken = dataAccessObject.createUser(new UserData("Cade", "hello", "different_email@123.com"));
         ArrayList<GameData> myArrayList = dataAccessObject.listGames(authToken);
         // no games have been created

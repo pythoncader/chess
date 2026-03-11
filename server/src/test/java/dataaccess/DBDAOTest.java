@@ -70,11 +70,56 @@ class DBDAOTest {
     }
 
     @Test
+    void gameEditPositive() throws DataAccessException {
+        String authToken1 = dataAccessObject.createUser(new UserData("Cade", "Rigby", "1@1.com"));
+        String authToken2 = dataAccessObject.createUser(new UserData("Jeremy", "my_password", "1@1.com"));
+        int id = dataAccessObject.makeNewGame("my_game", authToken1);
+        ArrayList<GameData> myArrayList = dataAccessObject.listGames(authToken1);
+        ListofGames myList = new ListofGames(myArrayList);
+        ArrayList<GameData> expected = new ArrayList<>();
+        expected.add(new GameData(id, null, null, "my_game", null));
+        assertEquals(expected, myList.games());
+
+        dataAccessObject.addToGame(authToken1, "WHITE", id);
+        myArrayList = dataAccessObject.listGames(authToken1);
+        myList = new ListofGames(myArrayList);
+        expected = new ArrayList<>();
+        expected.add(new GameData(id, "Cade", null, "my_game", null));
+        assertEquals(expected, myList.games());
+
+        dataAccessObject.addToGame(authToken2, "BLACK", id);
+        myArrayList = dataAccessObject.listGames(authToken1);
+        myList = new ListofGames(myArrayList);
+        expected = new ArrayList<>();
+        expected.add(new GameData(id, "Cade", "Jeremy", "my_game", null));
+        assertEquals(expected, myList.games());
+    }
+
+    @Test
+    void gameEditNegative() throws DataAccessException {
+        String authToken1 = dataAccessObject.createUser(new UserData("Cade", "Rigby", "1@1.com"));
+        String authToken2 = dataAccessObject.createUser(new UserData("Jeremy", "my_password", "1@1.com"));
+        int id = dataAccessObject.makeNewGame("my_game", authToken1);
+
+        dataAccessObject.addToGame(authToken1, "WHITE", id);
+        dataAccessObject.addToGame(authToken2, "BLACK", id);
+
+        DataAccessException exception = assertThrows(DataAccessException.class, () ->
+                dataAccessObject.addToGame(authToken1, "WHITE/BLACK", id)
+        );
+        assertEquals("Error: bad request", exception.getMessage());
+    }
+
+    @Test
     void createUserPositive() throws DataAccessException {
         String authToken = dataAccessObject.createUser(new UserData("Cade", "Rigby", "1@1.com"));
         assertTrue(isInTable(authToken, "authToken", "authTokens"));
         assertTrue(isInTable("Cade", "username", "authTokens"));
         assertTrue(checkPassword("Cade", "Rigby"));
+        assertFalse(checkPassword("Cade", "false_password"));
+        DataAccessException exception = assertThrows(DataAccessException.class, () ->
+                checkPassword("wrong username", "Rigby"));
+        assertEquals("There was a problem accessing the database", exception.getMessage());
     }
 
     @Test

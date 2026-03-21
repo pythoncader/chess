@@ -21,7 +21,7 @@ public class DrawChessBoard {
         } else {
             blackPerspective(board);
         }
-        System.out.println("\n");
+        System.out.print("\u001b[0m"); // clears all formatting after printing the game
     }
 
     private static void blackPerspective(ChessBoard board) {
@@ -52,7 +52,7 @@ public class DrawChessBoard {
         drawRectangle("g", "other_gray");
         drawRectangle("h", "other_gray");
         drawRectangle(" ", "other_gray");
-        System.out.print(SET_BG_COLOR_BLACK);
+        System.out.print("\u001b[0m"); // clears formatting
         System.out.println();
     }
 
@@ -67,7 +67,7 @@ public class DrawChessBoard {
         drawRectangle("b", "other_gray");
         drawRectangle("a", "other_gray");
         drawRectangle(" ", "other_gray");
-        System.out.print(SET_BG_COLOR_BLACK);
+        System.out.print("\u001b[0m"); // clears formatting
         System.out.println();
     }
 
@@ -148,7 +148,7 @@ public class DrawChessBoard {
             currentColor = changeColor(currentColor);
         }
         drawRectangle(Integer.toString(row), "other_gray");
-        System.out.print(SET_BG_COLOR_BLACK);
+        System.out.print("\u001b[0m"); // clears formatting
         System.out.println();
     }
 

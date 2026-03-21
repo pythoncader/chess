@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameID;
 import model.UserData;
 
 import java.net.URI;
@@ -23,6 +24,29 @@ public class ServerFacade {
         var request = buildRequest("POST", "/user", userData);
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
+    }
+
+    public AuthData login(String username, String password) throws ResponseException{
+        UserData userData = new UserData(username, password, null);
+        var request = buildRequest("POST", "/session", userData);
+        var response = sendRequest(request);
+        return handleResponse(response, AuthData.class);
+    }
+
+    public GameID createGame(String gameName, String authToken) throws ResponseException{
+        var request = HttpRequest.newBuilder()
+                .uri(URI.create(serverUrl + "/game"))
+                .method("POST", makeRequestBody(gameName));
+        request.setHeader("authorization", authToken);
+        var response = sendRequest(request.build());
+        return handleResponse(response, GameID.class);
+    }
+    public void logout(String authToken) throws ResponseException{
+        var request = HttpRequest.newBuilder()
+                .uri(URI.create(serverUrl + "/session"))
+                .method("DELETE", makeRequestBody(null));
+        request.setHeader("authorization", authToken);
+        sendRequest(request.build());
     }
 
     private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {

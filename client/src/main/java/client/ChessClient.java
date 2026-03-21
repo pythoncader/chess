@@ -6,11 +6,13 @@ import java.util.Objects;
 import java.util.Scanner;
 
 import exception.ResponseException;
+import model.AuthData;
 import server.ServerFacade;
 import ui.*;
 
 public class ChessClient {
     private boolean loggedIn = false;
+    private String authToken = "";
     private final ServerFacade server;
     public ChessClient(String serverUrl){
         server = new ServerFacade(serverUrl);
@@ -20,7 +22,7 @@ public class ChessClient {
         System.out.println("Welcome to off-brand Chess.com\n");
         String message = "";
         while (!Objects.equals(message, "quit")){
-            if (!loggedIn) {
+            if (!this.loggedIn) {
                 message = mainMenu();
             } else {
                 message = loggedInMenu();
@@ -28,21 +30,24 @@ public class ChessClient {
         }
     }
 
-    public String mainMenu() throws ResponseException {
+    private String mainMenu() throws ResponseException {
         System.out.println();
         System.out.println("Main Menu:");
         System.out.println("   1 - Help");
         System.out.println("   2 - Quit");
         System.out.println("   3 - Login");
         System.out.println("   4 - Register");
-        System.out.println();
         return parseMainMenu(getInput());
     }
 
-    public String parseMainMenu(String input) throws ResponseException {
+    private String parseMainMenu(String input) throws ResponseException {
         if (input.contains("1")){
-            System.out.println("We're helping...");
             // print out some helpful material
+            System.out.println("Enter the corresponding menu number to " +
+                    "\n    quit the application, " +
+                    "\n    login to an existing account, " +
+                    "\n    or register a new user");
+            return "";
         } else if (input.contains("2")){
             System.out.println("We're quitting...");
             // quit the system
@@ -53,7 +58,14 @@ public class ChessClient {
             System.out.println("Password: ");
             String password = getInput();
             // check the credentials
-            loggedIn = true;
+            try {
+                AuthData authData = server.login(username, password);
+                this.authToken = authData.authToken();
+                System.out.println("Logged in successfully!");
+                this.loggedIn = true;
+            } catch (Exception ex) {
+                System.out.println("Could not log in the user with that username and password");
+            }
         } else if (input.contains("4")){
             System.out.println("Email: ");
             String email = getInput();
@@ -64,8 +76,10 @@ public class ChessClient {
 
             // run the register endpoint
             try {
-                server.register(username, password, email);
-                loggedIn = true;
+                AuthData authData = server.register(username, password, email);
+                this.authToken = authData.authToken();
+                System.out.println("Registered successfully!");
+                this.loggedIn = true;
             } catch (Exception ex) {
                 System.out.println("Could not register the user with that username and password");
             }
@@ -73,12 +87,12 @@ public class ChessClient {
         return "";
     }
 
-    public String getInput(){
+    private String getInput(){
         Scanner myScanner = new Scanner(System.in);
         return myScanner.nextLine();
     }
 
-    public String loggedInMenu(){
+    private String loggedInMenu(){
         System.out.println();
         System.out.println("   1 - Help");
         System.out.println("   2 - Logout");
@@ -86,18 +100,28 @@ public class ChessClient {
         System.out.println("   4 - List Games");
         System.out.println("   5 - Play Game");
         System.out.println("   6 - Observe Game");
-        System.out.println("\n");
         return parseLoggedInMenu(getInput());
     }
 
-    public String parseLoggedInMenu(String input){
+    private String parseLoggedInMenu(String input){
         if (input.contains("1")){
-            System.out.println("We're helping...");
+            System.out.println("Enter the corresponding menu number to " +
+                    "\n    log out of the application, " +
+                    "\n    create a new chess game, " +
+                    "\n    view existing chess games," +
+                    "\n    join an existing chess game," +
+                    "\n    or observe an existing chess game");
             // print out some helpful material
+            return "";
         } else if (input.contains("2")){
             System.out.println("We're logging out...");
             // log out the user
-            loggedIn = false;
+            try {
+                server.logout(this.authToken);
+                this.loggedIn = false;
+            } catch (Exception ex){
+                System.out.println("The user could not be logged out of the system"+ex.getMessage());
+            }
             return "logged out";
         } else if (input.contains("3")){
             // create a game

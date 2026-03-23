@@ -2,9 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
-import model.AuthData;
-import model.GameID;
-import model.UserData;
+import model.*;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -33,14 +31,17 @@ public class ServerFacade {
         return handleResponse(response, AuthData.class);
     }
 
-    public GameID createGame(String gameName, String authToken) throws ResponseException{
+    public void createGame(String gameName, String authToken) throws ResponseException{
+        GameRequest gameRequest = new GameRequest(gameName, null);
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + "/game"))
-                .method("POST", makeRequestBody(gameName));
+                .method("POST", makeRequestBody(gameRequest));
+        request.setHeader("Content-Type", "application/json");
         request.setHeader("authorization", authToken);
-        var response = sendRequest(request.build());
-        return handleResponse(response, GameID.class);
+        sendRequest(request.build());
+//        return handleResponse(response, GameID.class);
     }
+
     public void logout(String authToken) throws ResponseException{
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + "/session"))

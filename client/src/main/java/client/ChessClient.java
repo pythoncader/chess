@@ -118,13 +118,21 @@ public class ChessClient {
             // log out the user
             try {
                 server.logout(this.authToken);
+                this.authToken = "";
                 this.loggedIn = false;
             } catch (Exception ex){
-                System.out.println("The user could not be logged out of the system"+ex.getMessage());
+                System.out.println("The user could not be logged out of the system");
             }
             return "logged out";
         } else if (input.contains("3")){
             // create a game
+            System.out.println("Please enter a name for your game:");
+            String gameName = getInput();
+            try {
+                server.createGame(gameName, this.authToken);
+            } catch (Exception ex){
+                System.out.println("Invalid game name");
+            }
         } else if (input.contains("4")){
             // list games
         } else if (input.contains("5")){

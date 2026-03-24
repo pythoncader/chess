@@ -172,8 +172,6 @@ public class ChessClient {
                     server.addToGame(latestGames.get(gameNum).gameID(), colorChoice, this.authToken);
                     ChessBoard board = desiredGame.getBoard();
                     // play game
-//                ChessBoard board = new ChessBoard();
-//                board.resetBoard();
                     System.out.println("\n\n          "+latestGames.get(gameNum).gameName());
                     DrawChessBoard myDrawer = new DrawChessBoard();
                     myDrawer.drawBoard(colorChoice, board);

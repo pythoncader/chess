@@ -23,9 +23,7 @@ public class ChessHandler {
             AuthData response = myService.register(registerRequest);
             ctx.result(gson.toJson(response));
         } catch (DataAccessException ex){
-            ctx.status(ex.getErrorCode());
-            ErrorMessage errorResponse = new ErrorMessage(ex.getMessage(), ex.getErrorCode());
-            ctx.result(gson.toJson(errorResponse));
+            throwErrorThroughJson(ctx, ex);
         }
     }
 
@@ -36,10 +34,14 @@ public class ChessHandler {
             AuthData response = myService.login(loginRequest);
             ctx.result(gson.toJson(response));
         } catch (DataAccessException ex){
-            ctx.status(ex.getErrorCode());
-            ErrorMessage errorResponse = new ErrorMessage(ex.getMessage(), ex.getErrorCode());
-            ctx.result(gson.toJson(errorResponse));
+            throwErrorThroughJson(ctx, ex);
         }
+    }
+
+    private void throwErrorThroughJson(Context ctx, DataAccessException ex) {
+        ctx.status(ex.getErrorCode());
+        ErrorMessage errorResponse = new ErrorMessage(ex.getMessage(), ex.getErrorCode());
+        ctx.result(gson.toJson(errorResponse));
     }
 
     public void logoutUser(Context ctx) {
@@ -50,9 +52,7 @@ public class ChessHandler {
                 ctx.result("{}");
             }
         } catch (DataAccessException ex) {
-            ctx.status(ex.getErrorCode());
-            ErrorMessage errorResponse = new ErrorMessage(ex.getMessage(), ex.getErrorCode());
-            ctx.result(gson.toJson(errorResponse));
+            throwErrorThroughJson(ctx, ex);
         }
     }
 
@@ -62,9 +62,7 @@ public class ChessHandler {
             myService.clear();
             ctx.result("{}");
         } catch (DataAccessException ex){
-            ctx.status(ex.getErrorCode());
-            ErrorMessage errorResponse = new ErrorMessage(ex.getMessage(), ex.getErrorCode());
-            ctx.result(gson.toJson(errorResponse));
+            throwErrorThroughJson(ctx, ex);
         }
     }
 
@@ -78,9 +76,7 @@ public class ChessHandler {
                 ctx.result(gson.toJson(newGameID));
             }
         } catch (DataAccessException ex){
-            ctx.status(ex.getErrorCode());
-            ErrorMessage errorResponse = new ErrorMessage(ex.getMessage(), ex.getErrorCode());
-            ctx.result(gson.toJson(errorResponse));
+            throwErrorThroughJson(ctx, ex);
         }
     }
 
@@ -93,9 +89,7 @@ public class ChessHandler {
                 ctx.result(gson.toJson(myGames));
             }
         } catch (DataAccessException ex){
-            ctx.status(ex.getErrorCode());
-            ErrorMessage errorResponse = new ErrorMessage(ex.getMessage(), ex.getErrorCode());
-            ctx.result(gson.toJson(errorResponse));
+            throwErrorThroughJson(ctx, ex);
         }
     }
 
@@ -109,9 +103,7 @@ public class ChessHandler {
                 ctx.result("{}");
             }
         } catch (DataAccessException ex){
-            ctx.status(ex.getErrorCode());
-            ErrorMessage errorResponse = new ErrorMessage(ex.getMessage(), ex.getErrorCode());
-            ctx.result(gson.toJson(errorResponse));
+            throwErrorThroughJson(ctx, ex);
         }
     }
 }

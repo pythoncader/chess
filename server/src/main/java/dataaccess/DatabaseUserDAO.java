@@ -208,20 +208,6 @@ public class DatabaseUserDAO implements UserDAO{
         }
     }
 
-    private static void removeGameObject(ArrayList<GameData> gameDataList, ArrayList<GameData> gameList) {
-        for (GameData dataGame : gameDataList) {
-            gameList.add(
-                    new GameData(
-                            dataGame.gameID(),
-                            dataGame.whiteUsername(),
-                            dataGame.blackUsername(),
-                            dataGame.gameName(),
-                            null
-                    )
-            );
-        }
-    }
-
     private String getUsername(String authToken) throws DataAccessException{
         var statement = "SELECT username FROM authTokens WHERE authToken=?";
         try (Connection conn = DatabaseManager.getConnection();

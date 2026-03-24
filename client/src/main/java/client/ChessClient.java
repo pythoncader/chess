@@ -9,7 +9,6 @@ import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.ListofGames;
-import server.ServerFacade;
 import ui.*;
 
 public class ChessClient {

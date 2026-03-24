@@ -28,13 +28,13 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void RegisterPositive() throws Exception {
+    public void registerPositive() throws Exception {
         AuthData authData;
         authData = facade.register("RegisterPositive", "password", "p1@email.com");
         Assertions.assertTrue(authData.authToken().length() > 10);
     }
 
-    @Test public void RegisterNegative() throws Exception {
+    @Test public void registerNegative() throws Exception {
         assertThrows(Exception.class, () -> facade.register(null, null, null));
     }
 

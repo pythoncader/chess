@@ -13,8 +13,8 @@ public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
     private final String serverUrl;
 
-    public ServerFacade(String url) {
-        serverUrl = url;
+    public ServerFacade(int port) {
+        this.serverUrl = "http://localhost:"+port;
     }
 
     public AuthData register(String username, String password, String email) throws ResponseException{
@@ -34,7 +34,7 @@ public class ServerFacade {
     public void createGame(String gameName, String authToken) throws ResponseException{
         GameRequest gameRequest = new GameRequest(gameName, null);
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(serverUrl + "/game"))
+                .uri(URI.create(this.serverUrl + "/game"))
                 .method("POST", makeRequestBody(gameRequest));
         request.setHeader("Content-Type", "application/json");
         request.setHeader("authorization", authToken);
@@ -45,7 +45,7 @@ public class ServerFacade {
     public void addToGame(int gameID, String colorChoice, String authToken) throws ResponseException{
         JoinRequest joinRequest = new JoinRequest(authToken, colorChoice, gameID);
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(serverUrl + "/game"))
+                .uri(URI.create(this.serverUrl + "/game"))
                 .method("PUT", makeRequestBody(joinRequest));
         request.setHeader("Content-Type", "application/json");
         request.setHeader("authorization", authToken);
@@ -58,7 +58,7 @@ public class ServerFacade {
 
     public ListofGames listGames(String authToken) throws ResponseException{
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(serverUrl + "/game"))
+                .uri(URI.create(this.serverUrl + "/game"))
                 .method("GET", makeRequestBody(null));
         request.setHeader("authorization", authToken);
         var response = sendRequest(request.build());
@@ -67,10 +67,14 @@ public class ServerFacade {
 
     public void logout(String authToken) throws ResponseException{
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(serverUrl + "/session"))
+                .uri(URI.create(this.serverUrl + "/session"))
                 .method("DELETE", makeRequestBody(null));
         request.setHeader("authorization", authToken);
-        sendRequest(request.build());
+        var response = sendRequest(request.build());
+        var myError = new Gson().fromJson(response.body(), ErrorMessage.class);
+        if (myError.status() != 200 && myError.status() != 0){
+            throw new ResponseException(ResponseException.fromHttpStatusCode(myError.status()), myError.message());
+        }
     }
 
     private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
@@ -96,7 +100,7 @@ public class ServerFacade {
 
     private HttpRequest buildRequest(String method, String path, Object body) {
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(serverUrl + path))
+                .uri(URI.create(this.serverUrl + path))
                 .method(method, makeRequestBody(body));
         if (body != null) {
             request.setHeader("Content-Type", "application/json");

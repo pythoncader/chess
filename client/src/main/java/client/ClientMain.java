@@ -5,13 +5,13 @@ import exception.ResponseException;
 
 public class ClientMain {
     public static void main(String[] args) {
-        String serverUrl = "http://localhost:8080";
+        int port = 8080;
         if (args.length == 1) {
-            serverUrl = args[0];
+            port = Integer.parseInt(args[0]);
         }
 
         try {
-            new ChessClient(serverUrl).run();
+            new ChessClient(port).run();
 
         } catch (ResponseException ex) {
             System.out.println(ex.code());

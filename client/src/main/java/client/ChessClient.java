@@ -17,8 +17,8 @@ public class ChessClient {
     private final ServerFacade server;
     private HashMap<Integer, GameData> latestGames = new HashMap<>();
 
-    public ChessClient(String serverUrl){
-        server = new ServerFacade(serverUrl);
+    public ChessClient(int port){
+        server = new ServerFacade(port);
     }
 
     public void run() throws ResponseException {

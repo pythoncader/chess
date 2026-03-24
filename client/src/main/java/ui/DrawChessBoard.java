@@ -15,7 +15,7 @@ public class DrawChessBoard {
 
     public static void drawBoard(String userColor, ChessBoard board){
         System.out.print(ERASE_SCREEN);
-        System.out.println("\n");
+//        System.out.println("\n");
         if (userColor.equals("WHITE")) {
             whitePerspective(board);
         } else {

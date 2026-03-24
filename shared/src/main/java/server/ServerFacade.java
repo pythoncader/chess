@@ -8,6 +8,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
@@ -40,6 +42,29 @@ public class ServerFacade {
         request.setHeader("authorization", authToken);
         sendRequest(request.build());
 //        return handleResponse(response, GameID.class);
+    }
+
+    public void addToGame(int gameID, String colorChoice, String authToken) throws ResponseException{
+        JoinRequest joinRequest = new JoinRequest(authToken, colorChoice, gameID);
+        var request = HttpRequest.newBuilder()
+                .uri(URI.create(serverUrl + "/game"))
+                .method("PUT", makeRequestBody(joinRequest));
+        request.setHeader("Content-Type", "application/json");
+        request.setHeader("authorization", authToken);
+        var response = sendRequest(request.build());
+        var myError = new Gson().fromJson(response.body(), ErrorMessage.class);
+        if (myError.status() != 200 && myError.status() != 0){
+            throw new ResponseException(ResponseException.fromHttpStatusCode(myError.status()), myError.message());
+        }
+    }
+
+    public ListofGames listGames(String authToken) throws ResponseException{
+        var request = HttpRequest.newBuilder()
+                .uri(URI.create(serverUrl + "/game"))
+                .method("GET", makeRequestBody(null));
+        request.setHeader("authorization", authToken);
+        var response = sendRequest(request.build());
+        return handleResponse(response, ListofGames.class);
     }
 
     public void logout(String authToken) throws ResponseException{

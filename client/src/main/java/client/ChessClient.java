@@ -2,11 +2,13 @@ package client;
 
 import chess.ChessBoard;
 
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
+import chess.ChessGame;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
+import model.ListofGames;
 import server.ServerFacade;
 import ui.*;
 
@@ -14,6 +16,8 @@ public class ChessClient {
     private boolean loggedIn = false;
     private String authToken = "";
     private final ServerFacade server;
+    private HashMap<Integer, GameData> latestGames = new HashMap<>();
+
     public ChessClient(String serverUrl){
         server = new ServerFacade(serverUrl);
     }
@@ -41,6 +45,10 @@ public class ChessClient {
     }
 
     private String parseMainMenu(String input) throws ResponseException {
+        if (input.length() > 1){
+            System.out.println("Please choose a menu number");
+            return "";
+        }
         if (input.contains("1")){
             // print out some helpful material
             System.out.println("Enter the corresponding menu number to " +
@@ -83,6 +91,8 @@ public class ChessClient {
             } catch (Exception ex) {
                 System.out.println("Could not register the user with that username and password");
             }
+        } else {
+            System.out.println("Invalid menu option");
         }
         return "";
     }
@@ -104,6 +114,10 @@ public class ChessClient {
     }
 
     private String parseLoggedInMenu(String input){
+        if (input.length() > 1){
+            System.out.println("Please choose a menu number");
+            return "";
+        }
         if (input.contains("1")){
             System.out.println("Enter the corresponding menu number to " +
                     "\n    log out of the application, " +
@@ -134,21 +148,87 @@ public class ChessClient {
                 System.out.println("Invalid game name");
             }
         } else if (input.contains("4")){
-            // list games
+            listGames();
         } else if (input.contains("5")){
-            // play game
-            ChessBoard board = new ChessBoard();
-            board.resetBoard();
-            DrawChessBoard myDrawer = new DrawChessBoard();
-            myDrawer.drawBoard("BLACK", board);
+            System.out.println("Which game do you want to join? (enter the game number)");
+            listGames();
+            try {
+                int gameNum = Integer.parseInt(getInput());
+                ChessGame desiredGame = latestGames.get(gameNum).game();
+                System.out.println("Would you like to join as the white or the black player?");
+
+                String colorChoice = "";
+                while (!colorChoice.equals("BLACK") && !colorChoice.equals("WHITE")) {
+                    colorChoice = getInput();
+                    if (colorChoice.contains("b") || colorChoice.contains("B")) {
+                        colorChoice = "BLACK";
+                    } else if (colorChoice.contains("w") || colorChoice.contains("W")) {
+                        colorChoice = "WHITE";
+                    } else {
+                        System.out.println("Please enter your choice of \"black\" or \"white\"");
+                    }
+                }
+
+                try {
+                    server.addToGame(latestGames.get(gameNum).gameID(), colorChoice, this.authToken);
+                    ChessBoard board = desiredGame.getBoard();
+                    // play game
+//                ChessBoard board = new ChessBoard();
+//                board.resetBoard();
+                    System.out.println("\n\n          "+latestGames.get(gameNum).gameName());
+                    DrawChessBoard myDrawer = new DrawChessBoard();
+                    myDrawer.drawBoard(colorChoice, board);
+                } catch (ResponseException ex){
+                    if (Objects.equals(ex.code(), ResponseException.Code.AlreadyTakenError)){
+                        System.out.println("Sorry, someone is already playing as the "+colorChoice.toLowerCase()+" player");
+                    } else {
+                        System.out.println("Could not add the user to the game");
+                    }
+                }
+            } catch (Exception ex){
+                System.out.println("Invalid game number");
+            }
+
         } else if (input.contains("6")){
             // observe game
-            ChessBoard board = new ChessBoard();
-            board.resetBoard();
-            DrawChessBoard myDrawer = new DrawChessBoard();
-            myDrawer.drawBoard("WHITE", board);
+            System.out.println("Which game do you want to observe? (enter the game number)");
+            listGames();
+            try {
+                int gameNum = Integer.parseInt(getInput());
+                ChessGame desiredGame = latestGames.get(gameNum).game();
+                ChessBoard board = desiredGame.getBoard();
+                System.out.println("\n\n          " + latestGames.get(gameNum).gameName());
+                DrawChessBoard myDrawer = new DrawChessBoard();
+                myDrawer.drawBoard("WHITE", board);
+            } catch (Exception ex){
+                System.out.println("Invalid game number");
+            }
+        } else {
+            System.out.println("Invalid menu option");
         }
         return "";
+    }
+
+    private void listGames() {
+        try {
+            if (this.latestGames != null) {
+                this.latestGames.clear();
+            }
+            ListofGames gameList = server.listGames(this.authToken);
+//                System.out.println(gameList.games());
+            int gameNum = 0;
+            if (gameList.games().isEmpty()){
+                System.out.println("There are no current games");
+            }
+            for (GameData game : gameList.games()){
+                gameNum++;
+                System.out.println("Game " + gameNum + ": \"" + game.gameName() + "\" - white player: "
+                        + game.whiteUsername() + ", black player: "+ game.blackUsername());
+                this.latestGames.put(gameNum, game);
+            }
+        } catch (Exception ex){
+            System.out.println("Could not list the games "+ex.getMessage());
+        }
     }
 
 }

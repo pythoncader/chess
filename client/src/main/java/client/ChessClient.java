@@ -5,6 +5,8 @@ import chess.ChessBoard;
 import java.util.*;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -16,6 +18,9 @@ public class ChessClient {
     private String authToken = "";
     private final ServerFacade server;
     private HashMap<Integer, GameData> latestGames = new HashMap<>();
+    private int currentGameNum = -1;
+    private String currentUserColor = "";
+    private HashMap<Integer, GameData> gamesOver = new HashMap<>();
 
     public ChessClient(int port){
         server = new ServerFacade(port);
@@ -152,8 +157,8 @@ public class ChessClient {
             System.out.println("Which game do you want to join? (enter the game number)");
             listGames();
             try {
-                int gameNum = Integer.parseInt(getInput());
-                ChessGame desiredGame = latestGames.get(gameNum).game();
+                this.currentGameNum = Integer.parseInt(getInput());
+                ChessGame desiredGame = latestGames.get(this.currentGameNum).game();
                 System.out.println("Would you like to join as the white or the black player?");
 
                 String colorChoice = "";
@@ -169,12 +174,14 @@ public class ChessClient {
                 }
 
                 try {
-                    server.addToGame(latestGames.get(gameNum).gameID(), colorChoice, this.authToken);
+                    server.addToGame(latestGames.get(this.currentGameNum).gameID(), colorChoice, this.authToken);
+                    this.currentUserColor = colorChoice;
                     ChessBoard board = desiredGame.getBoard();
                     // play game
-                    System.out.println("\n\n          "+latestGames.get(gameNum).gameName());
+                    System.out.println("\n\n          "+latestGames.get(this.currentGameNum).gameName());
                     DrawChessBoard myDrawer = new DrawChessBoard();
-                    myDrawer.drawBoard(colorChoice, board);
+                    myDrawer.drawBoard(colorChoice, board, null, null);
+                    gameMenu();
                 } catch (ResponseException ex){
                     if (Objects.equals(ex.code(), ResponseException.Code.AlreadyTakenError)){
                         System.out.println("Sorry, someone is already playing as the "+colorChoice.toLowerCase()+" player");
@@ -191,12 +198,8 @@ public class ChessClient {
             System.out.println("Which game do you want to observe? (enter the game number)");
             listGames();
             try {
-                int gameNum = Integer.parseInt(getInput());
-                ChessGame desiredGame = latestGames.get(gameNum).game();
-                ChessBoard board = desiredGame.getBoard();
-                System.out.println("\n\n          " + latestGames.get(gameNum).gameName());
-                DrawChessBoard myDrawer = new DrawChessBoard();
-                myDrawer.drawBoard("WHITE", board);
+                this.currentGameNum = Integer.parseInt(getInput());
+                drawGame("WHITE");
             } catch (Exception ex){
                 System.out.println("Invalid game number");
             }
@@ -204,6 +207,14 @@ public class ChessClient {
             System.out.println("Invalid menu option");
         }
         return "";
+    }
+
+    private void drawGame(String userColor) {
+        ChessGame desiredGame = latestGames.get(this.currentGameNum).game();
+        ChessBoard board = desiredGame.getBoard();
+        System.out.println("\n\n          " + latestGames.get(this.currentGameNum).gameName());
+        DrawChessBoard myDrawer = new DrawChessBoard();
+        myDrawer.drawBoard(userColor, board, null, null);
     }
 
     private void listGames() {
@@ -224,8 +235,106 @@ public class ChessClient {
                 this.latestGames.put(gameNum, game);
             }
         } catch (Exception ex){
-            System.out.println("Could not list the games "+ex.getMessage());
+            System.out.println("Could not list the games ");
         }
     }
 
+    private String gameMenu() {
+        System.out.println();
+        System.out.println("   1 - Help");
+        System.out.println("   2 - Redraw Chess Board");
+        System.out.println("   3 - Leave");
+        System.out.println("   4 - Make Move");
+        System.out.println("   5 - Resign");
+        System.out.println("   6 - Highlight Legal Moves");
+        return parseGameMenu(getInput());
+    }
+
+    private String parseGameMenu(String input){
+        if (input.length() > 1){
+            System.out.println("Please choose a menu number");
+            return "";
+        }
+        if (input.contains("1")){
+            // print out some helpful material
+            System.out.println("Enter the corresponding menu number to " +
+                    "\n    draw the chessboard again, " +
+                    "\n    leave the game, " +
+                    "\n    make a chess move in the game," +
+                    "\n    resign and forfeit the game," +
+                    "\n    or see all legal moves for a piece");
+            return "";
+        } else if (input.contains("2")){
+            // redraw the chess board
+            drawGame(this.currentUserColor);
+            gameMenu();
+        } else if (input.contains("3")){
+            // leave the game
+        } else if (input.contains("4")){
+            // make a chess move
+        } else if (input.contains("5")){
+            // resign the game
+            System.out.println("Are you sure you want to resign? (y/n)");
+            String choice = getInput();
+            if (choice.equals("y")){
+                System.out.println("You have quit the game");
+                gamesOver.put(this.latestGames.get(this.currentGameNum).gameID(), this.latestGames.get(this.currentGameNum));
+                // notify the other user that they have won the game
+            }
+        } else if (input.contains("6")){
+            // highlight the legal moves
+            System.out.println("Enter the piece location (e.g. c8):");
+            String pieceLocation = getInput();
+
+            while (pieceLocation.length() > 2
+                    | !chessColumnsWhite.containsKey(String.valueOf(pieceLocation.charAt(0)))
+                    | !Character.isDigit(pieceLocation.charAt(1))) {
+                System.out.println("Please enter a valid location on the chessboard");
+                pieceLocation = getInput();
+            }
+            try {
+                int col;
+                if (this.currentUserColor.equals("WHITE")) {
+                    col = chessColumnsWhite.get(String.valueOf(pieceLocation.charAt(0)));
+                } else {
+                    col = chessColumnsBlack.get(String.valueOf(pieceLocation.charAt(0)));
+                }
+                int row = Integer.parseInt(String.valueOf(pieceLocation.charAt(1)));
+                System.out.println("col: "+col+"\nrow: "+row);
+                ChessGame desiredGame = latestGames.get(this.currentGameNum).game();
+                ChessBoard board = desiredGame.getBoard();
+                ChessPosition piecePosition = new ChessPosition(row, col);
+
+                Collection<ChessPosition> possibleMoves = getValidMoves(desiredGame, piecePosition);
+
+                System.out.println("\n\n          " + latestGames.get(this.currentGameNum).gameName());
+                DrawChessBoard myDrawer = new DrawChessBoard();
+                myDrawer.drawBoard(this.currentUserColor, board, possibleMoves, piecePosition);
+                gameMenu();
+            } catch (Exception ex){
+                System.out.println("Invalid game number");
+            }
+        } else {
+            System.out.println("Invalid menu option");
+        }
+        return "";
+    }
+
+    private static Collection<ChessPosition> getValidMoves(ChessGame desiredGame, ChessPosition piecePosition) {
+        Collection<ChessMove> possibleChessMoves = desiredGame.validMoves(piecePosition);
+        if (possibleChessMoves != null){
+            Collection<ChessPosition> possibleMoves = new ArrayList<>();
+            for (ChessMove move : possibleChessMoves){
+                possibleMoves.add(move.getEndPosition());
+            }
+            System.out.println(possibleMoves);
+            return possibleMoves;
+        } else {
+            System.out.println("returned null");
+            return null;
+        }
+    }
+
+    private final Map<String, Integer> chessColumnsWhite = Map.of("a", 1, "b", 2, "c", 3, "d", 4, "e", 5, "f", 6, "g", 7, "h", 8);
+    private final Map<String, Integer> chessColumnsBlack = Map.of("a", 8, "b", 7, "c", 6, "d", 5, "e", 4, "f", 3, "g", 2, "h", 1);
 }

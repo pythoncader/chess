@@ -1,11 +1,9 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 import static chess.ChessPiece.PieceType.*;
@@ -13,31 +11,32 @@ import static ui.EscapeSequences.*;
 
 public class DrawChessBoard {
 
-    public static void drawBoard(String userColor, ChessBoard board){
+    public static void drawBoard(String userColor, ChessBoard board, Collection<ChessPosition> possibleMoves, ChessPosition piecePosition){
         System.out.print(ERASE_SCREEN);
 //        System.out.println("\n");
         if (userColor.equals("WHITE")) {
-            whitePerspective(board);
+            whitePerspective(board, possibleMoves, piecePosition);
         } else {
-            blackPerspective(board);
+            blackPerspective(board, possibleMoves, piecePosition);
         }
         System.out.print("\u001b[0m"); // clears all formatting after printing the game
+
     }
 
-    private static void blackPerspective(ChessBoard board) {
+    private static void blackPerspective(ChessBoard board, Collection<ChessPosition> possibleMoves, ChessPosition piecePosition) {
         drawHeaderBlack();
         for (int row = 1; row < 9; row=row+2){
-            drawRow(row, board, "WHITE");
-            drawRow(row+1, board, "GREEN");
+            drawRow(row, board, "WHITE", possibleMoves, piecePosition);
+            drawRow(row+1, board, "GREEN", possibleMoves, piecePosition);
         }
         drawHeaderBlack();
     }
 
-    private static void whitePerspective(ChessBoard board) {
+    private static void whitePerspective(ChessBoard board, Collection<ChessPosition> possibleMoves, ChessPosition piecePosition) {
         drawHeaderWhite();
         for (int row = 8; row > 0; row=row-2){
-            drawRow(row, board, "WHITE");
-            drawRow(row-1, board, "GREEN");
+            drawRow(row, board, "WHITE", possibleMoves, piecePosition);
+            drawRow(row-1, board, "GREEN", possibleMoves, piecePosition);
         }
         drawHeaderWhite();
     }
@@ -73,16 +72,17 @@ public class DrawChessBoard {
 
     private static void drawRectangle(String piece, String color) {
         String backgroundColor;
-        String textColor;
-        if (color.equals("green")){
-            backgroundColor = SET_BG_COLOR_GREEN;
-            textColor = SET_TEXT_COLOR_BLACK;
-        } else if (color.equals("gray")){
-            backgroundColor = SET_BG_COLOR_GRAY;
-            textColor = SET_TEXT_COLOR_BLACK;
-        } else {
-            backgroundColor = SET_BG_COLOR_DARK_GREY;
-            textColor = SET_TEXT_COLOR_GRAY;
+        String textColor = SET_TEXT_COLOR_BLACK;
+        switch (color) {
+            case "green" -> backgroundColor = SET_BG_COLOR_GREEN;
+            case "gray" -> backgroundColor = SET_BG_COLOR_GRAY;
+            case "highlighted gray" -> backgroundColor = SET_BG_COLOR_LIGHT_GREY;
+            case "highlighted green" -> backgroundColor = SET_BG_COLOR_DARK_GREEN;
+            case "yellow green", "yellow gray" -> backgroundColor = SET_BG_COLOR_YELLOW;
+            default -> {
+                backgroundColor = SET_BG_COLOR_DARK_GREY;
+                textColor = SET_TEXT_COLOR_GRAY;
+            }
         }
         System.out.print(backgroundColor);
         System.out.print(textColor);
@@ -94,7 +94,7 @@ public class DrawChessBoard {
         System.out.print(" ".repeat(1));
     }
 
-    private static void drawRow(int row, ChessBoard chessBoard, String startColor) {
+    private static void drawRow(int row, ChessBoard chessBoard, String startColor, Collection<ChessPosition> possibleMoves, ChessPosition piecePosition) {
         drawRectangle(Integer.toString(row), "other_gray");
         String currentColor;
         if (Objects.equals(startColor, "WHITE")){
@@ -103,10 +103,13 @@ public class DrawChessBoard {
             currentColor = "green";
         }
         ChessPiece currentPiece;
+        ChessPosition currentPosition;
         String myPiece = " ";
         ChessPiece.PieceType pieceType;
         for (int col = 1; col < 9; col++){
-            currentPiece = chessBoard.getPiece(new ChessPosition(row, col));
+            currentPosition = new ChessPosition(row, col);
+            currentColor = highlightSquare(possibleMoves, currentPosition, piecePosition, currentColor);
+            currentPiece = chessBoard.getPiece(currentPosition);
 
             if (currentPiece != null){
                 if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
@@ -152,10 +155,30 @@ public class DrawChessBoard {
         System.out.println();
     }
 
+    private static String highlightSquare(Collection<ChessPosition> possibleMoves, ChessPosition currentPosition, ChessPosition piecePosition, String currentColor) {
+        if (possibleMoves != null) {
+            if (possibleMoves.contains(currentPosition)) {
+//                System.out.println("hey guys we should be highlighting right now");
+                if (currentColor.equals("gray")) {
+                    currentColor = "highlighted gray";
+                } else if (currentColor.equals("green")) {
+                    currentColor = "highlighted green";
+                }
+            } else if (currentPosition.equals(piecePosition)){
+                if (currentColor.equals("gray")) {
+                    currentColor = "yellow gray";
+                } else if (currentColor.equals("green")) {
+                    currentColor = "yellow green";
+                }
+            }
+        }
+        return currentColor;
+    }
+
     private static String changeColor(String currentColor) {
-        if (currentColor.equals("green")){
+        if (currentColor.equals("green") || currentColor.equals("highlighted green") || currentColor.equals("yellow green")){
             currentColor = "gray";
-        } else if (currentColor.equals("gray")){
+        } else if (currentColor.equals("gray") || currentColor.equals("highlighted gray") || currentColor.equals("yellow gray")){
             currentColor = "green";
         }
         return currentColor;

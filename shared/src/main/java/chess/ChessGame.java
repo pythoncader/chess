@@ -58,14 +58,9 @@ public class ChessGame {
         Collection<ChessMove> myValidMoves = new ArrayList<>(List.of());
 
         for (ChessMove move : potentialMoves){
-            System.out.println("This is my board (before the potential move):");
-            System.out.println(newBoard);
             ChessPiece whatWasThere = newBoard.getPiece(move.getEndPosition());
             newBoard.addPiece(move.getEndPosition(), new ChessPiece(myPiece.getTeamColor(), myPiece.getPieceType()));
             newBoard.addPiece(move.getStartPosition(), null);
-            System.out.println("This is my board (after the potential move):");
-            System.out.println(newBoard);
-            System.out.printf("Is %s in check? %s%n\n\n", myPiece.getTeamColor(), isInCheck(myPiece.getTeamColor()));
             if (!isInCheck(myPiece.getTeamColor())){
                 myValidMoves.add(move);
             }
@@ -82,7 +77,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        System.out.println(myBoard);
+//        System.out.println(myBoard);
         ChessPiece myPiece = myBoard.getPiece(move.getStartPosition());
         if (myPiece != null){
             if (myPiece.getTeamColor() != this.currentTurn){

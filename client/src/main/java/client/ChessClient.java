@@ -7,23 +7,28 @@ import java.util.*;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
+import client.websocket.MessageHandler;
+import client.websocket.WebSocketFacade;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.ListofGames;
 import ui.*;
+import websocket.messages.ServerMessage;
 
-public class ChessClient {
+public class ChessClient implements MessageHandler {
     private boolean loggedIn = false;
     private String authToken = "";
     private final ServerFacade server;
+    private final WebSocketFacade ws;
     private HashMap<Integer, GameData> latestGames = new HashMap<>();
     private int currentGameNum = -1;
     private String currentUserColor = "";
     private HashMap<Integer, GameData> gamesOver = new HashMap<>();
 
-    public ChessClient(int port){
+    public ChessClient(int port) throws ResponseException {
         server = new ServerFacade(port);
+        ws = new WebSocketFacade(port, this);
     }
 
     public void run() throws ResponseException {
@@ -338,4 +343,9 @@ public class ChessClient {
 
     private final Map<String, Integer> chessColumnsWhite = Map.of("a", 1, "b", 2, "c", 3, "d", 4, "e", 5, "f", 6, "g", 7, "h", 8);
     private final Map<String, Integer> chessColumnsBlack = Map.of("a", 8, "b", 7, "c", 6, "d", 5, "e", 4, "f", 3, "g", 2, "h", 1);
+
+    @Override
+    public void notify(ServerMessage message) {
+        System.out.println("Here is the message: "+message.getServerMessageType());
+    }
 }

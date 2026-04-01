@@ -12,7 +12,6 @@ public class ClientMain {
 
         try {
             new ChessClient(port).run();
-
         } catch (ResponseException ex) {
             System.out.println(ex.code());
             System.out.printf("Unable to start server: %s%n", ex.getMessage());

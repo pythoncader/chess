@@ -61,7 +61,7 @@ public class ChessClient {
                     "\n    or register a new user");
             return "";
         } else if (input.contains("2")){
-            System.out.println("We're quitting...");
+            System.out.println("Quitting...");
             // quit the system
             return "quit";
         } else if (input.contains("3")){
@@ -132,7 +132,7 @@ public class ChessClient {
             // print out some helpful material
             return "";
         } else if (input.contains("2")){
-            System.out.println("We're logging out...");
+            System.out.println("Logging out...");
             // log out the user
             try {
                 server.logout(this.authToken);
@@ -279,6 +279,7 @@ public class ChessClient {
             if (choice.equals("y")){
                 System.out.println("You have quit the game");
                 gamesOver.put(this.latestGames.get(this.currentGameNum).gameID(), this.latestGames.get(this.currentGameNum));
+                this.latestGames.get(this.currentGameNum).game().setTeamTurn(ChessGame.TeamColor.NONE);
                 // notify the other user that they have won the game
             }
         } else if (input.contains("6")){

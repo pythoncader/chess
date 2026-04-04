@@ -15,6 +15,6 @@ public interface UserDAO {
     int makeNewGame(String gameName, String authToken) throws DataAccessException;
 
     ArrayList<GameData> listGames(String authToken) throws DataAccessException;
-
+    String getUsername(String authToken) throws DataAccessException;
     void addToGame(String authToken, String playerColor, int gameID) throws DataAccessException;
 }

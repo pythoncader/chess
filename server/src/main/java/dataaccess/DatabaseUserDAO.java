@@ -208,7 +208,7 @@ public class DatabaseUserDAO implements UserDAO{
         }
     }
 
-    private String getUsername(String authToken) throws DataAccessException{
+    public String getUsername(String authToken) throws DataAccessException{
         var statement = "SELECT username FROM authTokens WHERE authToken=?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement)) {

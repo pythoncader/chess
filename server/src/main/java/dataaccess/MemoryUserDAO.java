@@ -3,6 +3,10 @@ package dataaccess;
 import chess.ChessGame;
 import model.GameData;
 import model.UserData;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.*;
 
 public class MemoryUserDAO implements UserDAO{
@@ -172,5 +176,9 @@ public class MemoryUserDAO implements UserDAO{
         } else {
             throw new DataAccessException("Error: unauthorized", 401);
         }
+    }
+
+    public String getUsername(String authToken) {
+        return authTokens.get(authToken);
     }
 }

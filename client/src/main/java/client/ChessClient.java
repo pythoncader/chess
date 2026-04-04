@@ -7,7 +7,7 @@ import java.util.*;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
-import client.websocket.MessageHandler;
+import client.websocket.ServerMessageHandler;
 import client.websocket.WebSocketFacade;
 import exception.ResponseException;
 import model.AuthData;
@@ -16,19 +16,21 @@ import model.ListofGames;
 import ui.*;
 import websocket.messages.ServerMessage;
 
-public class ChessClient implements MessageHandler {
+
+public class ChessClient implements ServerMessageHandler {
+    private final int port;
     private boolean loggedIn = false;
     private String authToken = "";
     private final ServerFacade server;
-    private final WebSocketFacade ws;
+    private WebSocketFacade ws = null;
     private HashMap<Integer, GameData> latestGames = new HashMap<>();
     private int currentGameNum = -1;
     private String currentUserColor = "";
     private HashMap<Integer, GameData> gamesOver = new HashMap<>();
 
     public ChessClient(int port) throws ResponseException {
+        this.port = port;
         server = new ServerFacade(port);
-        ws = new WebSocketFacade(port, this);
     }
 
     public void run() throws ResponseException {
@@ -111,6 +113,9 @@ public class ChessClient implements MessageHandler {
         return myScanner.nextLine();
     }
 
+
+
+
     private String loggedInMenu(){
         System.out.println();
         System.out.println("   1 - Help");
@@ -159,6 +164,7 @@ public class ChessClient implements MessageHandler {
         } else if (input.contains("4")){
             listGames();
         } else if (input.contains("5")){
+            // join a game
             System.out.println("Which game do you want to join? (enter the game number)");
             listGames();
             try {
@@ -180,9 +186,12 @@ public class ChessClient implements MessageHandler {
 
                 try {
                     server.addToGame(latestGames.get(this.currentGameNum).gameID(), colorChoice, this.authToken);
+                    ws = new WebSocketFacade(port, this);
+                    ws.connectSocket(this.authToken, latestGames.get(this.currentGameNum).gameID());
+
                     this.currentUserColor = colorChoice;
                     ChessBoard board = desiredGame.getBoard();
-                    // play game
+
                     System.out.println("\n\n          "+latestGames.get(this.currentGameNum).gameName());
                     DrawChessBoard myDrawer = new DrawChessBoard();
                     myDrawer.drawBoard(colorChoice, board, null, null);
@@ -268,7 +277,7 @@ public class ChessClient implements MessageHandler {
                     "\n    make a chess move in the game," +
                     "\n    resign and forfeit the game," +
                     "\n    or see all legal moves for a piece");
-            return "";
+            gameMenu();
         } else if (input.contains("2")){
             // redraw the chess board
             drawGame(this.currentUserColor);
@@ -346,6 +355,6 @@ public class ChessClient implements MessageHandler {
 
     @Override
     public void notify(ServerMessage message) {
-        System.out.println("Here is the message: "+message.getServerMessageType());
+        System.out.println(message.getMessage());
     }
 }

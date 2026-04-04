@@ -1,8 +1,11 @@
 package server.websocket;
 
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
+import dataaccess.UserDAO;
 import io.javalin.websocket.*;
 import org.eclipse.jetty.websocket.api.Session;
+import server.Server;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -11,6 +14,11 @@ import java.io.IOException;
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
+    private final UserDAO DAO;
+
+    public WebSocketHandler(UserDAO DAO) {
+        this.DAO = DAO;
+    }
 
     @Override
     public void handleConnect(WsConnectContext ctx) {
@@ -23,8 +31,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (command.getCommandType()) {
-                case CONNECT -> enter(command.getAuthToken(), ctx.session);
-                case MAKE_MOVE -> exit(command.getAuthToken(), ctx.session);
+                case CONNECT -> joinGame(command.getAuthToken(), command.getGameID(), ctx.session);
+                case MAKE_MOVE -> exit(command.getAuthToken()+"4", ctx.session);
                 case LEAVE -> exit(command.getAuthToken()+"5", ctx.session);
                 case RESIGN -> exit(command.getAuthToken()+"6", ctx.session);
             }
@@ -38,16 +46,27 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Websocket closed");
     }
 
+
+    private void joinGame(String authToken, int gameID, Session session){
+        connections.add(session);
+        try {
+            var message = String.format("%s has joined the game", DAO.getUsername(authToken));
+            var notification = new ServerMessage(message, ServerMessage.ServerMessageType.LOAD_GAME);
+            connections.broadcast(session, notification); // I'll need to do something with the gameID to get the correct sessions that are linked to it
+        } catch (Exception ex){
+            System.out.println("Error getting the username or broadcasting the message");
+        }
+    }
     private void enter(String visitorName, Session session) throws IOException {
         connections.add(session);
 //        var message = String.format("%s is in the shop", visitorName);
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        var notification = new ServerMessage("", ServerMessage.ServerMessageType.NOTIFICATION);
         connections.broadcast(session, notification);
     }
 
     private void exit(String visitorName, Session session) throws IOException {
 //        var message = String.format("%s left the shop", visitorName);
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        var notification = new ServerMessage("", ServerMessage.ServerMessageType.NOTIFICATION);
         connections.broadcast(session, notification);
         connections.remove(session);
     }

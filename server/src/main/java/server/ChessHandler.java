@@ -8,12 +8,11 @@ import io.javalin.http.Context;
 import model.*;
 
 public class ChessHandler {
-//    UserDAO myDataAccess = new MemoryUserDAO();
-    UserDAO myDataAccess = new DatabaseUserDAO();
-    Service myService = new Service(myDataAccess);
+    Service myService;
     Gson gson = new Gson();
 
-    public ChessHandler() throws DataAccessException {
+    public ChessHandler(Service myService) throws DataAccessException {
+        this.myService = myService;
     }
 
     public void registerUser(Context ctx) {

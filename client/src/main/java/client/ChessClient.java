@@ -223,7 +223,7 @@ public class ChessClient implements ServerMessageHandler {
         return "";
     }
 
-    private void drawGame(String userColor) {
+    public void drawGame(String userColor) {
         ChessGame desiredGame = latestGames.get(this.currentGameNum).game();
         ChessBoard board = desiredGame.getBoard();
         System.out.println("\n\n          " + latestGames.get(this.currentGameNum).gameName());
@@ -292,9 +292,12 @@ public class ChessClient implements ServerMessageHandler {
             String choice = getInput();
             if (choice.equals("y")){
                 System.out.println("You have quit the game");
-                gamesOver.put(this.latestGames.get(this.currentGameNum).gameID(), this.latestGames.get(this.currentGameNum));
-                this.latestGames.get(this.currentGameNum).game().setTeamTurn(ChessGame.TeamColor.NONE);
-                // notify the other user that they have won the game
+                try {
+                    ws.resign(this.authToken, latestGames.get(this.currentGameNum).gameID());
+                } catch (Exception ex){
+                    System.out.println(ex.getMessage());
+                    // make this better!
+                }
             }
         } else if (input.contains("6")){
             // highlight the legal moves
@@ -354,7 +357,10 @@ public class ChessClient implements ServerMessageHandler {
     private final Map<String, Integer> chessColumnsBlack = Map.of("a", 8, "b", 7, "c", 6, "d", 5, "e", 4, "f", 3, "g", 2, "h", 1);
 
     @Override
-    public void notify(ServerMessage message) {
-        System.out.println(message.getMessage());
+    public void notify(ServerMessage notification) {
+        if (notification.getServerMessageType().equals(ServerMessage.ServerMessageType.LOAD_GAME)){
+            drawGame(this.currentUserColor);
+        }
+        System.out.println(notification.getMessage());
     }
 }

@@ -34,7 +34,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case CONNECT -> joinGame(command.getAuthToken(), command.getGameID(), ctx.session);
                 case MAKE_MOVE -> exit(command.getAuthToken()+"4", ctx.session);
                 case LEAVE -> exit(command.getAuthToken()+"5", ctx.session);
-                case RESIGN -> exit(command.getAuthToken()+"6", ctx.session);
+                case RESIGN -> resignGame(command.getAuthToken(), command.getGameID(), ctx.session);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -57,12 +57,18 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             System.out.println("Error getting the username or broadcasting the message");
         }
     }
-    private void enter(String visitorName, Session session) throws IOException {
+
+    private void resignGame(String authToken, int gameID, Session session){
         connections.add(session);
-//        var message = String.format("%s is in the shop", visitorName);
-        var notification = new ServerMessage("", ServerMessage.ServerMessageType.NOTIFICATION);
-        connections.broadcast(session, notification);
+        try {
+            var message = String.format("%s has resigned from the game. You win!", DAO.getUsername(authToken));
+            var notification = new ServerMessage(message, ServerMessage.ServerMessageType.NOTIFICATION);
+            connections.broadcast(session, notification); // I'll need to do something with the gameID to get the correct sessions that are linked to it
+        } catch (Exception ex){
+            System.out.println("Error getting the username or broadcasting the message");
+        }
     }
+
 
     private void exit(String visitorName, Session session) throws IOException {
 //        var message = String.format("%s left the shop", visitorName);

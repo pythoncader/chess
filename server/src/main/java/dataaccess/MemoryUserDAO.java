@@ -1,6 +1,8 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import model.GameData;
 import model.UserData;
@@ -152,6 +154,25 @@ public class MemoryUserDAO implements UserDAO{
             chessGames.put(gameID, myGameData);
         }
     }
+
+    @Override
+    public void makeMove(String authToken, int gameID, ChessMove move) throws InvalidMoveException {
+        if (authTokens.containsKey(authToken)) {
+            GameData oldGameData = chessGames.get(gameID);
+            ChessGame newGame = oldGameData.game();
+            newGame.makeMove(move);
+
+            GameData myGameData = new GameData(
+                    gameID,
+                    oldGameData.whiteUsername(),
+                    oldGameData.blackUsername(),
+                    oldGameData.gameName(),
+                    newGame
+            );
+            chessGames.put(gameID, myGameData);
+        }
+    }
+
 
     @Override
     public void addToGame(String authToken, String playerColor, int gameID, boolean leave) throws DataAccessException {

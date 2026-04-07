@@ -1,5 +1,7 @@
 package dataaccess;
 
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import model.GameData;
 import model.UserData;
 
@@ -18,4 +20,6 @@ public interface UserDAO {
     String getUsername(String authToken) throws DataAccessException;
     void addToGame(String authToken, String playerColor, int gameID, boolean leave) throws DataAccessException;
     void endGame(String authToken, int gameID) throws DataAccessException;
+
+    void makeMove(String authToken, int gameID, ChessMove chessMove) throws DataAccessException, InvalidMoveException;
 }

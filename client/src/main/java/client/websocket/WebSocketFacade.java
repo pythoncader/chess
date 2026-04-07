@@ -1,9 +1,13 @@
 package client.websocket;
 
+import chess.ChessGame;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import jakarta.websocket.*;
+import org.glassfish.grizzly.http.server.Response;
 import ui.DrawChessBoard;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -57,6 +61,24 @@ public class WebSocketFacade extends Endpoint{
             var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, playerColor);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex){
+            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+        }
+    }
+
+    public void observe(String authToken, int gameID) throws ResponseException {
+        try {
+            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, "NONE");
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException ex) {
+            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+        }
+    }
+
+    public void makeMove(String authToken, int gameID, String playerColor, ChessPosition startPosition, ChessPosition endPosition) throws ResponseException {
+        try {
+            var command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, playerColor, startPosition, endPosition);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException ex) {
             throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
         }
     }

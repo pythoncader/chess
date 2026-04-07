@@ -1,6 +1,9 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import model.GameData;
 import model.UserData;
@@ -248,6 +251,30 @@ public class DatabaseUserDAO implements UserDAO{
             GameData oldGameData = new Gson().fromJson(getChessGame(gameID), GameData.class);
             ChessGame newGame = oldGameData.game();
             newGame.setTeamTurn(ChessGame.TeamColor.NONE); // end the game
+
+            GameData myGameData = new GameData(
+                    gameID,
+                    oldGameData.whiteUsername(),
+                    oldGameData.blackUsername(),
+                    oldGameData.gameName(),
+                    newGame
+            );
+
+            String json = new Gson().toJson(myGameData);
+            System.out.println(json);
+            executeUpdate(statement, json, gameID);
+        }
+    }
+
+    @Override
+    public void makeMove(String authToken, int gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
+        if (isInTable(authToken, "authToken", "authTokens")) {
+            var statement = "UPDATE chessGames SET json = ? WHERE id=?";
+            GameData oldGameData = new Gson().fromJson(getChessGame(gameID), GameData.class);
+            ChessGame newGame = oldGameData.game();
+            System.out.println(newGame.getBoard().getPiece(new ChessPosition(2, 1)));
+            newGame.makeMove(move);
+            System.out.println(newGame.getBoard().getPiece(new ChessPosition(4, 1)));
 
             GameData myGameData = new GameData(
                     gameID,

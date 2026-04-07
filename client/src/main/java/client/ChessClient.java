@@ -162,11 +162,11 @@ public class ChessClient implements ServerMessageHandler {
                 System.out.println("Invalid game name");
             }
         } else if (input.contains("4")){
-            listGames();
+            listGames(true);
         } else if (input.contains("5")){
             // join a game
             System.out.println("Which game do you want to join? (enter the game number)");
-            listGames();
+            listGames(true);
             try {
                 this.currentGameNum = Integer.parseInt(getInput());
                 ChessGame desiredGame = latestGames.get(this.currentGameNum).game();
@@ -187,9 +187,9 @@ public class ChessClient implements ServerMessageHandler {
                 try {
                     server.addToGame(latestGames.get(this.currentGameNum).gameID(), colorChoice, this.authToken);
                     ws = new WebSocketFacade(port, this);
-                    ws.connectSocket(this.authToken, latestGames.get(this.currentGameNum).gameID());
-
                     this.currentUserColor = colorChoice;
+                    ws.connectSocket(this.authToken, latestGames.get(this.currentGameNum).gameID(), this.currentUserColor);
+
                     ChessBoard board = desiredGame.getBoard();
 
                     System.out.println("\n\n          "+latestGames.get(this.currentGameNum).gameName());
@@ -210,7 +210,7 @@ public class ChessClient implements ServerMessageHandler {
         } else if (input.contains("6")){
             // observe game
             System.out.println("Which game do you want to observe? (enter the game number)");
-            listGames();
+            listGames(true);
             try {
                 this.currentGameNum = Integer.parseInt(getInput());
                 drawGame("WHITE");
@@ -231,7 +231,7 @@ public class ChessClient implements ServerMessageHandler {
         myDrawer.drawBoard(userColor, board, null, null);
     }
 
-    private void listGames() {
+    private void listGames(boolean print) {
         try {
             if (this.latestGames != null) {
                 this.latestGames.clear();
@@ -240,12 +240,16 @@ public class ChessClient implements ServerMessageHandler {
 //                System.out.println(gameList.games());
             int gameNum = 0;
             if (gameList.games().isEmpty()){
-                System.out.println("There are no current games");
+                if (print) {
+                    System.out.println("There are no current games");
+                }
             }
             for (GameData game : gameList.games()){
                 gameNum++;
-                System.out.println("Game " + gameNum + ": \"" + game.gameName() + "\" - white player: "
-                        + game.whiteUsername() + ", black player: "+ game.blackUsername());
+                if (print) {
+                    System.out.println("Game " + gameNum + ": \"" + game.gameName() + "\" - white player: "
+                            + game.whiteUsername() + ", black player: " + game.blackUsername() + ", nextTurn: " + game.game().getTeamTurn());
+                }
                 this.latestGames.put(gameNum, game);
             }
         } catch (Exception ex){
@@ -298,14 +302,20 @@ public class ChessClient implements ServerMessageHandler {
             System.out.println("Are you sure you want to resign? (y/n)");
             String choice = getInput();
             if (choice.equals("y")){
-                System.out.println("You have quit the game");
-                try {
-                    ws.resign(this.authToken, latestGames.get(this.currentGameNum).gameID());
-                } catch (Exception ex){
-                    System.out.println(ex.getMessage());
-                    // make this better!
+                listGames(false); // update the list of latest games so that it is up to date
+                if (latestGames.get(this.currentGameNum).game().getTeamTurn() != ChessGame.TeamColor.NONE) {
+                    System.out.println("You have quit the game");
+                    try {
+                        ws.resign(this.authToken, latestGames.get(this.currentGameNum).gameID());
+                    } catch (Exception ex) {
+                        System.out.println(ex.getMessage());
+                        // make this better!
+                    }
+                } else {
+                    System.out.println("The game is already over, you cannot resign!");
                 }
             }
+            gameMenu();
         } else if (input.contains("6")){
             // highlight the legal moves
             System.out.println("Enter the piece location (e.g. c8):");

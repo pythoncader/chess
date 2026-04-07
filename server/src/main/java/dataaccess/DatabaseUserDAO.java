@@ -242,6 +242,28 @@ public class DatabaseUserDAO implements UserDAO{
     }
 
     @Override
+    public void endGame(String authToken, int gameID) throws DataAccessException{
+        if (isInTable(authToken, "authToken", "authTokens")) {
+            var statement = "UPDATE chessGames SET json = ? WHERE id=?";
+            GameData oldGameData = new Gson().fromJson(getChessGame(gameID), GameData.class);
+            ChessGame newGame = oldGameData.game();
+            newGame.setTeamTurn(ChessGame.TeamColor.NONE); // end the game
+
+            GameData myGameData = new GameData(
+                    gameID,
+                    oldGameData.whiteUsername(),
+                    oldGameData.blackUsername(),
+                    oldGameData.gameName(),
+                    newGame
+            );
+
+            String json = new Gson().toJson(myGameData);
+            System.out.println(json);
+            executeUpdate(statement, json, gameID);
+        }
+    }
+
+    @Override
     public void addToGame(String authToken, String playerColor, int gameID, boolean leave) throws DataAccessException { // tested
         if (authToken == null
                 || authToken.isEmpty()

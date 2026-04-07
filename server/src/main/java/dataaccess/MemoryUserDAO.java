@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import model.GameData;
 import model.UserData;
 
@@ -131,6 +132,24 @@ public class MemoryUserDAO implements UserDAO{
             return gameList;
         } else {
             throw new DataAccessException("Error: unauthorized", 401);
+        }
+    }
+
+    @Override
+    public void endGame(String authToken, int gameID) {
+        if (authTokens.containsKey(authToken)) {
+            GameData oldGameData = chessGames.get(gameID);
+            ChessGame newGame = oldGameData.game();
+            newGame.setTeamTurn(ChessGame.TeamColor.NONE); // end the game
+
+            GameData myGameData = new GameData(
+                    gameID,
+                    oldGameData.whiteUsername(),
+                    oldGameData.blackUsername(),
+                    oldGameData.gameName(),
+                    newGame
+            );
+            chessGames.put(gameID, myGameData);
         }
     }
 

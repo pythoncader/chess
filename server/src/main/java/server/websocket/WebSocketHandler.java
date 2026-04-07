@@ -30,8 +30,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (command.getCommandType()) {
-                case CONNECT -> joinGame(command.getAuthToken(), command.getGameID(), ctx.session);
-                case MAKE_MOVE -> joinGame(command.getAuthToken()+"4", command.getGameID(), ctx.session);
+                case CONNECT -> joinGame(command.getAuthToken(), command.getGameID(), command.getPlayerColor(), ctx.session);
+                case MAKE_MOVE -> joinGame(command.getAuthToken()+"4", command.getGameID(), command.getPlayerColor(), ctx.session);
                 case LEAVE -> leaveGame(command.getAuthToken(), command.getGameID(), command.getPlayerColor(), ctx.session);
                 case RESIGN -> resignGame(command.getAuthToken(), command.getGameID(), ctx.session);
             }
@@ -46,10 +46,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
 
-    private void joinGame(String authToken, int gameID, Session session) throws IOException{
+    private void joinGame(String authToken, int gameID, String playerColor, Session session) throws IOException{
         connections.add(gameID, session);
         try {
-            var message = String.format("%s has joined the game", DAO.getUsername(authToken));
+            var message = String.format("%s has joined the game as " + playerColor, DAO.getUsername(authToken));
             var notification = new ServerMessage(message, ServerMessage.ServerMessageType.LOAD_GAME);
             connections.broadcast(gameID, session, notification); // I'll need to do something with the gameID to get the correct sessions that are linked to it
         } catch (Exception ex){
@@ -61,6 +61,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.add(gameID, session);
         try {
             var message = String.format("%s has resigned from the game. You win!", DAO.getUsername(authToken));
+            DAO.endGame(authToken, gameID);
             var notification = new ServerMessage(message, ServerMessage.ServerMessageType.NOTIFICATION);
             connections.broadcast(gameID, session, notification); // I'll need to do something with the gameID to get the correct sessions that are linked to it
         } catch (DataAccessException ex){

@@ -163,6 +163,7 @@ public class ChessClient implements ServerMessageHandler {
             }
         } else if (input.contains("4")){
             listGames(true);
+
         } else if (input.contains("5")){
             // join a game
             System.out.println("Which game do you want to join? (enter the game number)");

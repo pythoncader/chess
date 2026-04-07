@@ -242,7 +242,7 @@ public class DatabaseUserDAO implements UserDAO{
     }
 
     @Override
-    public void addToGame(String authToken, String playerColor, int gameID) throws DataAccessException { // tested
+    public void addToGame(String authToken, String playerColor, int gameID, boolean leave) throws DataAccessException { // tested
         if (authToken == null
                 || authToken.isEmpty()
                 || (!Objects.equals(playerColor, "BLACK") && !Objects.equals(playerColor, "WHITE"))
@@ -253,12 +253,16 @@ public class DatabaseUserDAO implements UserDAO{
             GameData oldGame = new Gson().fromJson(getChessGame(gameID), GameData.class);
 
             if (Objects.equals(playerColor, "BLACK")) {
-                if (oldGame.blackUsername() == null) {
+                if (oldGame.blackUsername() == null || leave) {
                     var statement = "UPDATE chessGames SET json = ? WHERE id=?";
+                    String newUsername = getUsername(authToken);
+                    if (leave){
+                        newUsername = null;
+                    }
                     GameData myGame = new GameData(
                             gameID,
                             oldGame.whiteUsername(),
-                            getUsername(authToken),
+                            newUsername,
                             oldGame.gameName(),
                             oldGame.game()
                     );
@@ -269,11 +273,15 @@ public class DatabaseUserDAO implements UserDAO{
                     throw new DataAccessException("Error: already taken", 403);
                 }
             } else {
-                if (oldGame.whiteUsername() == null) {
+                if (oldGame.whiteUsername() == null || leave) {
                     var statement = "UPDATE chessGames SET json = ? WHERE id=?";
+                    String newUsername = getUsername(authToken);
+                    if (leave){
+                        newUsername = null;
+                    }
                     GameData myGame = new GameData(
                             gameID,
-                            getUsername(authToken),
+                            newUsername,
                             oldGame.blackUsername(),
                             oldGame.gameName(),
                             oldGame.game()

@@ -5,22 +5,31 @@ import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<Session, Session> connections = new ConcurrentHashMap<>();
+    public final HashMap<Integer, Set<Session>> connections = new HashMap<>();
 
-    public void add(Session session) {
-        connections.put(session, session);
+
+    public void add(int gameID, Session session) {
+        if (connections.get(gameID) == null){
+            Set<Session> sessions = new HashSet<>();
+            sessions.add(session);
+            connections.put(gameID, sessions);
+        } else {
+            connections.get(gameID).add(session);
+        }
     }
 
-    public void remove(Session session) {
-        connections.remove(session);
+    public void remove(int gameID, Session session) {
+        connections.get(gameID).remove(session);
     }
 
-    public void broadcast(Session excludeSession, ServerMessage notification) throws IOException {
+    public void broadcast(int gameID, Session excludeSession, ServerMessage notification) throws IOException {
         String msg = new Gson().toJson(notification);
-        for (Session c : connections.values()) {
+        for (Session c : connections.get(gameID)) {
             if (c.isOpen()) {
                 if (!c.equals(excludeSession)) {
                     c.getRemote().sendString(msg);

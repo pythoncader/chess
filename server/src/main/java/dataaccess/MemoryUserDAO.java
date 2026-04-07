@@ -135,7 +135,7 @@ public class MemoryUserDAO implements UserDAO{
     }
 
     @Override
-    public void addToGame(String authToken, String playerColor, int gameID) throws DataAccessException {
+    public void addToGame(String authToken, String playerColor, int gameID, boolean leave) throws DataAccessException {
         if (authToken == null
                 || authToken.isEmpty()
                 || (!Objects.equals(playerColor, "BLACK") && !Objects.equals(playerColor, "WHITE"))
@@ -145,12 +145,16 @@ public class MemoryUserDAO implements UserDAO{
         if (authTokens.containsKey(authToken)) {
             GameData oldGame = chessGames.get(gameID);
             if (Objects.equals(playerColor, "BLACK")) {
-                if (oldGame.blackUsername() == null) {
+                if (oldGame.blackUsername() == null || leave) {
+                    String newUsername = authTokens.get(authToken);
+                    if (leave){
+                        newUsername = null;
+                    }
                     chessGames.put(gameID,
                             new GameData(
                                 oldGame.gameID(),
                                 oldGame.whiteUsername(),
-                                authTokens.get(authToken),
+                                newUsername,
                                 oldGame.gameName(),
                                 oldGame.game()
                             )
@@ -159,11 +163,15 @@ public class MemoryUserDAO implements UserDAO{
                     throw new DataAccessException("Error: already taken", 403);
                 }
             } else {
-                if (oldGame.whiteUsername() == null) {
+                if (oldGame.whiteUsername() == null || leave) {
+                    String newUsername = getUsername(authToken);
+                    if (leave){
+                        newUsername = null;
+                    }
                     chessGames.put(gameID,
                             new GameData(
                                 oldGame.gameID(),
-                                authTokens.get(authToken),
+                                newUsername,
                                 oldGame.blackUsername(),
                                 oldGame.gameName(),
                                 oldGame.game()

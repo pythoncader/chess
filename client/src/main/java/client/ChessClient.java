@@ -284,6 +284,13 @@ public class ChessClient implements ServerMessageHandler {
             gameMenu();
         } else if (input.contains("3")){
             // leave the game
+            System.out.println("You have left the game");
+            try {
+                ws.leave(this.authToken, latestGames.get(this.currentGameNum).gameID(), currentUserColor);
+            } catch (Exception ex){
+                System.out.println(ex.getMessage());
+                // make this better!
+            }
         } else if (input.contains("4")){
             // make a chess move
         } else if (input.contains("5")){

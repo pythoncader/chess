@@ -35,6 +35,6 @@ public class Service {
     }
 
     public void join(JoinRequest request) throws DataAccessException{
-        myDataAccess.addToGame(request.authToken(), request.playerColor(), request.gameID());
+        myDataAccess.addToGame(request.authToken(), request.playerColor(), request.gameID(), false);
     }
 }

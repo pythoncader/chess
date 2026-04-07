@@ -80,14 +80,14 @@ class DBDAOTest {
         expected.add(new GameData(id, null, null, "my_game", null));
         assertEquals(expected, myList.games());
 
-        dataAccessObject.addToGame(authToken1, "WHITE", id);
+        dataAccessObject.addToGame(authToken1, "WHITE", id, false);
         myArrayList = dataAccessObject.listGames(authToken1);
         myList = new ListofGames(myArrayList);
         expected = new ArrayList<>();
         expected.add(new GameData(id, "Cade", null, "my_game", null));
         assertEquals(expected, myList.games());
 
-        dataAccessObject.addToGame(authToken2, "BLACK", id);
+        dataAccessObject.addToGame(authToken2, "BLACK", id, false);
         myArrayList = dataAccessObject.listGames(authToken1);
         myList = new ListofGames(myArrayList);
         expected = new ArrayList<>();
@@ -101,11 +101,11 @@ class DBDAOTest {
         String authToken2 = dataAccessObject.createUser(new UserData("Jeremy", "my_password", "1@1.com"));
         int id = dataAccessObject.makeNewGame("my_game", authToken1);
 
-        dataAccessObject.addToGame(authToken1, "WHITE", id);
-        dataAccessObject.addToGame(authToken2, "BLACK", id);
+        dataAccessObject.addToGame(authToken1, "WHITE", id, false);
+        dataAccessObject.addToGame(authToken2, "BLACK", id, false);
 
         DataAccessException exception = assertThrows(DataAccessException.class, () ->
-                dataAccessObject.addToGame(authToken1, "WHITE/BLACK", id)
+                dataAccessObject.addToGame(authToken1, "WHITE/BLACK", id, false)
         );
         assertEquals("Error: bad request", exception.getMessage());
     }
@@ -303,7 +303,7 @@ class DBDAOTest {
         assertEquals(3, myArrayList.size());
 
         // this should not change how many games there are
-        dataAccessObject.addToGame(authToken, "WHITE", id);
+        dataAccessObject.addToGame(authToken, "WHITE", id, false);
         myArrayList = dataAccessObject.listGames(authToken);
         assertEquals(3, myArrayList.size());
 
@@ -314,8 +314,8 @@ class DBDAOTest {
         String authToken = dataAccessObject.createUser(new UserData("Cade", "hello", "different_email@123.com"));
         String authToken2 = dataAccessObject.createUser(new UserData("Jeremy", "hello", "different_email@123.com"));
         int id = dataAccessObject.makeNewGame("my_game", authToken);
-        dataAccessObject.addToGame(authToken, "WHITE", id);
-        dataAccessObject.addToGame(authToken2, "BLACK", id);
+        dataAccessObject.addToGame(authToken, "WHITE", id, false);
+        dataAccessObject.addToGame(authToken2, "BLACK", id, false);
 
         ArrayList<GameData> myArrayList = dataAccessObject.listGames(authToken);
         ListofGames myList = new ListofGames(myArrayList);
@@ -329,17 +329,17 @@ class DBDAOTest {
         String authToken = dataAccessObject.createUser(new UserData("Cade", "hello", "different_email@123.com"));
         String authToken2 = dataAccessObject.createUser(new UserData("Jeremy", "hello", "different_email@123.com"));
         int id = dataAccessObject.makeNewGame("my_game", authToken);
-        dataAccessObject.addToGame(authToken, "WHITE", id);
+        dataAccessObject.addToGame(authToken, "WHITE", id, false);
 
         // request to join in a place that is already taken
         DataAccessException exception = assertThrows(DataAccessException.class, () -> dataAccessObject.addToGame(
-                authToken2, "WHITE", id
+                authToken2, "WHITE", id, false
             )
         );
         assertEquals("Error: already taken", exception.getMessage());
 
         // request to join without authorization
-        exception = assertThrows(DataAccessException.class, () -> dataAccessObject.addToGame("no authentication", "BLACK", id));
+        exception = assertThrows(DataAccessException.class, () -> dataAccessObject.addToGame("no authentication", "BLACK", id, false));
         assertEquals("Error: unauthorized", exception.getMessage());
 
     }
@@ -349,14 +349,14 @@ class DBDAOTest {
         String authToken = dataAccessObject.createUser(new UserData("Cade", "hello", "different_email@123.com"));
         String authToken2 = dataAccessObject.createUser(new UserData("Jeremy", "hello", "different_email@123.com"));
         int id = dataAccessObject.makeNewGame("my_game", authToken);
-        dataAccessObject.addToGame(authToken, "WHITE", id);
+        dataAccessObject.addToGame(authToken, "WHITE", id, false);
 
         // request to join without a valid player color
-        DataAccessException exception = assertThrows(DataAccessException.class, () -> dataAccessObject.addToGame(authToken2, null, id));
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> dataAccessObject.addToGame(authToken2, null, id, false));
         assertEquals("Error: bad request", exception.getMessage());
 
         // request to join without an invalid game ID
-        exception = assertThrows(DataAccessException.class, () -> dataAccessObject.addToGame(authToken2, "BLACK", 0));
+        exception = assertThrows(DataAccessException.class, () -> dataAccessObject.addToGame(authToken2, "BLACK", 0, false));
         assertEquals("Error: bad request", exception.getMessage());
 
     }

@@ -26,8 +26,8 @@ public class DrawChessBoard {
     private static void blackPerspective(ChessBoard board, Collection<ChessPosition> possibleMoves, ChessPosition piecePosition) {
         drawHeaderBlack();
         for (int row = 1; row < 9; row=row+2){
-            drawRow(row, board, "WHITE", possibleMoves, piecePosition);
-            drawRow(row+1, board, "GREEN", possibleMoves, piecePosition);
+            drawRowBlack(row, board, "WHITE", possibleMoves, piecePosition);
+            drawRowBlack(row+1, board, "GREEN", possibleMoves, piecePosition);
         }
         drawHeaderBlack();
     }
@@ -35,8 +35,8 @@ public class DrawChessBoard {
     private static void whitePerspective(ChessBoard board, Collection<ChessPosition> possibleMoves, ChessPosition piecePosition) {
         drawHeaderWhite();
         for (int row = 8; row > 0; row=row-2){
-            drawRow(row, board, "WHITE", possibleMoves, piecePosition);
-            drawRow(row-1, board, "GREEN", possibleMoves, piecePosition);
+            drawRowWhite(row, board, "WHITE", possibleMoves, piecePosition);
+            drawRowWhite(row-1, board, "GREEN", possibleMoves, piecePosition);
         }
         drawHeaderWhite();
     }
@@ -94,13 +94,13 @@ public class DrawChessBoard {
         System.out.print(" ".repeat(1));
     }
 
-    private static void drawRow(
+    private static void drawRowWhite(
             int row,
             ChessBoard chessBoard,
             String startColor,
             Collection<ChessPosition> possibleMoves,
             ChessPosition piecePosition
-        )
+    )
     {
         drawRectangle(Integer.toString(row), "other_gray");
         String currentColor;
@@ -114,6 +114,74 @@ public class DrawChessBoard {
         String myPiece = " ";
         ChessPiece.PieceType pieceType;
         for (int col = 1; col < 9; col++){
+            currentPosition = new ChessPosition(row, col);
+            currentColor = highlightSquare(possibleMoves, currentPosition, piecePosition, currentColor);
+            currentPiece = chessBoard.getPiece(currentPosition);
+
+            if (currentPiece != null){
+                if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                    pieceType = currentPiece.getPieceType();
+                    if (pieceType == ChessPiece.PieceType.PAWN){
+                        myPiece = WHITE_PAWN;
+                    } else if (pieceType == ROOK){
+                        myPiece = WHITE_ROOK;
+                    } else if (pieceType == KNIGHT){
+                        myPiece = WHITE_KNIGHT;
+                    } else if (pieceType == BISHOP){
+                        myPiece = WHITE_BISHOP;
+                    } else if (pieceType == QUEEN){
+                        myPiece = WHITE_QUEEN;
+                    } else if (pieceType == KING) {
+                        myPiece = WHITE_KING;
+                    }
+                } else {
+                    pieceType = currentPiece.getPieceType();
+                    if (pieceType == ChessPiece.PieceType.PAWN){
+                        myPiece = BLACK_PAWN;
+                    } else if (pieceType == ROOK){
+                        myPiece = BLACK_ROOK;
+                    } else if (pieceType == KNIGHT){
+                        myPiece = BLACK_KNIGHT;
+                    } else if (pieceType == BISHOP){
+                        myPiece = BLACK_BISHOP;
+                    } else if (pieceType == QUEEN){
+                        myPiece = BLACK_QUEEN;
+                    } else if (pieceType == KING) {
+                        myPiece = BLACK_KING;
+                    }
+                }
+            } else {
+                myPiece = " ";
+            }
+
+            drawRectangle(myPiece, currentColor);
+            currentColor = changeColor(currentColor);
+        }
+        drawRectangle(Integer.toString(row), "other_gray");
+        System.out.print("\u001b[0m"); // clears formatting
+        System.out.println();
+    }
+
+    private static void drawRowBlack(
+            int row,
+            ChessBoard chessBoard,
+            String startColor,
+            Collection<ChessPosition> possibleMoves,
+            ChessPosition piecePosition
+    )
+    {
+        drawRectangle(Integer.toString(row), "other_gray");
+        String currentColor;
+        if (Objects.equals(startColor, "WHITE")){
+            currentColor = "gray";
+        } else {
+            currentColor = "green";
+        }
+        ChessPiece currentPiece;
+        ChessPosition currentPosition;
+        String myPiece = " ";
+        ChessPiece.PieceType pieceType;
+        for (int col = 8; col > 0; col--){
             currentPosition = new ChessPosition(row, col);
             currentColor = highlightSquare(possibleMoves, currentPosition, piecePosition, currentColor);
             currentPiece = chessBoard.getPiece(currentPosition);

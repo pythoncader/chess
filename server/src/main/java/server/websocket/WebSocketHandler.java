@@ -13,10 +13,10 @@ import java.io.IOException;
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
-    private final UserDAO DAO;
+    private final UserDAO dataAccess;
 
-    public WebSocketHandler(UserDAO DAO) {
-        this.DAO = DAO;
+    public WebSocketHandler(UserDAO dataAccess) {
+        this.dataAccess = dataAccess;
     }
 
     @Override
@@ -49,9 +49,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void joinGame(String authToken, int gameID, String playerColor, Session session) throws IOException{
         connections.add(gameID, session);
         try {
-            var message = String.format("%s has joined the game as " + playerColor, DAO.getUsername(authToken));
+            var message = String.format("%s has joined the game as " + playerColor, dataAccess.getUsername(authToken));
             var notification = new ServerMessage(message, ServerMessage.ServerMessageType.LOAD_GAME);
-            connections.broadcast(gameID, session, notification); // I'll need to do something with the gameID to get the correct sessions that are linked to it
+            connections.broadcast(gameID, session, notification);
         } catch (Exception ex){
             System.out.println("Error getting the username or broadcasting the message");
         }
@@ -60,10 +60,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void resignGame(String authToken, int gameID, Session session) throws IOException{
         connections.add(gameID, session);
         try {
-            var message = String.format("%s has resigned from the game. You win!", DAO.getUsername(authToken));
-            DAO.endGame(authToken, gameID);
+            var message = String.format("%s has resigned from the game. You win!", dataAccess.getUsername(authToken));
+            dataAccess.endGame(authToken, gameID);
             var notification = new ServerMessage(message, ServerMessage.ServerMessageType.NOTIFICATION);
-            connections.broadcast(gameID, session, notification); // I'll need to do something with the gameID to get the correct sessions that are linked to it
+            connections.broadcast(gameID, session, notification);
         } catch (DataAccessException ex){
             throw new IOException(ex.getMessage());
         }
@@ -72,11 +72,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void leaveGame(String authToken, int gameID, String playerColor, Session session) throws IOException{
         connections.add(gameID, session);
         try {
-            var message = String.format("%s has left the game", DAO.getUsername(authToken));
-            DAO.addToGame(authToken, playerColor, gameID, true);
+            var message = String.format("%s has left the game", dataAccess.getUsername(authToken));
+            dataAccess.addToGame(authToken, playerColor, gameID, true);
             connections.remove(gameID, session);
             var notification = new ServerMessage(message, ServerMessage.ServerMessageType.NOTIFICATION);
-            connections.broadcast(gameID, session, notification); // I'll need to do something with the gameID to get the correct sessions that are linked to it
+            connections.broadcast(gameID, session, notification);
         } catch (DataAccessException ex){
             throw new IOException(ex.getMessage());
         }

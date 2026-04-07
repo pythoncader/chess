@@ -94,7 +94,14 @@ public class DrawChessBoard {
         System.out.print(" ".repeat(1));
     }
 
-    private static void drawRow(int row, ChessBoard chessBoard, String startColor, Collection<ChessPosition> possibleMoves, ChessPosition piecePosition) {
+    private static void drawRow(
+            int row,
+            ChessBoard chessBoard,
+            String startColor,
+            Collection<ChessPosition> possibleMoves,
+            ChessPosition piecePosition
+        )
+    {
         drawRectangle(Integer.toString(row), "other_gray");
         String currentColor;
         if (Objects.equals(startColor, "WHITE")){
@@ -155,7 +162,13 @@ public class DrawChessBoard {
         System.out.println();
     }
 
-    private static String highlightSquare(Collection<ChessPosition> possibleMoves, ChessPosition currentPosition, ChessPosition piecePosition, String currentColor) {
+    private static String highlightSquare(
+            Collection<ChessPosition> possibleMoves,
+            ChessPosition currentPosition,
+            ChessPosition piecePosition,
+            String currentColor
+        )
+    {
         if (possibleMoves != null) {
             if (possibleMoves.contains(currentPosition)) {
 //                System.out.println("hey guys we should be highlighting right now");

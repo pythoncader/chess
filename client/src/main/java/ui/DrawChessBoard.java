@@ -151,28 +151,25 @@ public class DrawChessBoard {
         ChessPiece currentPiece;
         ChessPosition currentPosition;
         String myPiece = " ";
+        int start, end, step;
         if (identifier.equals("BLACK")) {
-            for (int col = 8; col > 0; col--) {
-                currentPosition = new ChessPosition(row, col);
-                currentColor = highlightSquare(possibleMoves, currentPosition, piecePosition, currentColor);
-                currentPiece = chessBoard.getPiece(currentPosition);
-
-                myPiece = getPieceString(currentPiece, myPiece);
-
-                drawRectangle(myPiece, currentColor);
-                currentColor = changeColor(currentColor);
-            }
+            start = 8;
+            end = 0;
+            step = -1;
         } else {
-            for (int col = 1; col < 9; col++){
-                currentPosition = new ChessPosition(row, col);
-                currentColor = highlightSquare(possibleMoves, currentPosition, piecePosition, currentColor);
-                currentPiece = chessBoard.getPiece(currentPosition);
+            start = 1;
+            end = 9;
+            step = 1;
+        }
+        for (int col = start; col != end; col+= step){
+            currentPosition = new ChessPosition(row, col);
+            currentColor = highlightSquare(possibleMoves, currentPosition, piecePosition, currentColor);
+            currentPiece = chessBoard.getPiece(currentPosition);
 
-                myPiece = getPieceString(currentPiece, myPiece);
+            myPiece = getPieceString(currentPiece, myPiece);
 
-                drawRectangle(myPiece, currentColor);
-                currentColor = changeColor(currentColor);
-            }
+            drawRectangle(myPiece, currentColor);
+            currentColor = changeColor(currentColor);
         }
         drawRectangle(Integer.toString(row), "other_gray");
         System.out.print("\u001b[0m"); // clears formatting

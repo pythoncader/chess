@@ -11,6 +11,8 @@ import model.AuthData;
 import model.GameData;
 import model.ListofGames;
 import ui.*;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
 
@@ -185,7 +187,7 @@ public class ChessClient implements ServerMessageHandler {
                     server.addToGame(latestGames.get(this.currentGameNum).gameID(), colorChoice, this.authToken);
                     ws = new WebSocketFacade(port, this);
                     this.currentUserColor = colorChoice;
-                    ws.connectSocket(this.authToken, latestGames.get(this.currentGameNum).gameID(), this.currentUserColor);
+                    ws.connectSocket(this.authToken, latestGames.get(this.currentGameNum).gameID());
 
                     drawGame(this.currentUserColor);
                     return "gameMenu";
@@ -299,7 +301,7 @@ public class ChessClient implements ServerMessageHandler {
             // leave the game
             System.out.println("You have left the game");
             try {
-                ws.leave(this.authToken, latestGames.get(this.currentGameNum).gameID(), currentUserColor);
+                ws.leave(this.authToken, latestGames.get(this.currentGameNum).gameID());
             } catch (ResponseException ex) {
                 System.out.println("There was a problem sending a message to the other users");
             }
@@ -483,17 +485,23 @@ public class ChessClient implements ServerMessageHandler {
         }
     }
     private final Map<String, Integer> chessColumns = Map.of("a", 1, "b", 2, "c", 3, "d", 4, "e", 5, "f", 6, "g", 7, "h", 8);
+
     @Override
     public void notify(ServerMessage notification) {
         listGames(false);
         if (notification.getServerMessageType().equals(ServerMessage.ServerMessageType.LOAD_GAME)) {
             listGames(false);
-            System.out.println("\n" + notification.getMessage());
+//            System.out.println("\n" + notification.getMessage());
             drawGame(this.currentUserColor);
             printGameMenu();
-        } else {
-            listGames(false);
-            System.out.println("\n" + notification.getMessage());
         }
+    }
+    public void notifyError(ErrorMessage notification) {
+        listGames(false);
+        System.out.println("\n" + notification.getMessage());
+    }
+    public void notifyLoadGame(LoadGameMessage notification){
+        listGames(false);
+        System.out.println("\n" + notification.getMessage());
     }
 }

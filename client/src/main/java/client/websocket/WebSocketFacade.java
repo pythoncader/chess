@@ -1,6 +1,7 @@
 package client.websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import com.google.gson.Gson;
@@ -32,7 +33,10 @@ public class WebSocketFacade extends Endpoint{
                 @Override
                 public void onMessage(String message) {
                     ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
-                    serverMessageHandler.notify(notification);
+                    if (notification.getServerMessageType() == ServerMessage.ServerMessageType.ERROR){
+                        serverMessageHandler.notify(notification);
+                    }
+
                 }
             });
 
@@ -41,9 +45,9 @@ public class WebSocketFacade extends Endpoint{
         }
     }
 
-    public void connectSocket(String authToken, int gameID, String playerColor) throws ResponseException {
+    public void connectSocket(String authToken, int gameID) throws ResponseException {
         try {
-            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, playerColor);
+            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex){
             throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
@@ -52,16 +56,16 @@ public class WebSocketFacade extends Endpoint{
 
     public void resign(String authToken, int gameID) throws ResponseException {
         try {
-            var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID, null);
+            var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex){
             throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
         }
     }
 
-    public void leave(String authToken, int gameID, String playerColor) throws ResponseException {
+    public void leave(String authToken, int gameID) throws ResponseException {
         try {
-            var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, playerColor);
+            var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex){
             throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
@@ -70,7 +74,7 @@ public class WebSocketFacade extends Endpoint{
 
     public void observe(String authToken, int gameID) throws ResponseException {
         try {
-            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, "NONE");
+            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
@@ -96,15 +100,13 @@ public class WebSocketFacade extends Endpoint{
                     default -> null;
                 };
             }
+            ChessMove myMove = new ChessMove(startPosition, endPosition, promotionPiece);
             var command = new MakeMoveCommand(
                     UserGameCommand.CommandType.MAKE_MOVE,
                     authToken,
                     gameID,
-                    playerColor,
                     moveString,
-                    startPosition,
-                    endPosition,
-                    promotionPiece);
+                    myMove);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the other users");

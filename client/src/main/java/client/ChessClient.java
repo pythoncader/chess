@@ -32,17 +32,18 @@ public class ChessClient implements ServerMessageHandler {
     public void run() throws ResponseException {
         System.out.println("Welcome to off-brand Chess.com\n");
         String message = "";
-        while (!Objects.equals(message, "quit")){
+        while (!Objects.equals(message, "quit")) {
             if (!this.loggedIn) {
                 message = mainMenu();
             } else {
                 message = loggedInMenu();
-                while (message.equals("gameMenu")){
+                while (message.equals("gameMenu")) {
                     message = gameMenu();
                 }
             }
         }
     }
+
     private String mainMenu() throws ResponseException {
         System.out.println();
         System.out.println("Main Menu:");
@@ -52,23 +53,24 @@ public class ChessClient implements ServerMessageHandler {
         System.out.println("   4 - Register");
         return parseMainMenu(getInput());
     }
+
     private String parseMainMenu(String input) throws ResponseException {
-        if (input.length() > 1){
+        if (input.length() > 1) {
             System.out.println("Please choose a menu number");
             mainMenu();
         }
-        if (input.contains("1")){
+        if (input.contains("1")) {
             // print out some helpful material
             System.out.println("Enter the corresponding menu number to " +
                     "\n    quit the application, " +
                     "\n    login to an existing account, " +
                     "\n    or register a new user");
             return "";
-        } else if (input.contains("2")){
+        } else if (input.contains("2")) {
             System.out.println("Quitting...");
             // quit the system
             return "quit";
-        } else if (input.contains("3")){
+        } else if (input.contains("3")) {
             System.out.println("Username: ");
             String username = getInput();
             System.out.println("Password: ");
@@ -82,7 +84,7 @@ public class ChessClient implements ServerMessageHandler {
             } catch (Exception ex) {
                 System.out.println("Could not log in the user with that username and password");
             }
-        } else if (input.contains("4")){
+        } else if (input.contains("4")) {
             System.out.println("Email: ");
             String email = getInput();
             System.out.println("Username: ");
@@ -104,11 +106,13 @@ public class ChessClient implements ServerMessageHandler {
         }
         return "";
     }
-    private String getInput(){
+
+    private String getInput() {
         Scanner myScanner = new Scanner(System.in);
         return myScanner.nextLine();
     }
-    private String loggedInMenu(){
+
+    private String loggedInMenu() {
         System.out.println();
         System.out.println("   1 - Help");
         System.out.println("   2 - Logout");
@@ -118,12 +122,13 @@ public class ChessClient implements ServerMessageHandler {
         System.out.println("   6 - Observe Game");
         return parseLoggedInMenu(getInput());
     }
-    private String parseLoggedInMenu(String input){
-        if (input.length() > 1){
+
+    private String parseLoggedInMenu(String input) {
+        if (input.length() > 1) {
             System.out.println("Please choose a menu number");
             loggedInMenu();
         }
-        if (input.contains("1")){
+        if (input.contains("1")) {
             System.out.println("Enter the corresponding menu number to " +
                     "\n    log out of the application, " +
                     "\n    create a new chess game, " +
@@ -132,31 +137,31 @@ public class ChessClient implements ServerMessageHandler {
                     "\n    or observe an existing chess game");
             // print out some helpful material
             return "";
-        } else if (input.contains("2")){
+        } else if (input.contains("2")) {
             System.out.println("Logging out...");
             // log out the user
             try {
                 server.logout(this.authToken);
                 this.authToken = "";
                 this.loggedIn = false;
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 System.out.println("The user could not be logged out of the system");
             }
             return "logged out";
-        } else if (input.contains("3")){
+        } else if (input.contains("3")) {
             // create a game
             System.out.println("Please enter a name for your game:");
             String gameName = getInput();
             try {
                 server.createGame(gameName, this.authToken);
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 System.out.println("Invalid game name");
             }
-        } else if (input.contains("4")){
+        } else if (input.contains("4")) {
             // list the games
             listGames(true);
 
-        } else if (input.contains("5")){
+        } else if (input.contains("5")) {
             // join a game
             System.out.println("Which game do you want to join? (enter the game number)");
             listGames(true);
@@ -184,30 +189,30 @@ public class ChessClient implements ServerMessageHandler {
 
                     drawGame(this.currentUserColor);
                     return "gameMenu";
-                } catch (ResponseException ex){
-                    if (Objects.equals(ex.code(), ResponseException.Code.AlreadyTakenError)){
-                        System.out.println("Sorry, someone is already playing as the "+colorChoice.toLowerCase()+" player");
+                } catch (ResponseException ex) {
+                    if (Objects.equals(ex.code(), ResponseException.Code.AlreadyTakenError)) {
+                        System.out.println("Sorry, someone is already playing as the " + colorChoice.toLowerCase() + " player");
                     } else {
                         System.out.println("Could not add the user to the game");
                     }
                 }
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 System.out.println("Invalid game number");
             }
-        } else if (input.contains("6")){
+        } else if (input.contains("6")) {
             // observe game
             System.out.println("Which game do you want to observe? (enter the game number)");
             listGames(true);
             try {
                 this.currentGameNum = Integer.parseInt(getInput());
                 drawGame("WHITE");
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 System.out.println("Invalid game number");
             }
             try {
                 ws = new WebSocketFacade(port, this);
                 ws.observe(authToken, this.latestGames.get(this.currentGameNum).gameID());
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 System.out.println("There was a problem connecting to the game");
             }
         } else {
@@ -215,6 +220,7 @@ public class ChessClient implements ServerMessageHandler {
         }
         return "";
     }
+
     public void drawGame(String userColor) {
         ChessGame desiredGame = latestGames.get(this.currentGameNum).game();
         ChessBoard board = desiredGame.getBoard();
@@ -229,6 +235,7 @@ public class ChessClient implements ServerMessageHandler {
             System.out.println("The game is over");
         }
     }
+
     private void listGames(boolean print) {
         try {
             if (this.latestGames != null) {
@@ -237,12 +244,12 @@ public class ChessClient implements ServerMessageHandler {
             ListofGames gameList = server.listGames(this.authToken);
 //                System.out.println(gameList.games());
             int gameNum = 0;
-            if (gameList.games().isEmpty()){
+            if (gameList.games().isEmpty()) {
                 if (print) {
                     System.out.println("There are no current games");
                 }
             }
-            for (GameData game : gameList.games()){
+            for (GameData game : gameList.games()) {
                 gameNum++;
                 if (print) {
                     System.out.println("Game " + gameNum + ": \"" + game.gameName() + "\" - white player: "
@@ -250,14 +257,16 @@ public class ChessClient implements ServerMessageHandler {
                 }
                 this.latestGames.put(gameNum, game);
             }
-        } catch (Exception ex){
+        } catch (Exception ex) {
             System.out.println("Could not list the games ");
         }
     }
+
     private String gameMenu() {
         printGameMenu();
         return parseGameMenu(getInput());
     }
+
     private static void printGameMenu() {
         System.out.println();
         System.out.println("   1 - Help");
@@ -267,12 +276,13 @@ public class ChessClient implements ServerMessageHandler {
         System.out.println("   5 - Resign");
         System.out.println("   6 - Highlight Legal Moves");
     }
-    private String parseGameMenu(String input){
-        if (input.length() > 1){
+
+    private String parseGameMenu(String input) {
+        if (input.length() > 1) {
             System.out.println("Please choose a menu number");
             return "gameMenu";
         }
-        if (input.contains("1")){
+        if (input.contains("1")) {
             // print out some helpful material
             System.out.println("Enter the corresponding menu number to " +
                     "\n    draw the chessboard again, " +
@@ -281,24 +291,24 @@ public class ChessClient implements ServerMessageHandler {
                     "\n    resign and forfeit the game," +
                     "\n    or see all legal moves for a piece");
             return "gameMenu";
-        } else if (input.contains("2")){
+        } else if (input.contains("2")) {
             // redraw the chess board
             drawGame(this.currentUserColor);
             return "gameMenu";
-        } else if (input.contains("3")){
+        } else if (input.contains("3")) {
             // leave the game
             System.out.println("You have left the game");
             try {
                 ws.leave(this.authToken, latestGames.get(this.currentGameNum).gameID(), currentUserColor);
-            } catch (ResponseException ex){
+            } catch (ResponseException ex) {
                 System.out.println("There was a problem sending a message to the other users");
             }
             return "exit game menu";
-        } else if (input.contains("4")){
+        } else if (input.contains("4")) {
             // make a chess move
             System.out.println("Which piece do you want to move? Enter the piece location (e.g. a2):");
             String pieceLocation = getInput();
-            while (pieceLocation.isEmpty()){
+            while (pieceLocation.isEmpty()) {
                 System.out.println("Please enter a valid location on the chessboard");
                 pieceLocation = getInput();
             }
@@ -315,38 +325,37 @@ public class ChessClient implements ServerMessageHandler {
 //            System.out.println("col: "+col+"\nrow: "+row);
                 piecePosition = new ChessPosition(row, col);
                 highlightMoves(pieceLocation);
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 System.out.println("Invalid piece location");
                 return "gameMenu";
             }
             System.out.println("Where do you want to move to? Enter the board location (e.g. a4):");
             String moveToLocation = getInput();
-            while (moveToLocation.isEmpty()){
+            while (moveToLocation.isEmpty()) {
                 System.out.println("Please enter a valid location on the chessboard");
                 moveToLocation = getInput();
             }
             while (moveToLocation.length() > 2
                     | !chessColumns.containsKey(String.valueOf(moveToLocation.charAt(0)))
-                    | !Character.isDigit(moveToLocation.charAt(1)) )
-            {
+                    | !Character.isDigit(moveToLocation.charAt(1))) {
                 System.out.println("Please enter a valid location on the chessboard");
                 moveToLocation = getInput();
             }
             try {
                 makeMove(moveToLocation, piecePosition, pieceLocation);
                 return "gameMenu";
-            } catch (ResponseException ex){ // for errors sending out messages to the other users
+            } catch (ResponseException ex) { // for errors sending out messages to the other users
                 System.out.println(ex.getMessage());
                 return "gameMenu";
-            } catch (Exception ex){
-                System.out.println("Invalid piece location"+ex.getMessage());
+            } catch (Exception ex) {
+                System.out.println("Invalid piece location" + ex.getMessage());
                 return "gameMenu";
             }
-        } else if (input.contains("5")){
+        } else if (input.contains("5")) {
             // resign the game
             resign();
             return "gameMenu";
-        } else if (input.contains("6")){
+        } else if (input.contains("6")) {
             // highlight the legal moves
             highlightMoves();
             return "gameMenu";
@@ -355,6 +364,7 @@ public class ChessClient implements ServerMessageHandler {
             return "gameMenu";
         }
     }
+
     private void makeMove(String moveToLocation, ChessPosition piecePosition, String pieceLocation) throws ResponseException {
         int col = chessColumns.get(String.valueOf(moveToLocation.charAt(0)));
         int row = Integer.parseInt(String.valueOf(moveToLocation.charAt(1)));
@@ -369,26 +379,12 @@ public class ChessClient implements ServerMessageHandler {
         if (this.latestGames.get(
                 this.currentGameNum).game().getBoard().getPiece(piecePosition).toString().equalsIgnoreCase("pawn")) {
             if (moveToPosition.getRow() == 8 || moveToPosition.getRow() == 1) {
-                boolean invalid = true;
-                while (invalid) {
-                    System.out.println("What kind of piece would you like to convert your pawn into?");
-                    try {
-                        promotionPieceString = getInput();
-                        ArrayList<String> validPieces = new ArrayList<>(List.of("knight", "bishop", "rook", "queen"));
-                        if (validPieces.contains(promotionPieceString.toLowerCase())) {
-                            invalid = false;
-                        } else {
-                            System.out.println("Please type out the name of the piece:");
-                        }
-                    } catch (Exception ex) {
-                        System.out.println("Please type out the name of the piece:");
-                    }
-                }
+                promotionPieceString = getString(promotionPieceString);
                 moveString = moveString + " and promoted it to a " + promotionPieceString;
             }
         }
         ws.makeMove(authToken, this.latestGames.get(
-                this.currentGameNum).gameID(),
+                        this.currentGameNum).gameID(),
                 currentUserColor, moveString,
                 piecePosition, moveToPosition,
                 promotionPieceString);
@@ -399,12 +395,32 @@ public class ChessClient implements ServerMessageHandler {
             oppositeColor = ChessGame.TeamColor.WHITE;
         }
         listGames(false);
-        if (this.latestGames.get(this.currentGameNum).game().isInCheck(oppositeColor)){
+        if (this.latestGames.get(this.currentGameNum).game().isInCheck(oppositeColor)) {
             System.out.printf("You put %s in check%n", oppositeColor);
         }
         listGames(false);
         drawGame(currentUserColor);
     }
+
+    private String getString(String promotionPieceString) {
+        boolean invalid = true;
+        while (invalid) {
+            System.out.println("What kind of piece would you like to convert your pawn into?");
+            try {
+                promotionPieceString = getInput();
+                ArrayList<String> validPieces = new ArrayList<>(List.of("knight", "bishop", "rook", "queen"));
+                if (validPieces.contains(promotionPieceString.toLowerCase())) {
+                    invalid = false;
+                } else {
+                    System.out.println("Please type out the name of the piece:");
+                }
+            } catch (Exception ex) {
+                System.out.println("Please type out the name of the piece:");
+            }
+        }
+        return promotionPieceString;
+    }
+
     private void highlightMoves() {
         System.out.println("Enter the piece location (e.g. c8):");
         String pieceLocation = getInput();
@@ -416,14 +432,15 @@ public class ChessClient implements ServerMessageHandler {
         }
         try {
             highlightMoves(pieceLocation);
-        } catch (Exception ex){
-            System.out.println("Could not highlight the chessboard"+ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println("Could not highlight the chessboard" + ex.getMessage());
         }
     }
+
     private void resign() {
         System.out.println("Are you sure you want to resign? (y/n)");
         String choice = getInput();
-        if (choice.equals("y")){
+        if (choice.equals("y")) {
             listGames(false); // update the list of latest games so that it is up to date
             if (latestGames.get(this.currentGameNum).game().getTeamTurn() != ChessGame.TeamColor.NONE) {
                 System.out.println("You have forfeited the game");
@@ -438,6 +455,7 @@ public class ChessClient implements ServerMessageHandler {
             }
         }
     }
+
     private void highlightMoves(String pieceLocation) {
         int col = chessColumns.get(String.valueOf(pieceLocation.charAt(0)));
         int row = Integer.parseInt(String.valueOf(pieceLocation.charAt(1)));
@@ -450,11 +468,12 @@ public class ChessClient implements ServerMessageHandler {
         DrawChessBoard myDrawer = new DrawChessBoard();
         myDrawer.drawBoard(this.currentUserColor, board, possibleMoves, piecePosition);
     }
+
     private static Collection<ChessPosition> getValidMoves(ChessGame desiredGame, ChessPosition piecePosition) {
         Collection<ChessMove> possibleChessMoves = desiredGame.validMoves(piecePosition);
-        if (possibleChessMoves != null){
+        if (possibleChessMoves != null) {
             Collection<ChessPosition> possibleMoves = new ArrayList<>();
-            for (ChessMove move : possibleChessMoves){
+            for (ChessMove move : possibleChessMoves) {
                 possibleMoves.add(move.getEndPosition());
             }
             return possibleMoves;
@@ -467,14 +486,14 @@ public class ChessClient implements ServerMessageHandler {
     @Override
     public void notify(ServerMessage notification) {
         listGames(false);
-        if (notification.getServerMessageType().equals(ServerMessage.ServerMessageType.LOAD_GAME)){
+        if (notification.getServerMessageType().equals(ServerMessage.ServerMessageType.LOAD_GAME)) {
             listGames(false);
-            System.out.println("\n"+notification.getMessage());
+            System.out.println("\n" + notification.getMessage());
             drawGame(this.currentUserColor);
             printGameMenu();
         } else {
             listGames(false);
-            System.out.println("\n"+notification.getMessage());
+            System.out.println("\n" + notification.getMessage());
         }
     }
 }

@@ -1,18 +1,20 @@
 package server.websocket;
 
-import chess.ChessMove;
-import chess.ChessPosition;
-import chess.InvalidMoveException;
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import io.javalin.websocket.*;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
+import java.util.ArrayList;
+
+import static chess.ChessPiece.PieceType.*;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
@@ -42,8 +44,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     chessMove(
                             moveCommand.getAuthToken(),
                             moveCommand.getGameID(),
+                            moveCommand.getPlayerColor(),
+                            moveCommand.getMoveString(),
                             moveCommand.getStartPosition(),
                             moveCommand.getEndPosition(),
+                            moveCommand.getPromotionPiece(),
                             ctx.session
                             );
                     break;
@@ -79,7 +84,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void resignGame(String authToken, int gameID, Session session) throws IOException{
-        connections.add(gameID, session);
         try {
             var message = String.format("%s has forfeited the game!", dataAccess.getUsername(authToken));
             dataAccess.endGame(authToken, gameID);
@@ -90,8 +94,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void leaveGame(String authToken, int gameID, String playerColor, Session session) throws IOException{
-        connections.add(gameID, session);
+    private void leaveGame(String authToken, int gameID, String playerColor, Session session ) throws IOException{
         try {
             var message = String.format("%s has left the game", dataAccess.getUsername(authToken));
             dataAccess.addToGame(authToken, playerColor, gameID, true);
@@ -104,13 +107,38 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void chessMove(String authToken, int gameID, ChessPosition startPosition, ChessPosition endPosition, Session session) throws IOException{
-        connections.add(gameID, session);
+    private void chessMove(String authToken, int gameID, String playerColor, String moveString, ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece, Session session) throws IOException{
         try {
-            var message = String.format("%s moved a PieceType from startLocation to endLocation", dataAccess.getUsername(authToken));
-            dataAccess.makeMove(authToken, gameID, new ChessMove(startPosition, endPosition, null));
+            var message = dataAccess.getUsername(authToken) + moveString;
+            dataAccess.makeMove(authToken, gameID, playerColor, new ChessMove(startPosition, endPosition, promotionPiece));
+            ArrayList<GameData> gameList = dataAccess.listGames(authToken);
+            ChessGame.TeamColor oppositeColor;
+            if (playerColor.equals("WHITE")) {
+                oppositeColor = ChessGame.TeamColor.BLACK;
+            } else {
+                oppositeColor = ChessGame.TeamColor.WHITE;
+            }
+
             var notification = new ServerMessage(message, ServerMessage.ServerMessageType.LOAD_GAME);
             connections.broadcast(gameID, session, notification);
+
+            for (GameData gameData : gameList){
+                if (gameData.gameID() == gameID){
+                    if (gameData.game().isInCheckmate(oppositeColor)) {
+                        dataAccess.endGame(authToken, gameID);
+                        notification = new ServerMessage(String.format("%s is in checkmate, %s wins", oppositeColor.toString().toLowerCase(), playerColor.toLowerCase()), ServerMessage.ServerMessageType.NOTIFICATION);
+                        connections.broadcast(gameID, null, notification);
+                    } else if (gameData.game().isInCheck(oppositeColor)){
+                        notification = new ServerMessage(String.format("%s is in check", oppositeColor.toString().toLowerCase()), ServerMessage.ServerMessageType.NOTIFICATION);
+                        connections.broadcast(gameID, null, notification);
+                    } else if (gameData.game().isInStalemate(oppositeColor)){
+                        dataAccess.endGame(authToken, gameID);
+                        notification = new ServerMessage("The game ended in a stalemate", ServerMessage.ServerMessageType.NOTIFICATION);
+                        connections.broadcast(gameID, null, notification);
+                    }
+                }
+            }
+
 
         } catch (InvalidMoveException | DataAccessException ex){
             sendError(session, ex);

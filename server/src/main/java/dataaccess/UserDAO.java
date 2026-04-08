@@ -21,5 +21,5 @@ public interface UserDAO {
     void addToGame(String authToken, String playerColor, int gameID, boolean leave) throws DataAccessException;
     void endGame(String authToken, int gameID) throws DataAccessException;
 
-    void makeMove(String authToken, int gameID, ChessMove chessMove) throws DataAccessException, InvalidMoveException;
+    void makeMove(String authToken, int gameID, String playerColor, ChessMove chessMove) throws DataAccessException, InvalidMoveException;
 }

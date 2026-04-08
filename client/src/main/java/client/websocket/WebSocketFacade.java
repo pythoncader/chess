@@ -1,6 +1,7 @@
 package client.websocket;
 
 import chess.ChessGame;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import com.google.gson.Gson;
 import exception.ResponseException;
@@ -12,6 +13,9 @@ import websocket.messages.ServerMessage;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import static chess.ChessPiece.PieceType.*;
+import static chess.ChessPiece.PieceType.ROOK;
 
 public class WebSocketFacade extends Endpoint{
     public Session session;
@@ -73,9 +77,19 @@ public class WebSocketFacade extends Endpoint{
         }
     }
 
-    public void makeMove(String authToken, int gameID, String playerColor, ChessPosition startPosition, ChessPosition endPosition) throws ResponseException {
+    public void makeMove(String authToken, int gameID, String playerColor, String moveString, ChessPosition startPosition, ChessPosition endPosition, String promotionPieceString) throws ResponseException {
         try {
-            var command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, playerColor, startPosition, endPosition);
+            ChessPiece.PieceType promotionPiece = null;
+            if (promotionPieceString != null) {
+                promotionPiece = switch (promotionPieceString) {
+                    case "queen" -> QUEEN;
+                    case "knight" -> KNIGHT;
+                    case "bishop" -> BISHOP;
+                    case "rook" -> ROOK;
+                    default -> null;
+                };
+            }
+            var command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, playerColor, moveString, startPosition, endPosition, promotionPiece);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the other users");

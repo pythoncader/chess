@@ -93,33 +93,33 @@ public class ChessPiece {
         if (pieceColor == ChessGame.TeamColor.BLACK) {
             switch (type) {
                 case PAWN:
-                    return "p";
+                    return "pawn";
                 case ROOK:
-                    return "r";
+                    return "rook";
                 case KNIGHT:
-                    return "n";
+                    return "knight";
                 case BISHOP:
-                    return "b";
+                    return "bishop";
                 case QUEEN:
-                    return "q";
+                    return "queen";
                 case KING:
-                    return "k";
+                    return "king";
             }
             return "";
         } else {
             switch (type) {
                 case PAWN:
-                    return "P";
+                    return "Pawn";
                 case ROOK:
-                    return "R";
+                    return "Rook";
                 case KNIGHT:
-                    return "N";
+                    return "Knight";
                 case BISHOP:
-                    return "B";
+                    return "Bishop";
                 case QUEEN:
-                    return "Q";
+                    return "Queen";
                 case KING:
-                    return "K";
+                    return "King";
             }
             return "";
         }

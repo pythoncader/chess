@@ -266,25 +266,33 @@ public class DatabaseUserDAO implements UserDAO{
     }
 
     @Override
-    public void makeMove(String authToken, int gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
+    public void makeMove(String authToken, int gameID, String playerColor, ChessMove move) throws DataAccessException, InvalidMoveException {
         if (isInTable(authToken, "authToken", "authTokens")) {
             var statement = "UPDATE chessGames SET json = ? WHERE id=?";
             GameData oldGameData = new Gson().fromJson(getChessGame(gameID), GameData.class);
-            ChessGame newGame = oldGameData.game();
-            newGame.makeMove(move);
+            if (playerColor.equals(oldGameData.game().getTeamTurn().toString())){
+                ChessGame newGame = oldGameData.game();
+                newGame.makeMove(move);
 
-            GameData myGameData = new GameData(
-                    gameID,
-                    oldGameData.whiteUsername(),
-                    oldGameData.blackUsername(),
-                    oldGameData.gameName(),
-                    newGame
-            );
+                GameData myGameData = new GameData(
+                        gameID,
+                        oldGameData.whiteUsername(),
+                        oldGameData.blackUsername(),
+                        oldGameData.gameName(),
+                        newGame
+                );
 
-            String json = new Gson().toJson(myGameData);
-            executeUpdate(statement, json, gameID);
+                String json = new Gson().toJson(myGameData);
+                executeUpdate(statement, json, gameID);
+            } else if (oldGameData.game().getTeamTurn() == ChessGame.TeamColor.NONE){
+                throw new InvalidMoveException("The game is over, no more moves can be made!");
+            } else {
+                throw new InvalidMoveException("It's not your turn!");
+            }
+
         }
     }
+
 
     @Override
     public void addToGame(String authToken, String playerColor, int gameID, boolean leave) throws DataAccessException { // tested

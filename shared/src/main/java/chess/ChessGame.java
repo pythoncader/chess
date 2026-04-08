@@ -82,7 +82,7 @@ public class ChessGame {
         ChessPiece myPiece = myBoard.getPiece(move.getStartPosition());
         if (myPiece != null){
             if (myPiece.getTeamColor() != this.currentTurn){
-                throw new InvalidMoveException("It's not your turn!");
+                throw new InvalidMoveException("You can't move this piece!");
             }
             Collection<ChessMove> myMoves = validMoves(move.getStartPosition());
 
@@ -99,7 +99,7 @@ public class ChessGame {
                     this.setTeamTurn(TeamColor.WHITE);
                 }
             } else {
-                throw new InvalidMoveException("You can't move to this square: " + move.getEndPosition());
+                throw new InvalidMoveException("You can't move to that square!");
             }
         } else { // if there is no piece here on the board
             throw new InvalidMoveException("There is no piece at this position");

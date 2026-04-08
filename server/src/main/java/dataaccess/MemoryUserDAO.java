@@ -156,20 +156,24 @@ public class MemoryUserDAO implements UserDAO{
     }
 
     @Override
-    public void makeMove(String authToken, int gameID, ChessMove move) throws InvalidMoveException {
+    public void makeMove(String authToken, int gameID, String playerColor, ChessMove move) throws InvalidMoveException {
         if (authTokens.containsKey(authToken)) {
             GameData oldGameData = chessGames.get(gameID);
-            ChessGame newGame = oldGameData.game();
-            newGame.makeMove(move);
+            if (playerColor.equals(oldGameData.game().getTeamTurn().toString())) {
+                ChessGame newGame = oldGameData.game();
+                newGame.makeMove(move);
 
-            GameData myGameData = new GameData(
-                    gameID,
-                    oldGameData.whiteUsername(),
-                    oldGameData.blackUsername(),
-                    oldGameData.gameName(),
-                    newGame
-            );
-            chessGames.put(gameID, myGameData);
+                GameData myGameData = new GameData(
+                        gameID,
+                        oldGameData.whiteUsername(),
+                        oldGameData.blackUsername(),
+                        oldGameData.gameName(),
+                        newGame
+                );
+                chessGames.put(gameID, myGameData);
+            }
+        } else {
+            throw new InvalidMoveException("It's not your turn!");
         }
     }
 

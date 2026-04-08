@@ -77,7 +77,14 @@ public class WebSocketFacade extends Endpoint{
         }
     }
 
-    public void makeMove(String authToken, int gameID, String playerColor, String moveString, ChessPosition startPosition, ChessPosition endPosition, String promotionPieceString) throws ResponseException {
+    public void makeMove(
+            String authToken,
+            int gameID,
+            String playerColor,
+            String moveString,
+            ChessPosition startPosition,
+            ChessPosition endPosition,
+            String promotionPieceString) throws ResponseException {
         try {
             ChessPiece.PieceType promotionPiece = null;
             if (promotionPieceString != null) {
@@ -89,7 +96,15 @@ public class WebSocketFacade extends Endpoint{
                     default -> null;
                 };
             }
-            var command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, playerColor, moveString, startPosition, endPosition, promotionPiece);
+            var command = new MakeMoveCommand(
+                    UserGameCommand.CommandType.MAKE_MOVE,
+                    authToken,
+                    gameID,
+                    playerColor,
+                    moveString,
+                    startPosition,
+                    endPosition,
+                    promotionPiece);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the other users");

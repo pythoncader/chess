@@ -360,56 +360,7 @@ public class ChessClient implements ServerMessageHandler {
 
             try {
 
-                int col = chessColumns.get(String.valueOf(moveToLocation.charAt(0)));
-                int row = Integer.parseInt(String.valueOf(moveToLocation.charAt(1)));
-
-                ChessPosition moveToPosition = new ChessPosition(row, col);
-                String promotionPieceString = null;
-
-                String moveString = String.format(" moved the %s at %s to %s",
-                        this.latestGames.get(this.currentGameNum).game().getBoard().getPiece(piecePosition).toString().toLowerCase(),
-                        pieceLocation,
-                        moveToLocation
-                );
-
-                if (this.latestGames.get(this.currentGameNum).game().getBoard().getPiece(piecePosition).toString().equalsIgnoreCase("pawn")) {
-                    if (moveToPosition.getRow() == 8 || moveToPosition.getRow() == 1) {
-                        boolean invalid = true;
-                        while (invalid) {
-                            System.out.println("What kind of piece would you like to convert your pawn into?");
-                            try {
-                                promotionPieceString = getInput();
-                                ArrayList<String> validPieces = new ArrayList<>(List.of("knight", "bishop", "rook", "queen"));
-                                if (validPieces.contains(promotionPieceString.toLowerCase())) {
-                                    invalid = false;
-                                } else {
-                                    System.out.println("Please type out the name of the piece:");
-                                }
-                            } catch (Exception ex) {
-                                System.out.println("Please type out the name of the piece:");
-                            }
-                        }
-                        moveString = moveString + " and promoted it to a " + promotionPieceString;
-                    }
-                }
-
-
-                ws.makeMove(authToken, this.latestGames.get(this.currentGameNum).gameID(), currentUserColor, moveString, piecePosition, moveToPosition, promotionPieceString);
-
-//                System.out.println(this.currentUserColor);
-                ChessGame.TeamColor oppositeColor;
-                if (this.currentUserColor.equals("WHITE")) {
-                    oppositeColor = ChessGame.TeamColor.BLACK;
-                } else {
-                    oppositeColor = ChessGame.TeamColor.WHITE;
-                }
-                listGames(false);
-                if (this.latestGames.get(this.currentGameNum).game().isInCheck(oppositeColor)){
-                    System.out.printf("You put %s in check%n", oppositeColor);
-                }
-
-                listGames(false);
-                drawGame(currentUserColor);
+                makeMove(moveToLocation, piecePosition, pieceLocation);
                 return "gameMenu";
 
             } catch (ResponseException ex){ // for errors sending out messages to the other users
@@ -422,43 +373,109 @@ public class ChessClient implements ServerMessageHandler {
 
         } else if (input.contains("5")){
             // resign the game
-            System.out.println("Are you sure you want to resign? (y/n)");
-            String choice = getInput();
-            if (choice.equals("y")){
-                listGames(false); // update the list of latest games so that it is up to date
-                if (latestGames.get(this.currentGameNum).game().getTeamTurn() != ChessGame.TeamColor.NONE) {
-                    System.out.println("You have forfeited the game");
-                    try {
-                        ws.resign(this.authToken, latestGames.get(this.currentGameNum).gameID());
-                    } catch (Exception ex) {
-                        System.out.println(ex.getMessage());
-                        // make this better!
-                    }
-                } else {
-                    System.out.println("The game is already over, you cannot resign!");
-                }
-            }
+            resign();
             return "gameMenu";
         } else if (input.contains("6")){
             // highlight the legal moves
-            System.out.println("Enter the piece location (e.g. c8):");
-            String pieceLocation = getInput();
-
-            while (pieceLocation.length() > 2
-                    | !chessColumns.containsKey(String.valueOf(pieceLocation.charAt(0)))
-                    | !Character.isDigit(pieceLocation.charAt(1))) {
-                System.out.println("Please enter a valid location on the chessboard");
-                pieceLocation = getInput();
-            }
-            try {
-                highlightMoves(pieceLocation);
-            } catch (Exception ex){
-                System.out.println("Could not highlight the chessboard"+ex.getMessage());
-            }
+            highlightMoves();
             return "gameMenu";
         } else {
             System.out.println("Invalid menu option");
             return "gameMenu";
+        }
+    }
+
+    private void makeMove(String moveToLocation, ChessPosition piecePosition, String pieceLocation) throws ResponseException {
+        int col = chessColumns.get(String.valueOf(moveToLocation.charAt(0)));
+        int row = Integer.parseInt(String.valueOf(moveToLocation.charAt(1)));
+
+        ChessPosition moveToPosition = new ChessPosition(row, col);
+        String promotionPieceString = null;
+
+        String moveString = String.format(" moved the %s at %s to %s",
+                this.latestGames.get(this.currentGameNum).game().getBoard().getPiece(piecePosition).toString().toLowerCase(),
+                pieceLocation,
+                moveToLocation
+        );
+
+        if (this.latestGames.get(
+                this.currentGameNum).game().getBoard().getPiece(piecePosition).toString().equalsIgnoreCase("pawn")) {
+            if (moveToPosition.getRow() == 8 || moveToPosition.getRow() == 1) {
+                boolean invalid = true;
+                while (invalid) {
+                    System.out.println("What kind of piece would you like to convert your pawn into?");
+                    try {
+                        promotionPieceString = getInput();
+                        ArrayList<String> validPieces = new ArrayList<>(List.of("knight", "bishop", "rook", "queen"));
+                        if (validPieces.contains(promotionPieceString.toLowerCase())) {
+                            invalid = false;
+                        } else {
+                            System.out.println("Please type out the name of the piece:");
+                        }
+                    } catch (Exception ex) {
+                        System.out.println("Please type out the name of the piece:");
+                    }
+                }
+                moveString = moveString + " and promoted it to a " + promotionPieceString;
+            }
+        }
+
+
+        ws.makeMove(authToken, this.latestGames.get(
+                this.currentGameNum).gameID(),
+                currentUserColor, moveString,
+                piecePosition, moveToPosition,
+                promotionPieceString);
+
+//                System.out.println(this.currentUserColor);
+        ChessGame.TeamColor oppositeColor;
+        if (this.currentUserColor.equals("WHITE")) {
+            oppositeColor = ChessGame.TeamColor.BLACK;
+        } else {
+            oppositeColor = ChessGame.TeamColor.WHITE;
+        }
+        listGames(false);
+        if (this.latestGames.get(this.currentGameNum).game().isInCheck(oppositeColor)){
+            System.out.printf("You put %s in check%n", oppositeColor);
+        }
+
+        listGames(false);
+        drawGame(currentUserColor);
+    }
+
+    private void highlightMoves() {
+        System.out.println("Enter the piece location (e.g. c8):");
+        String pieceLocation = getInput();
+
+        while (pieceLocation.length() > 2
+                | !chessColumns.containsKey(String.valueOf(pieceLocation.charAt(0)))
+                | !Character.isDigit(pieceLocation.charAt(1))) {
+            System.out.println("Please enter a valid location on the chessboard");
+            pieceLocation = getInput();
+        }
+        try {
+            highlightMoves(pieceLocation);
+        } catch (Exception ex){
+            System.out.println("Could not highlight the chessboard"+ex.getMessage());
+        }
+    }
+
+    private void resign() {
+        System.out.println("Are you sure you want to resign? (y/n)");
+        String choice = getInput();
+        if (choice.equals("y")){
+            listGames(false); // update the list of latest games so that it is up to date
+            if (latestGames.get(this.currentGameNum).game().getTeamTurn() != ChessGame.TeamColor.NONE) {
+                System.out.println("You have forfeited the game");
+                try {
+                    ws.resign(this.authToken, latestGames.get(this.currentGameNum).gameID());
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                    // make this better!
+                }
+            } else {
+                System.out.println("The game is already over, you cannot resign!");
+            }
         }
     }
 

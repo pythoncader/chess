@@ -40,7 +40,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     joinGame(command.getAuthToken(), command.getGameID(), command.getPlayerColor(), ctx.session);
                     break;
                 case MAKE_MOVE:
-                    MakeMoveCommand moveCommand = new Gson().fromJson(ctx.message(), MakeMoveCommand.class); // re-serialize it as a MakeMoveCommand instead
+                    MakeMoveCommand moveCommand = new Gson().fromJson(ctx.message(), MakeMoveCommand.class);
+                    // re-serialize it as a MakeMoveCommand instead
                     chessMove(
                             moveCommand.getAuthToken(),
                             moveCommand.getGameID(),
@@ -107,7 +108,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void chessMove(String authToken, int gameID, String playerColor, String moveString, ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece, Session session) throws IOException{
+    private void chessMove(String authToken,
+                           int gameID,
+                           String playerColor,
+                           String moveString,
+                           ChessPosition startPosition,
+                           ChessPosition endPosition,
+                           ChessPiece.PieceType promotionPiece,
+                           Session session) throws IOException {
         try {
             var message = dataAccess.getUsername(authToken) + moveString;
             dataAccess.makeMove(authToken, gameID, playerColor, new ChessMove(startPosition, endPosition, promotionPiece));
@@ -126,14 +134,20 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 if (gameData.gameID() == gameID){
                     if (gameData.game().isInCheckmate(oppositeColor)) {
                         dataAccess.endGame(authToken, gameID);
-                        notification = new ServerMessage(String.format("%s is in checkmate, %s wins", oppositeColor.toString().toLowerCase(), playerColor.toLowerCase()), ServerMessage.ServerMessageType.NOTIFICATION);
+                        notification = new ServerMessage(String.format("%s is in checkmate, %s wins",
+                                oppositeColor.toString().toLowerCase(),
+                                playerColor.toLowerCase()),
+                                ServerMessage.ServerMessageType.NOTIFICATION);
                         connections.broadcast(gameID, null, notification);
                     } else if (gameData.game().isInCheck(oppositeColor)){
-                        notification = new ServerMessage(String.format("%s is in check", oppositeColor.toString().toLowerCase()), ServerMessage.ServerMessageType.NOTIFICATION);
+                        notification = new ServerMessage(String.format("%s is in check",
+                                oppositeColor.toString().toLowerCase()),
+                                ServerMessage.ServerMessageType.NOTIFICATION);
                         connections.broadcast(gameID, null, notification);
                     } else if (gameData.game().isInStalemate(oppositeColor)){
                         dataAccess.endGame(authToken, gameID);
-                        notification = new ServerMessage("The game ended in a stalemate", ServerMessage.ServerMessageType.NOTIFICATION);
+                        notification = new ServerMessage("The game ended in a stalemate",
+                                ServerMessage.ServerMessageType.NOTIFICATION);
                         connections.broadcast(gameID, null, notification);
                     }
                 }

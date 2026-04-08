@@ -38,8 +38,8 @@ public class ServerFacade {
                 .method("POST", makeRequestBody(gameRequest));
         request.setHeader("Content-Type", "application/json");
         request.setHeader("authorization", authToken);
-        sendRequest(request.build());
-//        return handleResponse(response, GameID.class);
+        var response = sendRequest(request.build());
+        getError(response);
     }
 
     public void addToGame(int gameID, String colorChoice, String authToken) throws ResponseException{
@@ -50,6 +50,10 @@ public class ServerFacade {
         request.setHeader("Content-Type", "application/json");
         request.setHeader("authorization", authToken);
         var response = sendRequest(request.build());
+        getError(response);
+    }
+
+    private static void getError(HttpResponse<String> response) throws ResponseException {
         var myError = new Gson().fromJson(response.body(), ErrorMessage.class);
         if (myError.status() != 200 && myError.status() != 0){
             throw new ResponseException(ResponseException.fromHttpStatusCode(myError.status()), myError.message());
@@ -71,10 +75,7 @@ public class ServerFacade {
                 .method("DELETE", makeRequestBody(null));
         request.setHeader("authorization", authToken);
         var response = sendRequest(request.build());
-        var myError = new Gson().fromJson(response.body(), ErrorMessage.class);
-        if (myError.status() != 200 && myError.status() != 0){
-            throw new ResponseException(ResponseException.fromHttpStatusCode(myError.status()), myError.message());
-        }
+        getError(response);
     }
 
     private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {

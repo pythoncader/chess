@@ -2,7 +2,6 @@ package ui;
 
 import chess.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -112,47 +111,12 @@ public class DrawChessBoard {
         ChessPiece currentPiece;
         ChessPosition currentPosition;
         String myPiece = " ";
-        ChessPiece.PieceType pieceType;
         for (int col = 1; col < 9; col++){
             currentPosition = new ChessPosition(row, col);
             currentColor = highlightSquare(possibleMoves, currentPosition, piecePosition, currentColor);
             currentPiece = chessBoard.getPiece(currentPosition);
 
-            if (currentPiece != null){
-                if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                    pieceType = currentPiece.getPieceType();
-                    if (pieceType == ChessPiece.PieceType.PAWN){
-                        myPiece = WHITE_PAWN;
-                    } else if (pieceType == ROOK){
-                        myPiece = WHITE_ROOK;
-                    } else if (pieceType == KNIGHT){
-                        myPiece = WHITE_KNIGHT;
-                    } else if (pieceType == BISHOP){
-                        myPiece = WHITE_BISHOP;
-                    } else if (pieceType == QUEEN){
-                        myPiece = WHITE_QUEEN;
-                    } else if (pieceType == KING) {
-                        myPiece = WHITE_KING;
-                    }
-                } else {
-                    pieceType = currentPiece.getPieceType();
-                    if (pieceType == ChessPiece.PieceType.PAWN){
-                        myPiece = BLACK_PAWN;
-                    } else if (pieceType == ROOK){
-                        myPiece = BLACK_ROOK;
-                    } else if (pieceType == KNIGHT){
-                        myPiece = BLACK_KNIGHT;
-                    } else if (pieceType == BISHOP){
-                        myPiece = BLACK_BISHOP;
-                    } else if (pieceType == QUEEN){
-                        myPiece = BLACK_QUEEN;
-                    } else if (pieceType == KING) {
-                        myPiece = BLACK_KING;
-                    }
-                }
-            } else {
-                myPiece = " ";
-            }
+            myPiece = getPieceString(currentPiece, myPiece);
 
             drawRectangle(myPiece, currentColor);
             currentColor = changeColor(currentColor);
@@ -160,6 +124,46 @@ public class DrawChessBoard {
         drawRectangle(Integer.toString(row), "other_gray");
         System.out.print("\u001b[0m"); // clears formatting
         System.out.println();
+    }
+
+    private static String getPieceString(ChessPiece currentPiece, String myPiece) {
+        ChessPiece.PieceType pieceType;
+        if (currentPiece != null){
+            if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                pieceType = currentPiece.getPieceType();
+                if (pieceType == ChessPiece.PieceType.PAWN){
+                    myPiece = WHITE_PAWN;
+                } else if (pieceType == ROOK){
+                    myPiece = WHITE_ROOK;
+                } else if (pieceType == KNIGHT){
+                    myPiece = WHITE_KNIGHT;
+                } else if (pieceType == BISHOP){
+                    myPiece = WHITE_BISHOP;
+                } else if (pieceType == QUEEN){
+                    myPiece = WHITE_QUEEN;
+                } else if (pieceType == KING) {
+                    myPiece = WHITE_KING;
+                }
+            } else {
+                pieceType = currentPiece.getPieceType();
+                if (pieceType == ChessPiece.PieceType.PAWN){
+                    myPiece = BLACK_PAWN;
+                } else if (pieceType == ROOK){
+                    myPiece = BLACK_ROOK;
+                } else if (pieceType == KNIGHT){
+                    myPiece = BLACK_KNIGHT;
+                } else if (pieceType == BISHOP){
+                    myPiece = BLACK_BISHOP;
+                } else if (pieceType == QUEEN){
+                    myPiece = BLACK_QUEEN;
+                } else if (pieceType == KING) {
+                    myPiece = BLACK_KING;
+                }
+            }
+        } else {
+            myPiece = " ";
+        }
+        return myPiece;
     }
 
     private static void drawRowBlack(
@@ -180,47 +184,12 @@ public class DrawChessBoard {
         ChessPiece currentPiece;
         ChessPosition currentPosition;
         String myPiece = " ";
-        ChessPiece.PieceType pieceType;
         for (int col = 8; col > 0; col--){
             currentPosition = new ChessPosition(row, col);
             currentColor = highlightSquare(possibleMoves, currentPosition, piecePosition, currentColor);
             currentPiece = chessBoard.getPiece(currentPosition);
 
-            if (currentPiece != null){
-                if (currentPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                    pieceType = currentPiece.getPieceType();
-                    if (pieceType == ChessPiece.PieceType.PAWN){
-                        myPiece = WHITE_PAWN;
-                    } else if (pieceType == ROOK){
-                        myPiece = WHITE_ROOK;
-                    } else if (pieceType == KNIGHT){
-                        myPiece = WHITE_KNIGHT;
-                    } else if (pieceType == BISHOP){
-                        myPiece = WHITE_BISHOP;
-                    } else if (pieceType == QUEEN){
-                        myPiece = WHITE_QUEEN;
-                    } else if (pieceType == KING) {
-                        myPiece = WHITE_KING;
-                    }
-                } else {
-                    pieceType = currentPiece.getPieceType();
-                    if (pieceType == ChessPiece.PieceType.PAWN){
-                        myPiece = BLACK_PAWN;
-                    } else if (pieceType == ROOK){
-                        myPiece = BLACK_ROOK;
-                    } else if (pieceType == KNIGHT){
-                        myPiece = BLACK_KNIGHT;
-                    } else if (pieceType == BISHOP){
-                        myPiece = BLACK_BISHOP;
-                    } else if (pieceType == QUEEN){
-                        myPiece = BLACK_QUEEN;
-                    } else if (pieceType == KING) {
-                        myPiece = BLACK_KING;
-                    }
-                }
-            } else {
-                myPiece = " ";
-            }
+            myPiece = getPieceString(currentPiece, myPiece);
 
             drawRectangle(myPiece, currentColor);
             currentColor = changeColor(currentColor);

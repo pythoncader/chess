@@ -2,6 +2,7 @@ package server.websocket;
 
 import chess.ChessMove;
 import chess.ChessPosition;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
@@ -37,11 +38,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     joinGame(command.getAuthToken(), command.getGameID(), command.getPlayerColor(), ctx.session);
                     break;
                 case MAKE_MOVE:
-                    MakeMoveCommand moveCommand = new Gson().fromJson(ctx.message(), MakeMoveCommand.class);
+                    MakeMoveCommand moveCommand = new Gson().fromJson(ctx.message(), MakeMoveCommand.class); // re-serialize it as a MakeMoveCommand instead
                     chessMove(
                             moveCommand.getAuthToken(),
                             moveCommand.getGameID(),
-                            moveCommand.getPlayerColor(),
                             moveCommand.getStartPosition(),
                             moveCommand.getEndPosition(),
                             ctx.session
@@ -55,7 +55,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     break;
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            System.out.println("Internal websocket error");
         }
     }
 
@@ -73,7 +73,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 var notification = new ServerMessage(message, ServerMessage.ServerMessageType.LOAD_GAME);
                 connections.broadcast(gameID, session, notification);
             } catch (Exception ex) {
-                System.out.println("Error getting the username or broadcasting the message");
+                sendError(session, ex);
             }
         }
     }
@@ -86,7 +86,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             var notification = new ServerMessage(message, ServerMessage.ServerMessageType.NOTIFICATION);
             connections.broadcast(gameID, session, notification);
         } catch (DataAccessException ex){
-            throw new IOException(ex.getMessage());
+            sendError(session, ex);
         }
     }
 
@@ -98,22 +98,29 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connections.remove(gameID, session);
             var notification = new ServerMessage(message, ServerMessage.ServerMessageType.NOTIFICATION);
             connections.broadcast(gameID, session, notification);
+
         } catch (DataAccessException ex){
-            throw new IOException(ex.getMessage());
+            sendError(session, ex);
         }
     }
 
-    private void chessMove(String authToken, int gameID, String playerColor, ChessPosition startPosition, ChessPosition endPosition, Session session) throws IOException{
+    private void chessMove(String authToken, int gameID, ChessPosition startPosition, ChessPosition endPosition, Session session) throws IOException{
         connections.add(gameID, session);
         try {
             var message = String.format("%s moved a PieceType from startLocation to endLocation", dataAccess.getUsername(authToken));
             dataAccess.makeMove(authToken, gameID, new ChessMove(startPosition, endPosition, null));
             var notification = new ServerMessage(message, ServerMessage.ServerMessageType.LOAD_GAME);
             connections.broadcast(gameID, session, notification);
-        } catch (Exception ex){
-            throw new IOException(ex.getMessage());
+
+        } catch (InvalidMoveException | DataAccessException ex){
+            sendError(session, ex);
         }
     }
 
+    private static void sendError(Session session, Exception ex) throws IOException {
+        var error = new ServerMessage(ex.getMessage(), ServerMessage.ServerMessageType.ERROR);
+        String msg = new Gson().toJson(error);
+        session.getRemote().sendString(msg);
+    }
 
 }

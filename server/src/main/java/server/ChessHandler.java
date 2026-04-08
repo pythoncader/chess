@@ -11,7 +11,7 @@ public class ChessHandler {
     Service myService;
     Gson gson = new Gson();
 
-    public ChessHandler(Service myService) throws DataAccessException {
+    public ChessHandler(Service myService) {
         this.myService = myService;
     }
 

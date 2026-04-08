@@ -5,8 +5,6 @@ import chess.ChessPosition;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import jakarta.websocket.*;
-import org.glassfish.grizzly.http.server.Response;
-import ui.DrawChessBoard;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
@@ -33,8 +31,9 @@ public class WebSocketFacade extends Endpoint{
                     serverMessageHandler.notify(notification);
                 }
             });
+
         } catch (DeploymentException | IOException | URISyntaxException ex){
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+            throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
         }
     }
 
@@ -43,7 +42,7 @@ public class WebSocketFacade extends Endpoint{
             var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, playerColor);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex){
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+            throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
         }
     }
 
@@ -52,7 +51,7 @@ public class WebSocketFacade extends Endpoint{
             var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID, null);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex){
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+            throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
         }
     }
 
@@ -61,7 +60,7 @@ public class WebSocketFacade extends Endpoint{
             var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, playerColor);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex){
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+            throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
         }
     }
 
@@ -70,7 +69,7 @@ public class WebSocketFacade extends Endpoint{
             var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, "NONE");
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+            throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
         }
     }
 
@@ -79,7 +78,7 @@ public class WebSocketFacade extends Endpoint{
             var command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, playerColor, startPosition, endPosition);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+            throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the other users");
         }
     }
 

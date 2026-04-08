@@ -261,7 +261,6 @@ public class DatabaseUserDAO implements UserDAO{
             );
 
             String json = new Gson().toJson(myGameData);
-            System.out.println(json);
             executeUpdate(statement, json, gameID);
         }
     }
@@ -272,9 +271,7 @@ public class DatabaseUserDAO implements UserDAO{
             var statement = "UPDATE chessGames SET json = ? WHERE id=?";
             GameData oldGameData = new Gson().fromJson(getChessGame(gameID), GameData.class);
             ChessGame newGame = oldGameData.game();
-            System.out.println(newGame.getBoard().getPiece(new ChessPosition(2, 1)));
             newGame.makeMove(move);
-            System.out.println(newGame.getBoard().getPiece(new ChessPosition(4, 1)));
 
             GameData myGameData = new GameData(
                     gameID,
@@ -285,7 +282,6 @@ public class DatabaseUserDAO implements UserDAO{
             );
 
             String json = new Gson().toJson(myGameData);
-            System.out.println(json);
             executeUpdate(statement, json, gameID);
         }
     }

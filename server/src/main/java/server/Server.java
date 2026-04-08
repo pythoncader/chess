@@ -33,11 +33,13 @@ public class Server {
             javalin.post("/game", myHandler::createGame);
             javalin.get("/game", myHandler::getGames);
             javalin.put("/game", myHandler::joinGame);
+
             javalin.ws("/ws", ws -> {
                 ws.onConnect(webSocketHandler);
                 ws.onMessage(webSocketHandler);
                 ws.onClose(webSocketHandler);
-            });
+                }
+            );
         } catch (Exception ex) {
             System.out.println("Could not start server");
         }

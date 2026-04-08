@@ -82,7 +82,7 @@ public class ChessGame {
         ChessPiece myPiece = myBoard.getPiece(move.getStartPosition());
         if (myPiece != null){
             if (myPiece.getTeamColor() != this.currentTurn){
-                throw new InvalidMoveException("You can't move out of turn");
+                throw new InvalidMoveException("It's not your turn!");
             }
             Collection<ChessMove> myMoves = validMoves(move.getStartPosition());
 

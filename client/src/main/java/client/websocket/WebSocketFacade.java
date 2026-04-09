@@ -53,32 +53,22 @@ public class WebSocketFacade extends Endpoint{
         }
     }
     public void connectSocket(String authToken, int gameID) throws ResponseException {
-        try {
-            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
-            this.session.getBasicRemote().sendText(new Gson().toJson(command));
-        } catch (IOException ex){
-            throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
-        }
+        generalFacade(UserGameCommand.CommandType.CONNECT, authToken, gameID);
     }
+
     public void resign(String authToken, int gameID) throws ResponseException {
-        try {
-            var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
-            this.session.getBasicRemote().sendText(new Gson().toJson(command));
-        } catch (IOException ex){
-            throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
-        }
+        generalFacade(UserGameCommand.CommandType.RESIGN, authToken, gameID);
     }
     public void leave(String authToken, int gameID) throws ResponseException {
-        try {
-            var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
-            this.session.getBasicRemote().sendText(new Gson().toJson(command));
-        } catch (IOException ex){
-            throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
-        }
+        generalFacade(UserGameCommand.CommandType.LEAVE, authToken, gameID);
     }
     public void observe(String authToken, int gameID) throws ResponseException {
+        generalFacade(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+    }
+
+    private void generalFacade(UserGameCommand.CommandType type, String authToken, int gameID) throws ResponseException {
         try {
-            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+            var command = new UserGameCommand(type, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");

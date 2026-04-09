@@ -7,6 +7,7 @@ import dataaccess.UserDAO;
 import io.javalin.websocket.*;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
+import org.jetbrains.annotations.Nullable;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
@@ -73,25 +74,34 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             ArrayList<GameData> gameList = dataAccess.listGames(authToken);
             for (GameData gameData : gameList) {
-                if (gameData.gameID() == gameID) {
-//                    System.out.println(dataAccess.getUsername(authToken));
-                    if (gameData.whiteUsername() != null){
-                        if (gameData.whiteUsername().equals(dataAccess.getUsername(authToken))) {
-                            return "WHITE";
-                        }
-                    }
-                    if (gameData.blackUsername() != null) {
-                        if (gameData.blackUsername().equals(dataAccess.getUsername(authToken))) {
-                            return "BLACK";
-                        }
-                    }
-                    return "NONE";
+                String color = findColor(authToken, gameID, gameData);
+                if (color != null) {
+                    return color;
                 }
             }
             return null;
         } catch (Exception ex){
             return null;
         }
+    }
+
+    @Nullable
+    private String findColor(String authToken, int gameID, GameData gameData) throws DataAccessException {
+        if (gameData.gameID() == gameID) {
+//                    System.out.println(dataAccess.getUsername(authToken));
+            if (gameData.whiteUsername() != null){
+                if (gameData.whiteUsername().equals(dataAccess.getUsername(authToken))) {
+                    return "WHITE";
+                }
+            }
+            if (gameData.blackUsername() != null) {
+                if (gameData.blackUsername().equals(dataAccess.getUsername(authToken))) {
+                    return "BLACK";
+                }
+            }
+            return "NONE";
+        }
+        return null;
     }
 
     private GameData getGameData(String authToken, int gameID){

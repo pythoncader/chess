@@ -424,7 +424,7 @@ public class ChessClient implements ServerMessageHandler {
         try {
             highlightMoves(pieceLocation);
         } catch (Exception ex) {
-            System.out.println("Could not highlight the chessboard" + ex.getMessage());
+            System.out.println("Could not highlight the chessboard");
         }
     }
 

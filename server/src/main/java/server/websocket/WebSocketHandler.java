@@ -196,22 +196,26 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 connections.broadcast(gameID, session, notification);
 
                 ChessGame.TeamColor oppositeColor;
+                String oppositePlayer;
                 if (playerColor.equals("WHITE")) {
                     oppositeColor = ChessGame.TeamColor.BLACK;
+                    oppositePlayer = myGameData.blackUsername();
                 } else {
                     oppositeColor = ChessGame.TeamColor.WHITE;
+                    oppositePlayer = myGameData.whiteUsername();
                 }
 
                 if (myGameData.game().isInCheckmate(oppositeColor)) {
+
                     dataAccess.endGame(authToken, gameID);
                     var newNotification = new ServerMessage(String.format("%s is in checkmate, %s wins",
-                            oppositeColor.toString().toLowerCase(),
-                            playerColor.toLowerCase()),
+                            oppositePlayer,
+                            dataAccess.getUsername(authToken)),
                             ServerMessage.ServerMessageType.NOTIFICATION);
                     connections.broadcast(gameID, null, newNotification);
                 } else if (myGameData.game().isInCheck(oppositeColor)){
                     var newNotification = new ServerMessage(String.format("%s is in check",
-                            oppositeColor.toString().toLowerCase()),
+                            oppositePlayer),
                             ServerMessage.ServerMessageType.NOTIFICATION);
                     connections.broadcast(gameID, null, newNotification);
                 } else if (myGameData.game().isInStalemate(oppositeColor)){

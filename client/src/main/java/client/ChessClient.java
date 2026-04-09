@@ -189,7 +189,7 @@ public class ChessClient implements ServerMessageHandler {
                     this.currentUserColor = colorChoice;
                     ws.connectSocket(this.authToken, latestGames.get(this.currentGameNum).gameID());
 
-                    drawGame(this.currentUserColor);
+//                    drawGame(this.currentUserColor);
                     return "gameMenu";
                 } catch (ResponseException ex) {
                     if (Objects.equals(ex.code(), ResponseException.Code.AlreadyTakenError)) {
@@ -205,9 +205,10 @@ public class ChessClient implements ServerMessageHandler {
             // observe game
             System.out.println("Which game do you want to observe? (enter the game number)");
             listGames(true);
+            this.currentUserColor = "WHITE";
             try {
                 this.currentGameNum = Integer.parseInt(getInput());
-                drawGame("WHITE");
+//                drawGame("WHITE");
             } catch (Exception ex) {
                 System.out.println("Invalid game number");
             }
@@ -217,6 +218,7 @@ public class ChessClient implements ServerMessageHandler {
             } catch (Exception ex) {
                 System.out.println("There was a problem connecting to the game");
             }
+            return "gameMenu";
         } else {
             System.out.println("Invalid menu option");
         }
@@ -278,7 +280,6 @@ public class ChessClient implements ServerMessageHandler {
         System.out.println("   5 - Resign");
         System.out.println("   6 - Highlight Legal Moves");
     }
-
     private String parseGameMenu(String input) {
         if (input.length() > 1) {
             System.out.println("Please choose a menu number");
@@ -366,7 +367,6 @@ public class ChessClient implements ServerMessageHandler {
             return "gameMenu";
         }
     }
-
     private void makeMove(String moveToLocation, ChessPosition piecePosition, String pieceLocation) throws ResponseException {
         int col = chessColumns.get(String.valueOf(moveToLocation.charAt(0)));
         int row = Integer.parseInt(String.valueOf(moveToLocation.charAt(1)));
@@ -385,25 +385,15 @@ public class ChessClient implements ServerMessageHandler {
                 moveString = moveString + " and promoted it to a " + promotionPieceString;
             }
         }
-        ws.makeMove(authToken, this.latestGames.get(
-                        this.currentGameNum).gameID(),
-                currentUserColor, moveString,
+        ws.makeMove(
+                authToken,
+                this.latestGames.get(this.currentGameNum).gameID(),
+                moveString,
                 piecePosition, moveToPosition,
                 promotionPieceString);
-        ChessGame.TeamColor oppositeColor;
-        if (this.currentUserColor.equals("WHITE")) {
-            oppositeColor = ChessGame.TeamColor.BLACK;
-        } else {
-            oppositeColor = ChessGame.TeamColor.WHITE;
-        }
         listGames(false);
-        if (this.latestGames.get(this.currentGameNum).game().isInCheck(oppositeColor)) {
-            System.out.printf("You put %s in check%n", oppositeColor);
-        }
-        listGames(false);
-        drawGame(currentUserColor);
+//        drawGame(currentUserColor);
     }
-
     private String getString(String promotionPieceString) {
         boolean invalid = true;
         while (invalid) {
@@ -422,7 +412,6 @@ public class ChessClient implements ServerMessageHandler {
         }
         return promotionPieceString;
     }
-
     private void highlightMoves() {
         System.out.println("Enter the piece location (e.g. c8):");
         String pieceLocation = getInput();
@@ -445,9 +434,9 @@ public class ChessClient implements ServerMessageHandler {
         if (choice.equals("y")) {
             listGames(false); // update the list of latest games so that it is up to date
             if (latestGames.get(this.currentGameNum).game().getTeamTurn() != ChessGame.TeamColor.NONE) {
-                System.out.println("You have forfeited the game");
                 try {
                     ws.resign(this.authToken, latestGames.get(this.currentGameNum).gameID());
+                    System.out.println("You have forfeited the game");
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                     // make this better!
@@ -457,7 +446,6 @@ public class ChessClient implements ServerMessageHandler {
             }
         }
     }
-
     private void highlightMoves(String pieceLocation) {
         int col = chessColumns.get(String.valueOf(pieceLocation.charAt(0)));
         int row = Integer.parseInt(String.valueOf(pieceLocation.charAt(1)));
@@ -470,7 +458,6 @@ public class ChessClient implements ServerMessageHandler {
         DrawChessBoard myDrawer = new DrawChessBoard();
         myDrawer.drawBoard(this.currentUserColor, board, possibleMoves, piecePosition);
     }
-
     private static Collection<ChessPosition> getValidMoves(ChessGame desiredGame, ChessPosition piecePosition) {
         Collection<ChessMove> possibleChessMoves = desiredGame.validMoves(piecePosition);
         if (possibleChessMoves != null) {
@@ -485,23 +472,22 @@ public class ChessClient implements ServerMessageHandler {
         }
     }
     private final Map<String, Integer> chessColumns = Map.of("a", 1, "b", 2, "c", 3, "d", 4, "e", 5, "f", 6, "g", 7, "h", 8);
-
     @Override
     public void notify(ServerMessage notification) {
         listGames(false);
-        if (notification.getServerMessageType().equals(ServerMessage.ServerMessageType.LOAD_GAME)) {
-            listGames(false);
-//            System.out.println("\n" + notification.getMessage());
-            drawGame(this.currentUserColor);
-            printGameMenu();
-        }
+        System.out.println("\n" + notification.getMessage());
     }
+
+    @Override
     public void notifyError(ErrorMessage notification) {
         listGames(false);
-        System.out.println("\n" + notification.getMessage());
+        System.out.println("\n" + notification.getErrorMessage());
     }
+
+    @Override
     public void notifyLoadGame(LoadGameMessage notification){
         listGames(false);
-        System.out.println("\n" + notification.getMessage());
+        drawGame(this.currentUserColor);
+        printGameMenu();
     }
 }

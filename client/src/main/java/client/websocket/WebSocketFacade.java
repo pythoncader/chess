@@ -9,6 +9,8 @@ import exception.ResponseException;
 import jakarta.websocket.*;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -34,6 +36,12 @@ public class WebSocketFacade extends Endpoint{
                 public void onMessage(String message) {
                     ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
                     if (notification.getServerMessageType() == ServerMessage.ServerMessageType.ERROR){
+                        ErrorMessage error = new Gson().fromJson(message, ErrorMessage.class);
+                        serverMessageHandler.notifyError(error);
+                    } else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
+                        LoadGameMessage loadGame = new Gson().fromJson(message, LoadGameMessage.class);
+                        serverMessageHandler.notifyLoadGame(loadGame);
+                    } else {
                         serverMessageHandler.notify(notification);
                     }
 
@@ -44,7 +52,6 @@ public class WebSocketFacade extends Endpoint{
             throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
         }
     }
-
     public void connectSocket(String authToken, int gameID) throws ResponseException {
         try {
             var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
@@ -53,7 +60,6 @@ public class WebSocketFacade extends Endpoint{
             throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
         }
     }
-
     public void resign(String authToken, int gameID) throws ResponseException {
         try {
             var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
@@ -62,7 +68,6 @@ public class WebSocketFacade extends Endpoint{
             throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
         }
     }
-
     public void leave(String authToken, int gameID) throws ResponseException {
         try {
             var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
@@ -71,7 +76,6 @@ public class WebSocketFacade extends Endpoint{
             throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the server");
         }
     }
-
     public void observe(String authToken, int gameID) throws ResponseException {
         try {
             var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
@@ -84,7 +88,6 @@ public class WebSocketFacade extends Endpoint{
     public void makeMove(
             String authToken,
             int gameID,
-            String playerColor,
             String moveString,
             ChessPosition startPosition,
             ChessPosition endPosition,
@@ -112,7 +115,6 @@ public class WebSocketFacade extends Endpoint{
             throw new ResponseException(ResponseException.Code.ServerError, "There was a problem sending a message to the other users");
         }
     }
-
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig){}
 }

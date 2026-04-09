@@ -286,6 +286,8 @@ public class DatabaseUserDAO implements UserDAO{
                 executeUpdate(statement, json, gameID);
             } else if (oldGameData.game().getTeamTurn() == ChessGame.TeamColor.NONE){
                 throw new InvalidMoveException("The game is over, no more moves can be made!");
+            } else if (playerColor.equals("NONE")){
+                throw new InvalidMoveException("An observer cannot make a move");
             } else {
                 throw new InvalidMoveException("It's not your turn!");
             }
